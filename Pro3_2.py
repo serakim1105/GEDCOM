@@ -153,21 +153,6 @@ def parse_gedcom_file(filename):
     print("\nFamilies:")
     print(fam_table)
 
-    # print("Individuals:")
-    # print("ID|Name|Gender|Birthday|Age|Alive|Death|Child|Spouse")
-    # for indi in individuals:
-    #     alive = indi['Death'] == "NA"
-    #     age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
-    #     print(f"{indi['ID']}|{indi['Name']}|{indi['Gender']}|{indi['Birthday']}|{age}|{alive}|{indi['Death']}|{indi['Child']}|{','.join(indi['Spouse'])}")
-
-    # print("\nFamilies:")
-    # print("ID|Married|Divorced|HusbandID|HusbandName|WifeID|WifeName|Children")
-    # for fam in families:
-    #     print(f"{fam['ID']}|{fam['Married']}|{fam['Divorced']}|{fam['Husband']}|{fam['HusbandName']}|{fam['Wife']}|{fam['WifeName']}|{','.join(fam['Children'])}")
-
-    # Add calls to future features here
-
-
 def main():
     # To read file from command line
     if len(sys.argv) != 2:
