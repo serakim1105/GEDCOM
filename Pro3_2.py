@@ -1,4 +1,6 @@
 from datetime import datetime
+import sys
+from prettytable import PrettyTable
 
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
 
@@ -39,8 +41,12 @@ def parse_gedcom_line(line):
     
     return level, tag, is_valid, args
 
-def main():
-    filename = 'family_tree.ged'
+def parse_gedcom_file(filename):    
+    # if len(sys.argv) != 2:
+    #     print("Please enter an input file name when running the command")
+    #     return
+    # filename = sys.argv[1]
+    # filename = 'sample.ged'
     file = open(filename, 'r')
     lines = file.readlines()
     
@@ -57,21 +63,17 @@ def main():
         level, tag, is_valid, args = parse_gedcom_line(line)
 
         if level == '0':
+            if current_indi:
+                individuals.append(current_indi)
+                current_indi = None
+            if current_fam:
+                families.append(current_fam)
+                current_fam = None
+
             if tag == "INDI":
-                if current_indi:
-                    individuals.append(current_indi)
                 current_indi = {"ID": args, "Name": "NA", "Gender": "NA", "Birthday": "NA", "Death": "NA", "Child": "NA", "Spouse": []}
             elif tag == "FAM":
-                if current_fam:
-                    families.append(current_fam)
                 current_fam = {"ID": args, "Married": "NA", "Divorced": "NA", "Husband": "NA", "HusbandName": "Unknown", "Wife": "NA", "WifeName": "Unknown", "Children": []}
-            else:
-                if current_indi:
-                    individuals.append(current_indi)
-                    current_indi = None
-                if current_fam:
-                    families.append(current_fam)
-                    current_fam = None
 
         if current_indi:
             if tag == "NAME":
@@ -92,13 +94,7 @@ def main():
                 current_indi["Spouse"].append(args)
             elif level == "0":
                 indi_id = line.split()[1]
-                # print(f"{line}")
-                # print(f"{tokens[1]}")
-                # current_indi["ID"] = tokens[1]
                 current_indi["ID"] = indi_id
-                # print(f"{current_indi["ID"]}")
-                # print(f"{indi_id}\n")
-                # print(f"{line}")
 
         if current_fam:
             if tag == "DATE":
@@ -125,7 +121,7 @@ def main():
                     current_fam["ID"] = tokens[1]
 
     if current_indi:
-        print(f"{current_indi["ID"]}")
+        # print(f'{current_indi["ID"]}')
         individuals.append(current_indi)
     if current_fam:
         families.append(current_fam)
@@ -134,17 +130,37 @@ def main():
         if not indi["Spouse"]:
             indi["Spouse"] = ["NA"]
 
-    print("Individuals:")
-    print("ID|Name|Gender|Birthday|Age|Alive|Death|Child|Spouse")
+    # Print the individuals and families
+    
+    indi_table = PrettyTable()
+    indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
+    
     for indi in individuals:
         alive = indi['Death'] == "NA"
         age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
-        print(f"{indi['ID']}|{indi['Name']}|{indi['Gender']}|{indi['Birthday']}|{age}|{alive}|{indi['Death']}|{indi['Child']}|{','.join(indi['Spouse'])}")
+        indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
+    
+    
+    fam_table = PrettyTable()
+    fam_table.field_names = ["ID", "Married", "Divorced", "HusbandID", "HusbandName", "WifeID", "WifeName", "Children"]
+    
+    for fam in families:
+        fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
+
+    print("Individuals:")
+    print(indi_table)
 
     print("\nFamilies:")
-    print("ID|Married|Divorced|HusbandID|HusbandName|WifeID|WifeName|Children")
-    for fam in families:
-        print(f"{fam['ID']}|{fam['Married']}|{fam['Divorced']}|{fam['Husband']}|{fam['HusbandName']}|{fam['Wife']}|{fam['WifeName']}|{','.join(fam['Children'])}")
+    print(fam_table)
+
+def main():
+    # To read file from command line
+    if len(sys.argv) != 2:
+        print("Please enter an input file name when running the command")
+        return
+    filename = sys.argv[1]
+    parse_gedcom_file(filename)
+
 
 if __name__ == "__main__":
     main()
