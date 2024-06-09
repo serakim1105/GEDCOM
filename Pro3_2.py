@@ -153,7 +153,7 @@ def parse_gedcom_file(filename):
     print("\nFamilies:")
     print(fam_table)
 
-    return individuals 
+    return individuals, families 
 
 def us07(individuals):
     errors = []
@@ -177,6 +177,9 @@ def us07(individuals):
                 errors.append(f"US07: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 
+def us16(individuals, families):
+    family_last_names = {}
+    return 
 
 def main():
     # To read file from command line
@@ -184,7 +187,8 @@ def main():
         print("Please enter an input file name when running the command")
         return
     filename = sys.argv[1]
-    individuals = parse_gedcom_file(filename)
+    individuals, _ = parse_gedcom_file(filename)
+    _, families = parse_gedcom_file(filename)
     us07(individuals)
 
 
