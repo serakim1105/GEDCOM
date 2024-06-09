@@ -2,6 +2,9 @@ from datetime import datetime
 import sys
 from prettytable import PrettyTable
 
+# def func(x):
+#     return x + 1
+
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
 
 def print_result(level, tag, is_valid, args):
@@ -175,7 +178,7 @@ def main():
         return
     filename = sys.argv[1]
     parse_gedcom_file(filename)
-
+    
 
 if __name__ == "__main__":
     main()
