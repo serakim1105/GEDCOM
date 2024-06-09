@@ -153,13 +153,39 @@ def parse_gedcom_file(filename):
     print("\nFamilies:")
     print(fam_table)
 
+    return individuals 
+
+def us07(individuals):
+    errors = []
+    for indi in individuals:
+        birth_date_str = indi['Birthday']
+        death_date_str = indi['Death']
+        
+        if birth_date_str == "NA":
+            continue
+        
+        birth_date = datetime.strptime(birth_date_str, "%d %b %Y")
+        if death_date_str != "NA":
+            death_date = datetime.strptime(death_date_str, "%d %b %Y")
+            age_at_death = calculate_age(birth_date_str, death_date_str)
+            if age_at_death >= 150:
+                errors.append(f"US07: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
+        else:
+            current_date = datetime.today()
+            age = calculate_age(birth_date_str)
+            if age >= 150:
+                errors.append(f"US07: {indi['ID']}: More than 150 years old and still alive: {age} years")
+    return errors
+
+
 def main():
     # To read file from command line
     if len(sys.argv) != 2:
         print("Please enter an input file name when running the command")
         return
     filename = sys.argv[1]
-    parse_gedcom_file(filename)
+    individuals = parse_gedcom_file(filename)
+    us07(individuals)
 
 
 if __name__ == "__main__":
