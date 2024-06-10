@@ -164,22 +164,21 @@ def us07(individuals):
         if birth_date_str == "NA":
             continue
         
-        birth_date = datetime.strptime(birth_date_str, "%d %b %Y")
         if death_date_str != "NA":
-            death_date = datetime.strptime(death_date_str, "%d %b %Y")
             age_at_death = calculate_age(birth_date_str, death_date_str)
             if age_at_death >= 150:
                 errors.append(f"US07: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
         else:
-            current_date = datetime.today()
             age = calculate_age(birth_date_str)
             if age >= 150:
                 errors.append(f"US07: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 
 def us16(individuals, families):
+    errors = []
     family_last_names = {}
-    return 
+
+    return errors
 
 def main():
     # To read file from command line
@@ -187,9 +186,28 @@ def main():
         print("Please enter an input file name when running the command")
         return
     filename = sys.argv[1]
-    individuals, _ = parse_gedcom_file(filename)
-    _, families = parse_gedcom_file(filename)
-    us07(individuals)
+
+    # Pull out individuals and families list from parse_gedcom_file()
+    individuals, families = parse_gedcom_file(filename)
+    
+    # Check for US07 errors
+    errors_us07 = us07(individuals)
+    if errors_us07:
+        print(f"\nError in US07:")
+        for error in errors_us07:
+            print(error)
+    else:
+        print(f"\nNo errors in us07")
+    
+    # Check for US16 errors
+    errors_us16 = us16(individuals, families)
+    if errors_us16:
+        print(f"\nError in US07:")
+        for error in errors_us16:
+            print(error)
+    else:
+        print(f"\nNo errors in US16")
+
 
 
 if __name__ == "__main__":
