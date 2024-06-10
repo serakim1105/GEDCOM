@@ -190,15 +190,10 @@ def main():
         print("Please enter an input file name when running the command")
         return
     filename = sys.argv[1]
-<<<<<<< HEAD
-    parse_gedcom_file(filename)
-    
-=======
     individuals, _ = parse_gedcom_file(filename)
     _, families = parse_gedcom_file(filename)
     us07(individuals)
 
->>>>>>> master
 
 if __name__ == "__main__":
     main()
