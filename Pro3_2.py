@@ -202,7 +202,7 @@ def main():
     # Check for US16 errors
     errors_us16 = us16(individuals, families)
     if errors_us16:
-        print(f"\nError in US07:")
+        print(f"\nError in US16:")
         for error in errors_us16:
             print(error)
     else:
