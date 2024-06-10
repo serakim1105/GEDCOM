@@ -156,20 +156,33 @@ def parse_gedcom_file(filename):
     print("\nFamilies:")
     print(fam_table)
 
-    # print("Individuals:")
-    # print("ID|Name|Gender|Birthday|Age|Alive|Death|Child|Spouse")
-    # for indi in individuals:
-    #     alive = indi['Death'] == "NA"
-    #     age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
-    #     print(f"{indi['ID']}|{indi['Name']}|{indi['Gender']}|{indi['Birthday']}|{age}|{alive}|{indi['Death']}|{indi['Child']}|{','.join(indi['Spouse'])}")
+    return individuals, families 
 
-    # print("\nFamilies:")
-    # print("ID|Married|Divorced|HusbandID|HusbandName|WifeID|WifeName|Children")
-    # for fam in families:
-    #     print(f"{fam['ID']}|{fam['Married']}|{fam['Divorced']}|{fam['Husband']}|{fam['HusbandName']}|{fam['Wife']}|{fam['WifeName']}|{','.join(fam['Children'])}")
+def us07(individuals):
+    errors = []
+    for indi in individuals:
+        birth_date_str = indi['Birthday']
+        death_date_str = indi['Death']
+        
+        if birth_date_str == "NA":
+            continue
+        
+        birth_date = datetime.strptime(birth_date_str, "%d %b %Y")
+        if death_date_str != "NA":
+            death_date = datetime.strptime(death_date_str, "%d %b %Y")
+            age_at_death = calculate_age(birth_date_str, death_date_str)
+            if age_at_death >= 150:
+                errors.append(f"US07: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
+        else:
+            current_date = datetime.today()
+            age = calculate_age(birth_date_str)
+            if age >= 150:
+                errors.append(f"US07: {indi['ID']}: More than 150 years old and still alive: {age} years")
+    return errors
 
-    # Add calls to future features here
-
+def us16(individuals, families):
+    family_last_names = {}
+    return 
 
 def main():
     # To read file from command line
@@ -177,8 +190,15 @@ def main():
         print("Please enter an input file name when running the command")
         return
     filename = sys.argv[1]
+<<<<<<< HEAD
     parse_gedcom_file(filename)
     
+=======
+    individuals, _ = parse_gedcom_file(filename)
+    _, families = parse_gedcom_file(filename)
+    us07(individuals)
+
+>>>>>>> master
 
 if __name__ == "__main__":
     main()
