@@ -184,6 +184,17 @@ def us16(individuals, families):
     family_last_names = {}
     return 
 
+# list all deceased individuals
+def us29(individuals):
+    deceased_individuals = []
+    errors = []
+    print("\nDeceased:")
+    for indi in individuals:
+        if indi["Death"] != "NA":
+            deceased_individuals.append(indi["Name"])
+    return deceased_individuals       
+
+
 def main():
     # To read file from command line
     if len(sys.argv) != 2:
@@ -193,6 +204,7 @@ def main():
     individuals, _ = parse_gedcom_file(filename)
     _, families = parse_gedcom_file(filename)
     us07(individuals)
+    print("\n".join(us29(individuals)))
 
 
 if __name__ == "__main__":
