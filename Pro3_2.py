@@ -2,8 +2,8 @@ from datetime import datetime
 import sys
 from prettytable import PrettyTable
 
-def func(x):
-    return x + 1
+# def func(x):
+#     return x + 1
 
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
 
