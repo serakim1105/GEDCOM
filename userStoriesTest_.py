@@ -21,7 +21,7 @@ def test_1_us07():
 
 def test_2_us07():
     # Test case 2: Individual who is alive and exactly 150 years old
-    indi2 = create_individual("I02", "10 JUN 1874")
+    indi2 = create_individual("I02", "11 JUN 1874")
     assert us07([indi2]) == []
 
 def test_3_us07():
@@ -38,6 +38,14 @@ def test_5_us07():
     # Test case 5: Individual with no birth date specified
     indi5= create_individual("I05", "NA")
     assert us07([indi5]) == []
+
+def test_6_us07():
+    # Test case 6: Check if expected 2 errors come out of sera.ged as tested from Pro3_2.py
+    individuals, _ = parse_gedcom_file("sera.ged")
+    errors = us07(individuals)
+    print(errors) 
+    expected_num_errors = 2
+    assert len(errors) == expected_num_errors
 
 if __name__ == "__main__":
     pytest.main()
