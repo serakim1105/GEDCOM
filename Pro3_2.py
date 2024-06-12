@@ -177,7 +177,19 @@ def us07(individuals):
 
 def us16(individuals, families):
     errors = []
-    family_last_names = {}
+    individual_last_names = {indi["ID"]: indi["Name"].split('/')[-2] for indi in individuals}
+
+    for fam in families:
+        husband_id = fam["Husband"]
+        husband_last_name = individual_last_names[husband_id]
+        
+        child_id = fam["Children"]
+        for child_id in fam["Children"]:
+            for indi in individuals:
+                if indi["ID"] == child_id and indi["Gender"] == "M":
+                    child_last_name = individual_last_names[child_id]
+                    if husband_last_name and child_last_name != husband_last_name:
+                        errors.append(f"US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})")
 
     return errors
 
