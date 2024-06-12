@@ -212,7 +212,23 @@ def us16(individuals, families):
                 if indi["ID"] == child_id and indi["Gender"] == "M":
                     child_last_name = individual_last_names[child_id]
                     if husband_last_name and child_last_name != husband_last_name:
-                        errors.append(f"US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})")
+                        errors.append(f'US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
+    return errors
+
+def us35(individuals):
+    errors = []
+    today = datetime.now().date()
+    # print(today)
+    for indi in individuals:
+        birthday = indi['Birthday']
+        birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
+        # sample='09 JUN 2024'
+        # sample = datetime.strptime(sample,"%d %b %Y").date()
+        # diff1 = abs((today - sample).days)
+        # birthdate_format = birthdate_format.strftime("%Y-%m-%d")
+        diff = abs((today - birthdate_format).days)
+        if diff <= 30:
+            errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthdate_format}, born in the last 30 days')
 
     return errors
 
@@ -257,7 +273,18 @@ def main():
         print(f"\nNo errors in US16")
 
     print("\n".join(us02(individuals, families)))
-    print("\n".join(us29(individuals)))
+    print("\n".join(us29(individuals)))    
+    errors_us35 = us35(individuals)
+    if errors_us35:
+        for error in errors_us35:
+            print(error)
+    else:
+        print('No Error')
+        
+
+    
+
+
 
 if __name__ == "__main__":
     main()
