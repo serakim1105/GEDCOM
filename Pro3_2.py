@@ -154,7 +154,6 @@ def parse_gedcom_file(filename):
     print(fam_table)
 
     return individuals, families 
-    return individuals, families 
 
 def us07(individuals):
     errors = []
