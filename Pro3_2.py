@@ -188,7 +188,7 @@ def us16(individuals, families):
 def us29(individuals):
     deceased_individuals = []
     errors = []
-    print("\nDeceased:")
+    print("\nAll deceased individuals:")
     for indi in individuals:
         if indi["Death"] != "NA":
             deceased_individuals.append(indi["Name"])
@@ -205,7 +205,6 @@ def main():
     _, families = parse_gedcom_file(filename)
     us07(individuals)
     print("\n".join(us29(individuals)))
-
 
 if __name__ == "__main__":
     main()
