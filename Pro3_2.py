@@ -215,21 +215,32 @@ def us16(individuals, families):
                         errors.append(f'US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
 
+#US35: List all people in a GEDCOM file who were born in the last 30 days
 def us35(individuals):
     errors = []
     today = datetime.now().date()
     # print(today)
     for indi in individuals:
         birthday = indi['Birthday']
-        birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
-        # sample='09 JUN 2024'
-        # sample = datetime.strptime(sample,"%d %b %Y").date()
-        # diff1 = abs((today - sample).days)
-        # birthdate_format = birthdate_format.strftime("%Y-%m-%d")
-        diff = abs((today - birthdate_format).days)
-        if diff <= 30:
-            errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthdate_format}, born in the last 30 days')
+        if birthday != 'NA':
+            birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
+            diff = abs((today - birthdate_format).days)
+            if diff <= 30:
+                errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthdate_format}, born in the last 30 days')
+    return errors
 
+#US36: List all people in a GEDCOM file who died in the last 30 days
+def us36(individuals):
+    errors = []
+    today = datetime.now().date()
+    # print(today)
+    for indi in individuals:
+        deathday = indi['Death']
+        if deathday != 'NA':
+            deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
+            diff = abs((today - deathdate_format).days)
+            if diff <= 30:
+                errors.append(f'ERROR: INDIVIDUAL: US36: {indi["ID"]}: Death {deathdate_format}, died in the last 30 days')
     return errors
 
 # list all deceased individuals
@@ -274,12 +285,20 @@ def main():
 
     print("\n".join(us02(individuals, families)))
     print("\n".join(us29(individuals)))    
+
     errors_us35 = us35(individuals)
     if errors_us35:
         for error in errors_us35:
-            print(error)
+            print("\n",error)
     else:
-        print('No Error')
+        print('No Error in US35')
+
+    errors_us36 = us36(individuals)
+    if errors_us36:
+        for error in errors_us36:
+            print("\n",error)
+    else:
+        print('No Error in US36')
         
 
     
