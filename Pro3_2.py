@@ -2,6 +2,9 @@ from datetime import datetime
 import sys
 from prettytable import PrettyTable
 
+# def func(x):
+#     return x + 1
+
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
 
 def print_result(level, tag, is_valid, args):
@@ -155,6 +158,27 @@ def parse_gedcom_file(filename):
 
     return individuals, families 
 
+# User Story 02 - Birth should occur before marriage
+def us02(individuals, families):
+    def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
+
+    # convert birthdates and married to datestring objects
+    individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
+    familes_dso = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
+
+    # find errors
+    errors = []
+    for fam in familes_dso:
+        husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
+        wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
+        if husband_birthday and wife_birthday:
+            if husband_birthday > fam['Married']:
+                errors.append(f"ERROR: US02: {fam['HusbandName']} married after his birthday.")
+            if wife_birthday > fam['Married']:
+                errors.append(f"ERROR: US02: {fam['WifeName']} married after her birthday.")
+    return errors
+
 def us07(individuals):
     errors = []
     for indi in individuals:
@@ -192,6 +216,17 @@ def us16(individuals, families):
 
     return errors
 
+# list all deceased individuals
+def us29(individuals):
+    deceased_individuals = []
+    errors = []
+    print("\nAll deceased individuals:")
+    for indi in individuals:
+        if indi["Death"] != "NA":
+            deceased_individuals.append(indi["Name"])
+    return deceased_individuals       
+
+
 def main():
     # To read file from command line
     if len(sys.argv) != 2:
@@ -201,6 +236,7 @@ def main():
 
     # Pull out individuals and families list from parse_gedcom_file()
     individuals, families = parse_gedcom_file(filename)
+    print("\n".join(us02(individuals, families)))
     
     # Check for US07 errors
     errors_us07 = us07(individuals)
@@ -220,7 +256,7 @@ def main():
     else:
         print(f"\nNo errors in US16")
 
-
+    print("\n".join(us29(individuals)))
 
 if __name__ == "__main__":
     main()
