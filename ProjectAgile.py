@@ -174,9 +174,9 @@ def us02(individuals, families):
         wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
         if husband_birthday and wife_birthday:
             if husband_birthday > fam['Married']:
-                errors.append(f"ERROR: US02: {fam['HusbandName']} married after his birthday.")
+                errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married after his birthday.")
             if wife_birthday > fam['Married']:
-                errors.append(f"ERROR: US02: {fam['WifeName']} married after her birthday.")
+                errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married after her birthday.")
     return errors
 
 def us07(individuals):
@@ -220,7 +220,7 @@ def us16(individuals, families):
 def us29(individuals):
     deceased_individuals = []
     errors = []
-    print("\nAll deceased individuals:")
+    print("\nUS29: List of all deceased individuals:")
     for indi in individuals:
         if indi["Death"] != "NA":
             deceased_individuals.append(indi["Name"])
@@ -241,7 +241,7 @@ def main():
     # Check for US07 errors
     errors_us07 = us07(individuals)
     if errors_us07:
-        print(f"\nError in US07:")
+        print(f"\nErrors in US07:")
         for error in errors_us07:
             print(error)
     else:
@@ -250,13 +250,22 @@ def main():
     # Check for US16 errors
     errors_us16 = us16(individuals, families)
     if errors_us16:
-        print(f"\nError in US16:")
+        print(f"\nErrors in US16:")
         for error in errors_us16:
             print(error)
     else:
         print(f"\nNo errors in US16")
 
-    print("\n".join(us02(individuals, families)))
+    # Check for US02 errors
+    errors_us02 = us02(individuals, families)
+    if errors_us02:
+        print(f"\nErrors in US02:")
+        for error in errors_us02:
+            print(error)
+    else:
+        print(f"\nNo errors in US02")
+
+    # US29: List all deceased individuals
     print("\n".join(us29(individuals)))
 
 if __name__ == "__main__":
