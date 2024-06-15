@@ -1,7 +1,6 @@
 import pytest
-from Pro3_2 import us29, parse_gedcom_line, parse_gedcom_file
-#import Pro3_2
-from datetime import datetime
+from Pro3_2 import us29
+
 
 # Helper function to create a mock individual
 def create_indi(id, name, death_date="NA"):
@@ -22,12 +21,10 @@ individuals.append(indi03)
 
 def test_1_us29(): 
     assert us29(individuals) == ["Christine /Anthony/", "Sriya /Bhamidipati/"] #should pass
-    #print(individuals)
 
 def test_2_us29():
-    #num_deceased = len(us29(individuals))
     assert len(us29(individuals)) == 2
-    #print(f"Number of deceased = {num_deceased}")
+
 
 if __name__ == "__main__":
     pytest.main()

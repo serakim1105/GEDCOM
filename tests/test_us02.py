@@ -1,6 +1,5 @@
 import pytest
 from Pro3_2 import us02, parse_gedcom_line, parse_gedcom_file
-#import Pro3_2
 from datetime import datetime
 
 # Sample data from sera.ged
