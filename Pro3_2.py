@@ -256,6 +256,7 @@ def main():
     else:
         print(f"\nNo errors in US16")
 
+    print("\n".join(us02(individuals, families)))
     print("\n".join(us29(individuals)))
 
 if __name__ == "__main__":
