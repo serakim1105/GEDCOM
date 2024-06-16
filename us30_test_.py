@@ -43,7 +43,7 @@ def test_5():
     # Test case 2: Individual who is not alive but had multiple spouses
     
     indi4 = create_individual("I04", "NA", "[F03,F04]")
-   assert us30([indi4]) == [f'ERROR: INDIVIDUAL: US30: I12: Not living and married.']
+   assert us30([indi5]) == [f'ERROR: INDIVIDUAL: US30: I12: Not living and married.']
 
 if __name__ == "__main__":
     pytest.main()
