@@ -2,8 +2,6 @@ from datetime import datetime
 import sys
 from prettytable import PrettyTable
 
-# def func(x):
-#     return x + 1
 
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
 
@@ -253,6 +251,35 @@ def us29(individuals):
             deceased_individuals.append(indi["Name"])
     return deceased_individuals       
 
+## List all living married individuals
+def us30(individuals, families):
+    living_individuals = []
+    living_married_individuals = []
+    errors = []
+    print("\nAll living married individuals:")
+
+    for fam in families:
+        notMarried = fam["Married"] == "NA"
+        for indi in individuals:
+            dead = indi["Death"] != "NA" 
+            if dead or notMarried:
+                errors.append(f'ERROR: INDIVIDUAL: US30: {indi["Name"]}: Not living and married.')
+        return errors
+
+#List all individuals who are 30 and have never been married
+def us31(individuals, families):
+    living_individuals = []
+    single_living_individuals = []
+    errors = []
+    print("\nAll living single individuals over the age of 30:")
+
+    for indi in individuals:
+        alive = indi['Death'] == "NA"
+        age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
+        spouse = indi['Spouse'] == "NA"
+        if age < 30 or spouse:
+             errors.append(f'ERROR: INDIVIDUAL: US31: {indi["Name"]}: Is not alive and single over 30.')
+    return errors
 
 def main():
     # To read file from command line
@@ -300,10 +327,19 @@ def main():
     else:
         print('No Error in US36')
         
+    errors_us30 = us30(individuals, families)
+    if errors_us30:
+        for error in errors_us30:
+            print("\n",error)
+    else:
+        print('No Error in US30')
 
-    
-
-
+    errors_us31 = us31(individuals, families)
+    if errors_us31:
+        for error in errors_us31:
+            print("\n",error)
+    else:
+        print('No Error in US31')
 
 if __name__ == "__main__":
     main()
