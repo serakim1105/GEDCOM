@@ -2,8 +2,6 @@ from datetime import datetime
 import sys
 from prettytable import PrettyTable
 
-# def func(x):
-#     return x + 1
 
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
 
@@ -150,7 +148,7 @@ def parse_gedcom_file(filename):
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
-    print("Individuals:")
+    print("\nIndividuals:")
     print(indi_table)
 
     print("\nFamilies:")
@@ -212,10 +210,9 @@ def us16(individuals, families):
                 if indi["ID"] == child_id and indi["Gender"] == "M":
                     child_last_name = individual_last_names[child_id]
                     if husband_last_name and child_last_name != husband_last_name:
-                        errors.append(f"US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})")
-
+                        errors.append(f'US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
-
+    
 # list all deceased individuals
 def us29(individuals):
     deceased_individuals = []
@@ -224,6 +221,63 @@ def us29(individuals):
             deceased_individuals.append(indi["Name"])
     return deceased_individuals       
 
+## List all living married individuals
+def us30(individuals, families):
+    living_individuals = []
+    living_married_individuals = []
+    errors = []
+    print("\nAll living married individuals:")
+
+    for fam in families:
+        notMarried = fam["Married"] == "NA"
+        for indi in individuals:
+            dead = indi["Death"] != "NA" 
+            if dead or notMarried:
+                errors.append(f'ERROR: INDIVIDUAL: US30: {indi["Name"]}: Not living and married.')
+        return errors
+
+#List all individuals who are 30 and have never been married
+def us31(individuals, families):
+    living_individuals = []
+    single_living_individuals = []
+    errors = []
+    print("\nAll living single individuals over the age of 30:")
+
+    for indi in individuals:
+        alive = indi['Death'] == "NA"
+        age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
+        spouse = indi['Spouse'] == "NA"
+        if age < 30 or spouse:
+             errors.append(f'ERROR: INDIVIDUAL: US31: {indi["Name"]}: Is not alive and single over 30.')
+    return errors
+
+#US35: List all people in a GEDCOM file who were born in the last 30 days
+def us35(individuals):
+    errors = []
+    today = datetime.now().date()
+    # print(today)
+    for indi in individuals:
+        birthday = indi['Birthday']
+        if birthday != 'NA':
+            birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
+            diff = abs((today - birthdate_format).days)
+            if diff <= 30:
+                errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthday}, born in the last 30 days')
+    return errors
+
+#US36: List all people in a GEDCOM file who died in the last 30 days
+def us36(individuals):
+    errors = []
+    today = datetime.now().date()
+    # print(today)
+    for indi in individuals:
+        deathday = indi['Death']
+        if deathday != 'NA':
+            deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
+            diff = abs((today - deathdate_format).days)
+            if diff <= 30:
+                errors.append(f'ERROR: INDIVIDUAL: US36: {indi["ID"]}: Death {deathday}, died in the last 30 days')
+    return errors
 
 def main():
     # To read file from command line
@@ -267,9 +321,39 @@ def main():
     deceased = us29(individuals)
     if deceased:
         print("\nUS29: List of all deceased individuals:")
-        print("\n".join(us29(individuals)))
+        print("\n".join(us29(individuals)))    
     else:
         print(f"\nUS29: No deceased individuals")
 
+    #Check for US30 errors
+    errors_us30 = us30(individuals, families)
+    if errors_us30:
+        for error in errors_us30:
+            print("\n",error)
+    else:
+        print('No Error in US30')
+
+    #Check for US31 errors
+    errors_us31 = us31(individuals, families)
+    if errors_us31:
+        for error in errors_us31:
+            print("\n",error)
+    else:
+        print('No Error in US31')
+
+    errors_us35 = us35(individuals)
+    if errors_us35:
+        for error in errors_us35:
+            print("\n",error)
+    else:
+        print('No Error in US35')
+
+    errors_us36 = us36(individuals)
+    if errors_us36:
+        for error in errors_us36:
+            print("\n",error)
+    else:
+        print('No Error in US36')
+        
 if __name__ == "__main__":
     main()
