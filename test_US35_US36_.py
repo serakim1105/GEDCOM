@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime, timedelta
-from Pro3_2 import us35, us36, parse_gedcom_file
+from ProjectAgile import us35, us36, parse_gedcom_file
 
 # Helper function to create a mock individual
 def create_individual(id, birth_date, death_date="NA"):
