@@ -17,33 +17,33 @@ def create_individual(id, death_date= "NA", spouse = ["NA"]):
 
 def test_1():
     # Test case 1: Individual who is not alive and was married
-    indi1 = create_individual("I03", "1 OCT 1996", "F02")
-   assert us31([indi1]) == [f'ERROR: INDIVIDUAL: US30: I03: Not  living and married.']
+    indi1 = create_individual()
+   assert us31([indi1]) == [f'ERROR: INDIVIDUAL: US31: I03: Is not alive and single over 30.']
 
 
 def test_2():
     # Test case 2: Individual who is alive but not married
-    indi1 = create_individual("I04", "NA", "NA")
-   assert us31([indi2]) == [f'ERROR: INDIVIDUAL: US30: I04: Not living and married.']
+    indi1 = create_individual()
+   assert us31([indi2]) == [f'ERROR: INDIVIDUAL: US31: I04: Is not alive and single over 30.']
 
 
 def test_3():
     # Test case 2: Individual who is not alive and never married
-    indi3 = create_individual("I05", "Nov 5 2000", "NA")
-   assert us31([indi3]) == [f'ERROR: INDIVIDUAL: US30: I05: Not living and married.']
+    indi3 = create_individual()
+   assert us31([indi3]) == [f'ERROR: INDIVIDUAL: US31: I05: Is not alive and single over 30.']
 
 def test_4():
     # Test case 2: Individual who died today and not married
     deathToday = datetime.today().strftime("%d %b %Y")
-    indi4 = create_individual("I10", deathToday)
-    indi4 = create_individual("I10", {deathToday}, "NA")
-   assert us31([indi4]) == [f'ERROR: INDIVIDUAL: US30: I10: Not living and married.']
+    indi4 = create_individual()
+    indi4 = create_individual()
+   assert us31([indi4]) == [f'ERROR: INDIVIDUAL: US31: I10: Is not alive and single over 30.']
 
 def test_5():
     # Test case 2: Individual who is not alive but had multiple spouses
     
-    indi4 = create_individual("I04", "NA", "[F03,F04]")
-   assert us31([indi4]) == [f'ERROR: INDIVIDUAL: US30: I12: Not living and married.']
+    indi4 = create_individual("I04")
+   assert us31([indi5]) == [f'ERROR: INDIVIDUAL: US31: I11: Is not alive and single over 30.']
 
 if __name__ == "__main__":
     pytest.main()
