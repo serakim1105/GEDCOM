@@ -174,9 +174,9 @@ def us02(individuals, families):
         wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
         if husband_birthday and wife_birthday:
             if husband_birthday > fam['Married']:
-                errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married after his birthday.")
+                errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before his birthday.")
             if wife_birthday > fam['Married']:
-                errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married after her birthday.")
+                errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married before her birthday.")
     return errors
 
 def us07(individuals):
@@ -224,6 +224,8 @@ def us29(individuals):
     for indi in individuals:
         if indi["Death"] != "NA":
             deceased_individuals.append(indi["Name"])
+        else:
+            print(f"\nUS29: No deceased individuals")
     return deceased_individuals       
 
 

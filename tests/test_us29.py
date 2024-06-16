@@ -1,5 +1,5 @@
 import pytest
-from Pro3_2 import us29
+from ProjectAgile import us29
 
 
 # Helper function to create a mock individual
