@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 from prettytable import PrettyTable
 
@@ -167,6 +167,7 @@ def us02(individuals, families):
 
     # find errors
     errors = []
+    anomalies = []
     for fam in familes_new:
         husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
         wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
@@ -175,7 +176,15 @@ def us02(individuals, families):
                 errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before his birthday.")
             if wife_birthday > fam['Married']:
                 errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married before her birthday.")
-    return errors
+            #print(f"husband_birthday: {husband_birthday}")
+            hdob_plus10 = husband_birthday + timedelta(days = 3650)
+            wdob_plus10 = wife_birthday + timedelta(days = 3650)
+            #print(f"husband birthday + 10 yrs: {hdob_plus10}")
+            if hdob_plus10 > fam['Married']:
+                anomalies.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before age of 10.")
+            if wdob_plus10 > fam['Married']:
+                anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
+    return errors, anomalies
 
 def us07(individuals):
     errors = []
@@ -288,8 +297,11 @@ def main():
 
     # Pull out individuals and families list from parse_gedcom_file()
     individuals, families = parse_gedcom_file(filename)
-    print("\n".join(us02(individuals, families)))
+    #print("\n".join(us02(individuals, families)))
     
+    # Pull out errors and anomalies from us02
+    errors_us02, anomalies_us02 = us02(individuals, families)
+
     # Check for US07 errors
     errors_us07 = us07(individuals)
     if errors_us07:
@@ -309,11 +321,17 @@ def main():
         print(f"\nNo errors in US16")
 
     # Check for US02 errors
-    errors_us02 = us02(individuals, families)
+    #errors_us02 = us02(individuals, families)
     if errors_us02:
         print(f"\nErrors in US02:")
         for error in errors_us02:
             print(error)
+    else:
+        print(f"\nNo errors in US02")
+    if anomalies_us02:
+        print(f"\nAnomalies in US02:")
+        for anomaly in anomalies_us02:
+            print(anomaly)
     else:
         print(f"\nNo errors in US02")
 

@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from ProjectAgile import us02, us07, us16, us29, parse_gedcom_file
+from ProjectAgile import us07, us16, parse_gedcom_file
 import test_us29 as test_us29
 
 # Helper function to create a mock individual
