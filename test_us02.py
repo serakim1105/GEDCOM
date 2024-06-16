@@ -1,5 +1,5 @@
 import pytest
-from ProjectAgile import us02, parse_gedcom_file
+from ProjectAgile import us02_err, parse_gedcom_file
 from datetime import datetime
 
 # Sample data from sera.ged
@@ -21,42 +21,42 @@ families = [
 ]
 # test output of sample data
 def test_1_us02(): 
-    assert us02(individuals, families) == []
+    assert us02_err(individuals, families) == []
     
 # test for both husband and wife being born after marriage
 def test_2_us02(): 
     families_tmp = families
     families_tmp[0]["Married"] = '1 MAR 1949'
-    assert us02(individuals, families_tmp) == ['US02: F01: Justin /Lee/ married before his birthday.', 'US02: F01: Anna /Lee/ married before her birthday.'], "Expected Justin and Anna both married before birthdays"
+    assert us02_err(individuals, families_tmp) == ['US02: F01: Justin /Lee/ married before his birthday.', 'US02: F01: Anna /Lee/ married before her birthday.'], "Expected Justin and Anna both married before birthdays"
 
 # test for empty .ged
 def test_3_us02():
-    result = us02([],[])
+    result = us02_err([],[])
     assert len(result) == 0, "Expected no output"
 
 # test more than one marriage before birthday
 def test_4_us02():
     families_tmp2 = families
     families_tmp2[3]["Married"] = '1 MAR 1550'
-    result = us02(individuals, families_tmp2)
+    result = us02_err(individuals, families_tmp2)
     assert len(result) == 4, "Expected 4 results: F01 Justin, F01 Anna, F04 Justin, F04 Judy"
 
 # test some marriages before birthday
 def test_5_us02():
     individuals, families_tmp5 = parse_gedcom_file("messed_up_fam.ged")
     families_tmp5[2]['Married'] = '1 MAR 1909'
-    result = us02(individuals, families_tmp5)
+    result = us02_err(individuals, families_tmp5)
     assert len(result) == 2, "Expected 2 results: F01 Sam Smith (from test_01_us02) born 1851, F03 Lyna Lester born 1910"
 
 # tests for no marriages
 def test_6_us02(): 
-    result = us02(individuals, [])
+    result = us02_err(individuals, [])
     assert len(result) == 0, "Expected no marriages before birthday"
 
 # test 
 def test_7_us02():
     individuals, families = parse_gedcom_file("messed_up_fam.ged")
-    errors = us02(individuals, families)
+    errors = us02_err(individuals, families)
     print(errors)
     assert len(errors) == 1
 

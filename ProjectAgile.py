@@ -156,8 +156,8 @@ def parse_gedcom_file(filename):
 
     return individuals, families 
 
-# User Story 02 - Birth should occur before marriage
-def us02(individuals, families):
+# User Story 02 - Check for Error: Birth should occur before marriage
+def us02_err(individuals, families):
     def str_to_date(date_str):
         return datetime.strptime(date_str, '%d %b %Y')
 
@@ -167,7 +167,6 @@ def us02(individuals, families):
 
     # find errors
     errors = []
-    anomalies = []
     for fam in familes_new:
         husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
         wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
@@ -176,7 +175,23 @@ def us02(individuals, families):
                 errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before his birthday.")
             if wife_birthday > fam['Married']:
                 errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married before her birthday.")
-            #print(f"husband_birthday: {husband_birthday}")
+    return errors
+
+# User Story 02 - Check for Anomoly: Marriage should occur 10 years after birth
+def us02_anom(individuals, families):
+    def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
+
+    # convert birthdates and married to datestring objects
+    individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
+    familes_new = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
+
+    # find anomalies
+    anomalies = []
+    for fam in familes_new:
+        husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
+        wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
+        if husband_birthday and wife_birthday:
             hdob_plus10 = husband_birthday + timedelta(days = 3650)
             wdob_plus10 = wife_birthday + timedelta(days = 3650)
             #print(f"husband birthday + 10 yrs: {hdob_plus10}")
@@ -184,7 +199,7 @@ def us02(individuals, families):
                 anomalies.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before age of 10.")
             if wdob_plus10 > fam['Married']:
                 anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
-    return errors, anomalies
+    return anomalies
 
 def us07(individuals):
     errors = []
@@ -298,9 +313,6 @@ def main():
     # Pull out individuals and families list from parse_gedcom_file()
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
-    
-    # Pull out errors and anomalies from us02
-    errors_us02, anomalies_us02 = us02(individuals, families)
 
     # Check for US07 errors
     errors_us07 = us07(individuals)
@@ -321,19 +333,22 @@ def main():
         print(f"\nNo errors in US16")
 
     # Check for US02 errors
-    #errors_us02 = us02(individuals, families)
+    errors_us02 = us02_err(individuals, families)
     if errors_us02:
         print(f"\nErrors in US02:")
         for error in errors_us02:
             print(error)
     else:
         print(f"\nNo errors in US02")
+
+    # Check for US02 anomalies
+    anomalies_us02 = us02_anom(individuals, families)    
     if anomalies_us02:
         print(f"\nAnomalies in US02:")
         for anomaly in anomalies_us02:
             print(anomaly)
     else:
-        print(f"\nNo errors in US02")
+        print(f"\nNo anomalies in US02")
 
     # US29: List all deceased individuals
     deceased = us29(individuals)
