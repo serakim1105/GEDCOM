@@ -248,7 +248,7 @@ def us31(individuals, families):
         age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
         spouse = indi['Spouse'] == "NA"
         if age < 30 or spouse:
-             errors.append(f'ERROR: INDIVIDUAL: US31: {indi["Name"]}: Is not alive and single over 30.')
+            errors.append(f'ERROR: INDIVIDUAL: US31: {indi["Name"]}: Is not alive and single over 30.')
     return errors
 
 #US35: List all people in a GEDCOM file who were born in the last 30 days
