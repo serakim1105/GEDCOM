@@ -148,7 +148,7 @@ def parse_gedcom_file(filename):
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
-    print("Individuals:")
+    print("\nIndividuals:")
     print(indi_table)
 
     print("\nFamilies:")
@@ -264,7 +264,7 @@ def us35(individuals):
             birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
             diff = abs((today - birthdate_format).days)
             if diff <= 30:
-                errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthdate_format}, born in the last 30 days')
+                errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthday}, born in the last 30 days')
     return errors
 
 #US36: List all people in a GEDCOM file who died in the last 30 days
@@ -278,7 +278,7 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                errors.append(f'ERROR: INDIVIDUAL: US36: {indi["ID"]}: Death {deathdate_format}, died in the last 30 days')
+                errors.append(f'ERROR: INDIVIDUAL: US36: {indi["ID"]}: Death {deathday}, died in the last 30 days')
     return errors
 
 def main():
