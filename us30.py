@@ -1,3 +1,7 @@
+import pytest
+from Pro3_2 import us02, parse_gedcom_line, parse_gedcom_file
+from datetime import datetime
+
 ## List all living married individuals
 def us30(individuals, families):
     living_individuals = []
