@@ -219,13 +219,9 @@ def us16(individuals, families):
 # list all deceased individuals
 def us29(individuals):
     deceased_individuals = []
-    errors = []
-    print("\nUS29: List of all deceased individuals:")
     for indi in individuals:
         if indi["Death"] != "NA":
             deceased_individuals.append(indi["Name"])
-        else:
-            print(f"\nUS29: No deceased individuals")
     return deceased_individuals       
 
 
@@ -268,7 +264,12 @@ def main():
         print(f"\nNo errors in US02")
 
     # US29: List all deceased individuals
-    print("\n".join(us29(individuals)))
+    deceased = us29(individuals)
+    if deceased:
+        print("\nUS29: List of all deceased individuals:")
+        print("\n".join(us29(individuals)))
+    else:
+        print(f"\nUS29: No deceased individuals")
 
 if __name__ == "__main__":
     main()
