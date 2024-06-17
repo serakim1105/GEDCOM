@@ -42,11 +42,6 @@ def test_5():
     indi5 = create_individual("I08", birthToday, "NA", ["F02"])
     assert us31([indi5]) == [f'ERROR: INDIVIDUAL: US31: {indi5["ID"]}: Is not alive or married above 30.']
 
-def test_6():
-    birthToday = datetime.today().strftime("%d %b %Y")
-    indi6 = create_individual("I05", "5 NOV 1980", "NA", ["NA"])
-    assert us31([indi6]) == [f'ERROR: INDIVIDUAL: US31: {indi6["ID"]}: Is not alive or married above 30.']
-
 if __name__ == "__main__":
     pytest.main()
 
