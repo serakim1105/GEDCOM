@@ -389,7 +389,7 @@ def main():
     # Pull out individuals and families list from parse_gedcom_file()
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
-
+    
     # Check for US07 errors
     errors_us07 = us07(individuals)
     if errors_us07:
