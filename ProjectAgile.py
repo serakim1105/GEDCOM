@@ -272,7 +272,7 @@ def us31(individuals):
 
 #US35: List all people in a GEDCOM file who were born in the last 30 days
 def us35(individuals):
-    errors = []
+    listName = []
     today = datetime.now().date()
     for indi in individuals:
         birthday = indi['Birthday']
@@ -280,12 +280,12 @@ def us35(individuals):
             birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
             diff = abs((today - birthdate_format).days)
             if diff <= 30:
-                errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthday}, born in the last 30 days')
-    return errors
+                listName.append(f'ID {indi["ID"]} Name {indi["Name"]} Birthday {birthday}')
+    return listName
 
 #US36: List all people in a GEDCOM file who died in the last 30 days
 def us36(individuals):
-    errors = []
+    listName = []
     today = datetime.now().date()
     # print(today)
     for indi in individuals:
@@ -294,8 +294,8 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                errors.append(f'ERROR: INDIVIDUAL: US36: {indi["ID"]}: Death {deathday}, died in the last 30 days')
-    return errors
+                listName.append(f'ID {indi["ID"]} Name {indi["Name"]} Death {deathday}')
+    return listName
 
 def main():
     # To read file from command line
@@ -368,19 +368,21 @@ def main():
     else:
         print('No Error in US31')
 
-    errors_us35 = us35(individuals)
-    if errors_us35:
-        for error in errors_us35:
-            print("\n",error)
+    list_us35 = us35(individuals)
+    if list_us35:
+        print('\n US35: List of all people in a GEDCOM file who were born in the last 30 days. ')
+        for val in list_us35:
+            print("\n",val)
     else:
-        print('No Error in US35')
+        print('\n US35: No one was born in the last 30 days.')
 
-    errors_us36 = us36(individuals)
-    if errors_us36:
-        for error in errors_us36:
-            print("\n",error)
+    list_us36 = us36(individuals)
+    if list_us36:
+        print('\n US36: List of all people in a GEDCOM file who died in the last 30 days')
+        for val in list_us36:
+            print("\n",val)
     else:
-        print('No Error in US36')
+        print('US36: No one died in the last 30 days.')
         
 if __name__ == "__main__":
     main()
