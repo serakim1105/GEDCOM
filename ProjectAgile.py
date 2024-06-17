@@ -246,33 +246,29 @@ def us29(individuals):
     return deceased_individuals       
 
 ## List all living married individuals
-def us30(individuals, families):
-    living_individuals = []
-    living_married_individuals = []
+def us30(individuals):
     errors = []
     print("\nAll living married individuals:")
 
-    for fam in families:
-        notMarried = fam["Married"] == "NA"
-        for indi in individuals:
-            dead = indi["Death"] != "NA" 
-            if dead or notMarried:
-                errors.append(f'ERROR: INDIVIDUAL: US30: {indi["Name"]}: Not living and married.')
-        return errors
+    for indi in individuals:
+        dead = indi["Death"] != "NA" 
+        notMarried = indi["Spouse"] == ["NA"]
+        if dead or notMarried:
+            errors.append(f'ERROR: INDIVIDUAL: US30: {indi["ID"]}: Not living and married.')
+    return errors
 
 #List all individuals who are 30 and have never been married
-def us31(individuals, families):
-    living_individuals = []
-    single_living_individuals = []
+def us31(individuals):
     errors = []
     print("\nAll living single individuals over the age of 30:")
 
+    
     for indi in individuals:
-        alive = indi['Death'] == "NA"
-        age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
-        spouse = indi['Spouse'] == "NA"
-        if age < 30 or spouse:
-            errors.append(f'ERROR: INDIVIDUAL: US31: {indi["Name"]}: Is not alive and single over 30.')
+        alive = indi['Death'] == "NA" 
+        age = calculate_age(indi["Birthday"])
+        Spouse = indi['Spouse'] != ["NA"]
+        if age < 30 or Spouse or not alive:
+             errors.append(f'ERROR: INDIVIDUAL: US31: {indi["ID"]}: Is not alive or married above 30.')
     return errors
 
 #US35: List all people in a GEDCOM file who were born in the last 30 days
@@ -358,8 +354,8 @@ def main():
     else:
         print(f"\nUS29: No deceased individuals")
 
-    #Check for US30 errors
-    errors_us30 = us30(individuals, families)
+        #Check for US30 errors
+    errors_us30 = us30(individuals)
     if errors_us30:
         for error in errors_us30:
             print("\n",error)
@@ -367,7 +363,7 @@ def main():
         print('No Error in US30')
 
     #Check for US31 errors
-    errors_us31 = us31(individuals, families)
+    errors_us31 = us31(individuals)
     if errors_us31:
         for error in errors_us31:
             print("\n",error)
