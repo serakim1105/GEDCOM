@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import sys
 from prettytable import PrettyTable
 
@@ -101,7 +101,7 @@ def parse_gedcom_file(filename):
             if tag == "DATE":
                 date_type = tag
                 current_fam["Married"] = args
-            elif tag == "DATE":
+            elif tag == "DIV":
                 date_type = tag
                 current_fam["Divorced"] = args
             elif tag == "HUSB":
@@ -148,7 +148,7 @@ def parse_gedcom_file(filename):
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
-    print("\nIndividuals:")
+    print("Individuals:")
     print(indi_table)
 
     print("\nFamilies:")
@@ -156,50 +156,26 @@ def parse_gedcom_file(filename):
 
     return individuals, families 
 
-# User Story 02 - Check for Error: Birth should occur before marriage
-def us02_err(individuals, families):
+# User Story 02 - Birth should occur before marriage
+def us02(individuals, families):
     def str_to_date(date_str):
         return datetime.strptime(date_str, '%d %b %Y')
 
     # convert birthdates and married to datestring objects
     individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
-    familes_new = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
+    familes_dso = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
 
     # find errors
     errors = []
-    for fam in familes_new:
+    for fam in familes_dso:
         husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
         wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
         if husband_birthday and wife_birthday:
             if husband_birthday > fam['Married']:
-                errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before his birthday.")
+                errors.append(f"ERROR: US02: {fam['HusbandName']} married after his birthday.")
             if wife_birthday > fam['Married']:
-                errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married before her birthday.")
+                errors.append(f"ERROR: US02: {fam['WifeName']} married after her birthday.")
     return errors
-
-# User Story 02 - Check for Anomoly: Marriage should occur 10 years after birth
-def us02_anom(individuals, families):
-    def str_to_date(date_str):
-        return datetime.strptime(date_str, '%d %b %Y')
-
-    # convert birthdates and married to datestring objects
-    individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
-    familes_new = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
-
-    # find anomalies
-    anomalies = []
-    for fam in familes_new:
-        husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
-        wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
-        if husband_birthday and wife_birthday:
-            hdob_plus10 = husband_birthday + timedelta(days = 3650)
-            wdob_plus10 = wife_birthday + timedelta(days = 3650)
-            #print(f"husband birthday + 10 yrs: {hdob_plus10}")
-            if hdob_plus10 > fam['Married']:
-                anomalies.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before age of 10.")
-            if wdob_plus10 > fam['Married']:
-                anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
-    return anomalies
 
 def us07(individuals):
     errors = []
@@ -240,39 +216,37 @@ def us16(individuals, families):
 # list all deceased individuals
 def us29(individuals):
     deceased_individuals = []
+    errors = []
+    print("\nAll deceased individuals:")
     for indi in individuals:
         if indi["Death"] != "NA":
             deceased_individuals.append(indi["Name"])
     return deceased_individuals       
 
 ## List all living married individuals
-def us30(individuals, families):
-    living_individuals = []
-    living_married_individuals = []
+def us30(individuals):
     errors = []
     print("\nAll living married individuals:")
 
-    for fam in families:
-        notMarried = fam["Married"] == "NA"
-        for indi in individuals:
-            dead = indi["Death"] != "NA" 
-            if dead or notMarried:
-                errors.append(f'ERROR: INDIVIDUAL: US30: {indi["Name"]}: Not living and married.')
-        return errors
+    for indi in individuals:
+        dead = indi["Death"] != "NA" 
+        notMarried = indi["Spouse"] == ["NA"]
+        if dead or notMarried:
+            errors.append(f'ERROR: INDIVIDUAL: US30: {indi["ID"]}: Not living and married.')
+    return errors
 
 #List all individuals who are 30 and have never been married
-def us31(individuals, families):
-    living_individuals = []
-    single_living_individuals = []
+def us31(individuals):
     errors = []
     print("\nAll living single individuals over the age of 30:")
 
+    
     for indi in individuals:
-        alive = indi['Death'] == "NA"
-        age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
-        spouse = indi['Spouse'] == "NA"
-        if age < 30 or spouse:
-            errors.append(f'ERROR: INDIVIDUAL: US31: {indi["Name"]}: Is not alive and single over 30.')
+        alive = indi['Death'] == "NA" 
+        age = calculate_age(indi["Birthday"])
+        Spouse = indi['Spouse'] != ["NA"]
+        if age < 30 or Spouse or not alive:
+             errors.append(f'ERROR: INDIVIDUAL: US31: {indi["ID"]}: Is not alive or married above 30.')
     return errors
 
 #US35: List all people in a GEDCOM file who were born in the last 30 days
@@ -286,7 +260,7 @@ def us35(individuals):
             birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
             diff = abs((today - birthdate_format).days)
             if diff <= 30:
-                errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthday}, born in the last 30 days')
+                errors.append(f'ERROR: INDIVIDUAL: US35: {indi["ID"]}: Birthday {birthdate_format}, born in the last 30 days')
     return errors
 
 #US36: List all people in a GEDCOM file who died in the last 30 days
@@ -300,7 +274,7 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                errors.append(f'ERROR: INDIVIDUAL: US36: {indi["ID"]}: Death {deathday}, died in the last 30 days')
+                errors.append(f'ERROR: INDIVIDUAL: US36: {indi["ID"]}: Death {deathdate_format}, died in the last 30 days')
     return errors
 
 def main():
@@ -312,12 +286,12 @@ def main():
 
     # Pull out individuals and families list from parse_gedcom_file()
     individuals, families = parse_gedcom_file(filename)
-    #print("\n".join(us02(individuals, families)))
-
+    print("\n".join(us02(individuals, families)))
+    
     # Check for US07 errors
     errors_us07 = us07(individuals)
     if errors_us07:
-        print(f"\nErrors in US07:")
+        print(f"\nError in US07:")
         for error in errors_us07:
             print(error)
     else:
@@ -326,53 +300,14 @@ def main():
     # Check for US16 errors
     errors_us16 = us16(individuals, families)
     if errors_us16:
-        print(f"\nErrors in US16:")
+        print(f"\nError in US16:")
         for error in errors_us16:
             print(error)
     else:
         print(f"\nNo errors in US16")
 
-    # Check for US02 errors
-    errors_us02 = us02_err(individuals, families)
-    if errors_us02:
-        print(f"\nErrors in US02:")
-        for error in errors_us02:
-            print(error)
-    else:
-        print(f"\nNo errors in US02")
-
-    # Check for US02 anomalies
-    anomalies_us02 = us02_anom(individuals, families)    
-    if anomalies_us02:
-        print(f"\nAnomalies in US02:")
-        for anomaly in anomalies_us02:
-            print(anomaly)
-    else:
-        print(f"\nNo anomalies in US02")
-
-    # US29: List all deceased individuals
-    deceased = us29(individuals)
-    if deceased:
-        print("\nUS29: List of all deceased individuals:")
-        print("\n".join(us29(individuals)))    
-    else:
-        print(f"\nUS29: No deceased individuals")
-
-    #Check for US30 errors
-    errors_us30 = us30(individuals, families)
-    if errors_us30:
-        for error in errors_us30:
-            print("\n",error)
-    else:
-        print('No Error in US30')
-
-    #Check for US31 errors
-    errors_us31 = us31(individuals, families)
-    if errors_us31:
-        for error in errors_us31:
-            print("\n",error)
-    else:
-        print('No Error in US31')
+    print("\n".join(us02(individuals, families)))
+    print("\n".join(us29(individuals)))    
 
     errors_us35 = us35(individuals)
     if errors_us35:
@@ -388,5 +323,19 @@ def main():
     else:
         print('No Error in US36')
         
+    errors_us30 = us30(individuals)
+    if errors_us30:
+        for error in errors_us30:
+            print("\n",error)
+    else:
+        print('No Error in US30')
+
+    errors_us31 = us31(individuals)
+    if errors_us31:
+        for error in errors_us31:
+            print("\n",error)
+    else:
+        print('No Error in US31')
+
 if __name__ == "__main__":
     main()
