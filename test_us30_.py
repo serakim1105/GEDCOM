@@ -46,7 +46,6 @@ def test_5():
 
 def test_6():
     # Test case 2: Individual who is alive but had multiple spouses
-    
     indi6 = create_individual("I12", "NA", ["F03,F04"])
     assert us30([indi6]) == [f'ERROR: INDIVIDUAL: US30: I12: Not living and married.']
 
