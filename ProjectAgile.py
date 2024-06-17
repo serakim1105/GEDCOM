@@ -213,11 +213,11 @@ def us07(individuals):
         if death_date_str != "NA":
             age_at_death = calculate_age(birth_date_str, death_date_str)
             if age_at_death >= 150:
-                errors.append(f"US07: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
+                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
         else:
             age = calculate_age(birth_date_str)
             if age >= 150:
-                errors.append(f"US07: {indi['ID']}: More than 150 years old and still alive: {age} years")
+                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 
 def us16(individuals, families):
@@ -242,9 +242,11 @@ def us29(individuals):
     deceased_individuals = []
     for indi in individuals:
         if indi["Death"] != "NA":
-            deceased_individuals.append(indi["Name"])
+            # id = indi["ID"]
+            name = indi["Name"].replace("/", "")
+            deceased_individuals.append(f"\tIndividual: {indi["ID"]}: {name}\n")
     return deceased_individuals       
- 
+
 
 ## List all living married individuals
 def us30(individuals):
@@ -347,7 +349,7 @@ def main():
     # US29: List all deceased individuals
     deceased = us29(individuals)
     if deceased:
-        print("\nUS29: List of all deceased individuals:")
+        print("\nUS29: List of all deceased individuals:\n")
         print("\n".join(us29(individuals)))    
     else:
         print(f"\nUS29: No deceased individuals")
