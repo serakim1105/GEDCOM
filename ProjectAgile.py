@@ -177,6 +177,30 @@ def us02(individuals, families):
                 errors.append(f"ERROR: US02: {fam['WifeName']} married after her birthday.")
     return errors
 
+# User Story 02 - Check for Anomoly: Marriage should occur 10 years after birth
+def us02_anom(individuals, families):
+    def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
+
+    # convert birthdates and married to datestring objects
+    individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
+    familes_new = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
+
+    # find anomalies
+    anomalies = []
+    for fam in familes_new:
+        husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
+        wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
+        if husband_birthday and wife_birthday:
+            hdob_plus10 = husband_birthday + timedelta(days = 3650)
+            wdob_plus10 = wife_birthday + timedelta(days = 3650)
+            #print(f"husband birthday + 10 yrs: {hdob_plus10}")
+            if hdob_plus10 > fam['Married']:
+                anomalies.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before age of 10.")
+            if wdob_plus10 > fam['Married']:
+                anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
+    return anomalies
+
 def us07(individuals):
     errors = []
     for indi in individuals:
@@ -307,7 +331,49 @@ def main():
         print(f"\nNo errors in US16")
 
     print("\n".join(us02(individuals, families)))
-    print("\n".join(us29(individuals)))    
+    print("\n".join(us29(individuals)))  
+
+    # Check for US02 errors
+    errors_us02 = us02_err(individuals, families)
+    if errors_us02:
+        print(f"\nErrors in US02:")
+        for error in errors_us02:
+            print(error)
+    else:
+        print(f"\nNo errors in US02")
+
+    # Check for US02 anomalies
+    anomalies_us02 = us02_anom(individuals, families)    
+    if anomalies_us02:
+        print(f"\nAnomalies in US02:")
+        for anomaly in anomalies_us02:
+            print(anomaly)
+    else:
+        print(f"\nNo anomalies in US02")
+
+    # US29: List all deceased individuals
+    deceased = us29(individuals)
+    if deceased:
+        print("\nUS29: List of all deceased individuals:")
+        print("\n".join(us29(individuals)))    
+    else:
+        print(f"\nUS29: No deceased individuals")
+
+    #Check for US30 errors
+    errors_us30 = us30(individuals, families)
+    if errors_us30:
+        for error in errors_us30:
+            print("\n",error)
+    else:
+        print('No Error in US30')
+
+    #Check for US31 errors
+    errors_us31 = us31(individuals, families)
+    if errors_us31:
+        for error in errors_us31:
+            print("\n",error)
+    else:
+        print('No Error in US31')
 
     errors_us35 = us35(individuals)
     if errors_us35:
