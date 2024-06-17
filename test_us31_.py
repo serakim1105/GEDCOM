@@ -43,7 +43,6 @@ def test_5():
     assert us31([indi5]) == [f'ERROR: INDIVIDUAL: US31: {indi5["ID"]}: Is not alive or married above 30.']
 
 
-
 if __name__ == "__main__":
     pytest.main()
 
