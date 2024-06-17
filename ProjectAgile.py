@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 from prettytable import PrettyTable
 
@@ -101,7 +101,7 @@ def parse_gedcom_file(filename):
             if tag == "DATE":
                 date_type = tag
                 current_fam["Married"] = args
-            elif tag == "DIV":
+            elif tag == "DATE":
                 date_type = tag
                 current_fam["Divorced"] = args
             elif tag == "HUSB":
@@ -148,7 +148,7 @@ def parse_gedcom_file(filename):
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
-    print("Individuals:")
+    print("\nIndividuals:")
     print(indi_table)
 
     print("\nFamilies:")
@@ -156,25 +156,25 @@ def parse_gedcom_file(filename):
 
     return individuals, families 
 
-# User Story 02 - Birth should occur before marriage
-def us02(individuals, families):
+# User Story 02 - Check for Error: Birth should occur before marriage
+def us02_err(individuals, families):
     def str_to_date(date_str):
         return datetime.strptime(date_str, '%d %b %Y')
 
     # convert birthdates and married to datestring objects
     individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
-    familes_dso = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
+    familes_new = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
 
     # find errors
     errors = []
-    for fam in familes_dso:
+    for fam in familes_new:
         husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
         wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
         if husband_birthday and wife_birthday:
             if husband_birthday > fam['Married']:
-                errors.append(f"ERROR: US02: {fam['HusbandName']} married after his birthday.")
+                errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before his birthday.")
             if wife_birthday > fam['Married']:
-                errors.append(f"ERROR: US02: {fam['WifeName']} married after her birthday.")
+                errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married before her birthday.")
     return errors
 
 # User Story 02 - Check for Anomoly: Marriage should occur 10 years after birth
