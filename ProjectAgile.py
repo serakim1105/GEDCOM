@@ -262,8 +262,7 @@ def us31(individuals):
     errors = []
     print("\nAll living single individuals over the age of 30:")
 
-    
-    for indi in individuals:
+     for indi in individuals:
         alive = indi['Death'] == "NA" 
         age = calculate_age(indi["Birthday"])
         Spouse = indi['Spouse'] != ["NA"]
@@ -354,7 +353,7 @@ def main():
     else:
         print(f"\nUS29: No deceased individuals")
 
-        #Check for US30 errors
+    #Check for US30 errors
     errors_us30 = us30(individuals)
     if errors_us30:
         for error in errors_us30:
