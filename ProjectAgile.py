@@ -223,6 +223,10 @@ def us07(individuals):
                 errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 
+#Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
+def us12(indiviuals, families):
+    return
+
 def us16(individuals, families):
     errors = []
     individual_last_names = {indi["ID"]: indi["Name"].split('/')[-2] for indi in individuals}
