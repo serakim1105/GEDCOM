@@ -244,7 +244,7 @@ def us29(individuals):
         if indi["Death"] != "NA":
             # id = indi["ID"]
             name = indi["Name"].replace("/", "")
-            deceased_individuals.append(f"\tIndividual: {indi["ID"]}: {name}\n")
+            deceased_individuals.append(f'\tIndividual: {indi["ID"]}: {name}\n')
     return deceased_individuals       
 
 
