@@ -251,13 +251,13 @@ def us29(individuals):
 def us30(individuals):
     errors = []
     living_married_individuals = []
-    print("\nAll living married individuals:")
+    print("\nUS30: All living married individuals:\n")
     for indi in individuals:
         dead = indi["Death"] != "NA" 
         notMarried = indi["Spouse"] == ["NA"]
         married = indi["Spouse"] != ["NA"]
         if not dead and married:
-            living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}')
+            living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}\n')
         if dead or notMarried:
             errors.append(f'ERROR: INDIVIDUAL: US30: {indi["ID"]}: Not living and married.')  
     print ("\n".join(living_married_individuals)) 
@@ -267,7 +267,7 @@ def us30(individuals):
 def us31(individuals):
     errors = []
     living_single_individuals = []
-    print("\nAll living single individuals over the age of 30:")
+    print("\n\nUS31: All living single individuals over the age of 30:")
     for indi in individuals:
         alive = indi['Death'] == "NA" 
         age = calculate_age(indi["Birthday"]) 
@@ -278,8 +278,8 @@ def us31(individuals):
         #Living individuals not over 30 or not single
         if age < 30 or not noSpouse or (not alive):
             errors.append(f'ERROR: INDIVIDUAL: US31: {indi["ID"]}: Is not alive or single above 30.')
-        else:
-            print("No results")
+    if len(living_single_individuals) == 0:
+        print("No results")
     print ("\n".join(living_single_individuals))
     return errors
 
@@ -293,7 +293,7 @@ def us35(individuals):
             birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
             diff = abs((today - birthdate_format).days)
             if diff <= 30:
-                listName.append(f'ID {indi["ID"]} Name {indi["Name"]} Birthday {birthday}')
+                listName.append(f'INDIVIDUAL: US35: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birthday}')
     return listName
 
 #US36: List all people in a GEDCOM file who died in the last 30 days
@@ -307,7 +307,7 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                listName.append(f'ID {indi["ID"]} Name {indi["Name"]} Death {deathday}')
+                listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
 def main():
@@ -387,15 +387,15 @@ def main():
         for val in list_us35:
             print("\n",val)
     else:
-        print('\n US35: No one was born in the last 30 days.')
+        print('\nUS35: No one was born in the last 30 days.')
 
     list_us36 = us36(individuals)
     if list_us36:
-        print('\n US36: List of all people in a GEDCOM file who died in the last 30 days')
+        print('\nUS36: List of all people in a GEDCOM file who died in the last 30 days')
         for val in list_us36:
             print("\n",val)
     else:
-        print('US36: No one died in the last 30 days.')
+        print('\nUS36: No one died in the last 30 days.')
         
 if __name__ == "__main__":
     main()

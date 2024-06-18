@@ -1,0 +1,145 @@
+
+Individuals:
++-----+-------------------+--------+-------------+-----+-------+-------------+-------+---------+
+|  ID |        Name       | Gender |   Birthday  | Age | Alive |    Death    | Child |  Spouse |
++-----+-------------------+--------+-------------+-----+-------+-------------+-------+---------+
+| I01 |    Sam /Smith/    |   M    | 15 MAR 1851 |  29 | False | 20 DEC 1880 |   NA  |   F01   |
+| I02 |    Jane /Jones/   |   F    | 10 APR 1810 |  80 | False | 25 JUN 1890 |   NA  |   F01   |
+| I03 |   Jimmy /Smith/   |   M    | 20 AUG 1830 |  80 | False | 30 NOV 1910 |  F01  |    NA   |
+| I04 |   Jenna /Smith/   |   F    |  1 DEC 1832 |  82 | False |  3 MAR 1915 |  F01  |   F02   |
+| I05 |   Jesus /Smith/   |   M    | 25 DEC 1837 | 159 | False |  6 NOV 1997 |  F01  |   F02   |
+| I06 |   Ted /Thompson/  |   M    |  3 MAR 1822 |  60 | False | 12 DEC 1882 |   NA  |   F02   |
+| I07 |  Timmy /Thompson/ |   M    | 20 AUG 1908 |  92 | False | 30 NOV 2000 |  F02  | F03,F04 |
+| I08 | Tabina /Thompson/ |   F    |  1 DEC 1911 |  89 | False | 30 NOV 2001 |  F02  |    NA   |
+| I09 |   Linda /Lyster/  |   F    |  3 DEC 1910 |  32 | False | 30 OCT 1943 |   NA  |   F03   |
+| I10 |  Zach /Thompson/  |   M    |  2 OCT 1939 |  50 | False | 30 NOV 1989 |  F04  |    NA   |
+| I11 |  Zelda /Thompson/ |   F    |  1 NOV 1942 |  10 | False | 30 DEC 1952 |  F04  |    NA   |
+| I12 |   Bonnie /Brown/  |   F    |  3 DEC 1907 |  89 | False | 30 NOV 1997 |   NA  |   F04   |
+| I13 |   Bobby /Brown/   |   M    | 11 FEB 1948 |  40 | False | 30 DEC 1988 |  F04  |    NA   |
+| I14 |    Bobo /Brown/   |   M    | 15 JUN 2024 |  0  |  True |      NA     |  F04  |    NA   |
++-----+-------------------+--------+-------------+-----+-------+-------------+-------+---------+
+
+Families:
++-----+-------------+----------+-----------+------------------+--------+----------------+-------------+
+|  ID |   Married   | Divorced | HusbandID |   HusbandName    | WifeID |    WifeName    |   Children  |
++-----+-------------+----------+-----------+------------------+--------+----------------+-------------+
+| F01 | 15 JUL 1850 |    NA    |    I01    |   Sam /Smith/    |  I02   |  Jane /Jones/  | I03,I04,I05 |
+| F02 | 18 JUL 1904 |    NA    |    I06    |  Ted /Thompson/  |  I04   | Jenna /Smith/  |   I07,I08   |
+| F03 |  8 AUG 1937 |    NA    |    I07    | Timmy /Thompson/ |  I09   | Linda /Lyster/ |   I10,I11   |
+| F04 | 10 JUN 1945 |    NA    |    I07    | Timmy /Thompson/ |  I12   | Bonnie /Brown/ | I10,I11,I13 |
++-----+-------------+----------+-----------+------------------+--------+----------------+-------------+
+
+Errors in US07:
+US07: INDIVIDUAL: I05: More than 150 years old at death: 159 years
+
+Errors in US16:
+US16: Family F04: Male child (Brown) has a different last name than the father (Thompson)
+
+Errors in US02:
+US02: F01: Sam /Smith/ married before his birthday.
+
+Anomalies in US02:
+US02: F01: Sam /Smith/ married before age of 10.
+
+US29: List of all deceased individuals:
+
+Individual: I01: Sam Smith
+
+Individual: I02: Jane Jones
+
+Individual: I03: Jimmy Smith
+
+Individual: I04: Jenna Smith
+
+Individual: I05: Jesus Smith
+
+Individual: I06: Ted Thompson
+
+Individual: I07: Timmy Thompson
+
+Individual: I08: Tabina Thompson
+
+Individual: I09: Linda Lyster
+
+Individual: I10: Zach Thompson
+
+Individual: I11: Zelda Thompson
+
+Individual: I12: Bonnie Brown
+
+Individual: I13: Bobby Brown
+
+
+US30: All living married individuals:
+
+
+
+ ERROR: INDIVIDUAL: US30: I01: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I02: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I03: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I04: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I05: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I06: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I07: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I08: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I09: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I10: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I11: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I12: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I13: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I14: Not living and married.
+
+
+US31: All living single individuals over the age of 30:
+I03:Jimmy /Smith/
+I08:Tabina /Thompson/
+I10:Zach /Thompson/
+I11:Zelda /Thompson/
+I13:Bobby /Brown/
+
+ ERROR: INDIVIDUAL: US31: I01: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I02: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I03: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I04: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I05: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I06: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I07: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I08: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I09: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I10: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I11: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I12: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I13: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I14: Is not alive or single above 30.
+
+ US35: List of all people in a GEDCOM file who were born in the last 30 days. 
+
+ INDIVIDUAL: US35: ID: I14 Name Bobo /Brown/ Birthday 15 JUN 2024
+
+US36: No one died in the last 30 days.
