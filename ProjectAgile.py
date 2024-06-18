@@ -247,17 +247,6 @@ def us29(individuals):
             deceased_individuals.append(f'\tIndividual: {indi["ID"]}: {name}\n')
     return deceased_individuals       
 
-
-## List all living married individuals
-# def us30(individuals):
-#     errors = []
-#     print("\nAll living married individuals:")
-#     for indi in individuals:
-#         dead = indi["Death"] != "NA" 
-#         notMarried = indi["Spouse"] == ["NA"]
-#         if dead or notMarried:
-#             errors.append(f'ERROR: INDIVIDUAL: US30: {indi["ID"]}: Not living and married.')
-#     return errors
 ## List all living married individuals
 def us30(individuals):
     errors = []
@@ -293,19 +282,6 @@ def us31(individuals):
             print("No results")
     print ("\n".join(living_single_individuals))
     return errors
-
-#List all individuals who are 30 and have never been married
-# def us31(individuals):
-#     errors = []
-#     print("\nAll living single individuals over the age of 30:")
-
-#     for indi in individuals:
-#         alive = indi['Death'] == "NA" 
-#         age = calculate_age(indi["Birthday"]) 
-#         Spouse = indi['Spouse'] == ["NA"]
-#         if age < 30 or Spouse or not alive:
-#             errors.append(f'ERROR: INDIVIDUAL: US31: {indi["ID"]}: Is not alive or married above 30.')
-#     return errors
 
 #US35: List all people in a GEDCOM file who were born in the last 30 days
 def us35(individuals):
