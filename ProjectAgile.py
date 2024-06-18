@@ -244,7 +244,7 @@ def us29(individuals):
         if indi["Death"] != "NA":
             # id = indi["ID"]
             name = indi["Name"].replace("/", "")
-            deceased_individuals.append(f'\tIndividual: {indi["ID"]}: {name}\n')
+            deceased_individuals.append(f'Individual: {indi["ID"]}: {name}\n')
     return deceased_individuals       
 
 ## List all living married individuals
@@ -257,7 +257,7 @@ def us30(individuals):
         notMarried = indi["Spouse"] == ["NA"]
         married = indi["Spouse"] != ["NA"]
         if not dead and married:
-           living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}')
+            living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}')
         if dead or notMarried:
             errors.append(f'ERROR: INDIVIDUAL: US30: {indi["ID"]}: Not living and married.')  
     print ("\n".join(living_married_individuals)) 
