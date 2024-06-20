@@ -283,6 +283,39 @@ def us31(individuals):
     print ("\n".join(living_single_individuals))
     return errors
 
+# US33: List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
+def us33(individuals,families):
+    errors = []
+    
+    def find_individual_by_id(individuals, indi_id):
+        for indi in individuals:
+            if indi["ID"] == indi_id:
+                return indi
+        return None
+
+    for family in families:
+        husband = find_individual_by_id(individuals, family["Husband"])
+        wife = find_individual_by_id(individuals, family["Wife"])
+        husband_dead = False
+        wife_dead = False
+
+        if husband and wife:
+            if husband["Death"] != "NA":
+               husband_dead = True
+            if wife["Death"] != "NA":
+                wife_dead = True
+            
+            if husband_dead and wife_dead:
+                for child_id in family["Children"]:
+                    child = find_individual_by_id(individuals, child_id)
+                    if child:
+                        birth_date = child["Birthday"]
+                        age = calculate_age(birth_date)
+                        if age < 18:
+                            errors.append(f'US33: INDIVIDUAL: Orphaned child: {child["Name"]} (ID: {child["ID"]}), Age: {age}')
+
+    return errors
+
 #US35: List all people in a GEDCOM file who were born in the last 30 days
 def us35(individuals):
     listName = []
@@ -380,6 +413,14 @@ def main():
             print("\n",error)
     else:
         print('No Error in US31')
+
+    # Check for US33 error
+    errors_us33 = us33(individuals,families)
+    if errors_us33:
+        for error in errors_us33:
+            print("\n",error)
+    else:
+        print("US33: No orphans under 18 years old")
 
     list_us35 = us35(individuals)
     if list_us35:
