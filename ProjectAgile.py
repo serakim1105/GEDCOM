@@ -224,8 +224,40 @@ def us07(individuals):
     return errors
 
 #Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
-def us12(indiviuals, families):
-    return
+def us12(individuals, families):
+    too_old_parents = []
+    
+    for individual in individuals:
+        #individual['Birthday'] = datetime.strptime(individual['Birthday'], '%d %b %Y')
+        alive = individual['Death'] == "NA"
+
+    for family in families:
+        husband_id = family['Husband']
+        wife_id = family['Wife']
+        children_ids = family['Children']
+        
+        husband = next((i for i in individuals if i['ID'] == husband_id), None)
+        wife = next((i for i in individuals if i['ID'] == wife_id), None)
+        
+        if husband and wife:
+
+            #age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
+            husband_age = calculate_age(husband['Birthday'], None if alive else husband['Death']) if husband['Birthday'] != 'NA' else 'NA'
+            wife_age = calculate_age(wife['Birthday'], None if alive else wife["Death"]) if wife["Birthday"] != "NA" else "NA"
+            
+            for child_id in children_ids:
+                child = next((i for i in individuals if i['ID'] == child_id), None)
+                if child:
+                    child_age = calculate_age(child['Birthday'], None if alive else child["Death"]) if child["Birthday"] != "NA" else "NA"
+                    
+                    if (wife_age - child_age > 60):
+                        #name = indi["Name"].replace("/", "")
+                        too_old_parents.append(f"Individual {wife['ID']}, family {family['ID']}: {family['WifeName'].replace('/', '')}, DOB {wife['Birthday']} is more than 60 yrs older than her child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
+                        #break  # Stop checking once a parent doesn't meet the criteria
+                    if (husband_age - child_age > 80):
+                        too_old_parents.append(f"Individual {husband['ID']}, family {family['ID']}: {family['HusbandName'].replace('/', '')}, DOB {husband['Birthday']} is more than 80 yrs older than his child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
+
+    return list(set(too_old_parents))  # Remove duplicates
 
 def us16(individuals, families):
     errors = []
@@ -427,6 +459,13 @@ def main():
             print(error)
     else:
         print('\nNo Errors in US22')
+    too_old = us12(individuals, families)
+    if too_old:
+        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
+        for parent in too_old:
+            print(parent)
+    else:
+        print(f"\nNone of the parents are too old to have kids in US12")
 
     #US29: List all deceased individuals
     deceased = us29(individuals)
