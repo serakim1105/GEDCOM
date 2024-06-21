@@ -237,6 +237,30 @@ def us16(individuals, families):
                         errors.append(f'US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
     
+def us22(individuals, families):
+    errors = []
+    uids = [] 
+    #dupids = []
+    
+    for indi in individuals:
+        id = indi['ID']
+        if id not in uids:
+            uids.append(id)
+        else:
+            #dupids.append(id)
+            errors.append(f"Duplicate individual ID, {id}, for {indi['Name']}")
+    
+    for fam in families:
+        id = fam['ID']
+        marr = fam['Married']
+        print(marr)
+        if id not in uids:
+            uids.append(id)
+        else:
+            #dupids.append(id)
+            errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
+    return errors
+
 # list all deceased individuals
 def us29(individuals):
     deceased_individuals = []
@@ -357,7 +381,16 @@ def main():
     else:
         print(f"\nNo anomalies in US02")
 
-    # US29: List all deceased individuals
+    #Check for US22 errors
+    errors = us22(individuals, families)
+    if errors:
+        print(f"\nErrors in US22:")
+        for error in errors:
+            print(error)
+    else:
+        print('\nNo Errors in US22')
+
+    #US29: List all deceased individuals
     deceased = us29(individuals)
     if deceased:
         print("\nUS29: List of all deceased individuals:\n")
