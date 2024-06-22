@@ -132,7 +132,7 @@ def parse_gedcom_file(filename):
             indi["Spouse"] = ["NA"]
 
     # Print the individuals and families
-    
+
     indi_table = PrettyTable()
     indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
     
@@ -244,14 +244,12 @@ def us16(individuals, families):
 def us22(individuals, families):
     errors = []
     uids = [] 
-    #dupids = []
     
     for indi in individuals:
         id = indi['ID']
         if id not in uids:
             uids.append(id)
         else:
-            #dupids.append(id)
             errors.append(f"Duplicate individual ID, {id}, for {indi['Name']}")
     
     for fam in families:
@@ -261,7 +259,6 @@ def us22(individuals, families):
         if id not in uids:
             uids.append(id)
         else:
-            #dupids.append(id)
             errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
     return errors
 
