@@ -148,6 +148,9 @@ def parse_gedcom_file(filename):
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
+    # print(individuals)
+    # print(families)
+
     print("\nIndividuals:")
     print(indi_table)
 
@@ -237,6 +240,7 @@ def us16(individuals, families):
                         errors.append(f'US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
     
+# Test unique IDs
 def us22(individuals, families):
     errors = []
     uids = [] 
