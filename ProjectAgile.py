@@ -362,7 +362,7 @@ def us33(individuals,families):
 
         if husband and wife:
             if husband["Death"] != "NA":
-               husband_dead = True
+                husband_dead = True
             if wife["Death"] != "NA":
                 wife_dead = True
             
@@ -414,24 +414,6 @@ def main():
     # Pull out individuals and families list from parse_gedcom_file()
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
-    
-    # Check for US07 errors
-    errors_us07 = us07(individuals)
-    if errors_us07:
-        print(f"\nErrors in US07:")
-        for error in errors_us07:
-            print(error)
-    else:
-        print(f"\nNo errors in us07")
-    
-    # Check for US16 errors
-    errors_us16 = us16(individuals, families)
-    if errors_us16:
-        print(f"\nErrors in US16:")
-        for error in errors_us16:
-            print(error)
-    else:
-        print(f"\nNo errors in US16")
 
     # Check for US02 errors
     errors_us02 = us02_err(individuals, families)
@@ -451,6 +433,33 @@ def main():
     else:
         print(f"\nNo anomalies in US02")
 
+    # Check for US07 errors
+    errors_us07 = us07(individuals)
+    if errors_us07:
+        print(f"\nErrors in US07:")
+        for error in errors_us07:
+            print(error)
+    else:
+        print(f"\nNo errors in us07")
+
+    #Check for US12 errors
+    too_old = us12(individuals, families)
+    if too_old:
+        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
+        for parent in too_old:
+            print(parent)
+    else:
+        print(f"\nNone of the parents are too old to have kids in US12")
+
+    # Check for US16 errors
+    errors_us16 = us16(individuals, families)
+    if errors_us16:
+        print(f"\nErrors in US16:")
+        for error in errors_us16:
+            print(error)
+    else:
+        print(f"\nNo errors in US16")
+
     #Check for US22 errors
     errors = us22(individuals, families)
     if errors:
@@ -459,13 +468,6 @@ def main():
             print(error)
     else:
         print('\nNo Errors in US22')
-    too_old = us12(individuals, families)
-    if too_old:
-        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
-        for parent in too_old:
-            print(parent)
-    else:
-        print(f"\nNone of the parents are too old to have kids in US12")
 
     #US29: List all deceased individuals
     deceased = us29(individuals)
