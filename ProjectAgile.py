@@ -132,7 +132,7 @@ def parse_gedcom_file(filename):
             indi["Spouse"] = ["NA"]
 
     # Print the individuals and families
-    
+
     indi_table = PrettyTable()
     indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
     
@@ -147,6 +147,9 @@ def parse_gedcom_file(filename):
     
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
+
+    # print(individuals)
+    # print(families)
 
     print("\nIndividuals:")
     print(indi_table)
@@ -273,6 +276,28 @@ def us16(individuals, families):
                         errors.append(f'US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
     
+# Test unique IDs
+def us22(individuals, families):
+    errors = []
+    uids = [] 
+    
+    for indi in individuals:
+        id = indi['ID']
+        if id not in uids:
+            uids.append(id)
+        else:
+            errors.append(f"Duplicate individual ID, {id}, for {indi['Name']}")
+    
+    for fam in families:
+        id = fam['ID']
+        marr = fam['Married']
+        print(marr)
+        if id not in uids:
+            uids.append(id)
+        else:
+            errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
+    return errors
+
 # list all deceased individuals
 def us29(individuals):
     deceased_individuals = []
@@ -337,7 +362,9 @@ def us33(individuals,families):
 
         if husband and wife:
             if husband["Death"] != "NA":
-               husband_dead = True
+
+                husband_dead = True
+
             if wife["Death"] != "NA":
                 wife_dead = True
             
@@ -389,24 +416,7 @@ def main():
     # Pull out individuals and families list from parse_gedcom_file()
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
-    
-    # Check for US07 errors
-    errors_us07 = us07(individuals)
-    if errors_us07:
-        print(f"\nErrors in US07:")
-        for error in errors_us07:
-            print(error)
-    else:
-        print(f"\nNo errors in us07")
-    
-    # Check for US16 errors
-    errors_us16 = us16(individuals, families)
-    if errors_us16:
-        print(f"\nErrors in US16:")
-        for error in errors_us16:
-            print(error)
-    else:
-        print(f"\nNo errors in US16")
+
 
     # Check for US02 errors
     errors_us02 = us02_err(individuals, families)
@@ -426,6 +436,19 @@ def main():
     else:
         print(f"\nNo anomalies in US02")
 
+
+    
+
+    # Check for US07 errors
+    errors_us07 = us07(individuals)
+    if errors_us07:
+        print(f"\nErrors in US07:")
+        for error in errors_us07:
+            print(error)
+    else:
+        print(f"\nNo errors in us07")
+
+    #Check for US12 errors
     too_old = us12(individuals, families)
     if too_old:
         print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
@@ -433,6 +456,44 @@ def main():
             print(parent)
     else:
         print(f"\nNone of the parents are too old to have kids in US12")
+
+    # Check for US16 errors
+    errors_us16 = us16(individuals, families)
+    if errors_us16:
+        print(f"\nErrors in US16:")
+        for error in errors_us16:
+            print(error)
+    else:
+        print(f"\nNo errors in US16")
+
+    #Check for US22 errors
+    errors = us22(individuals, families)
+    if errors:
+        print(f"\nErrors in US22:")
+        for error in errors:
+            print(error)
+    else:
+        print('\nNo Errors in US22')
+
+
+
+    # Check for US02 anomalies
+    anomalies_us02 = us02_anom(individuals, families)    
+    if anomalies_us02:
+        print(f"\nAnomalies in US02:")
+        for anomaly in anomalies_us02:
+            print(anomaly)
+    else:
+        print(f"\nNo anomalies in US02")
+
+    too_old = us12(individuals, families)
+    if too_old:
+        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
+        for parent in too_old:
+            print(parent)
+    else:
+        print(f"\nNone of the parents are too old to have kids in US12")
+
 
     #US29: List all deceased individuals
     deceased = us29(individuals)
