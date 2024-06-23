@@ -362,7 +362,9 @@ def us33(individuals,families):
 
         if husband and wife:
             if husband["Death"] != "NA":
+
                 husband_dead = True
+
             if wife["Death"] != "NA":
                 wife_dead = True
             
@@ -415,6 +417,7 @@ def main():
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
 
+
     # Check for US02 errors
     errors_us02 = us02_err(individuals, families)
     if errors_us02:
@@ -432,6 +435,9 @@ def main():
             print(anomaly)
     else:
         print(f"\nNo anomalies in US02")
+
+
+    
 
     # Check for US07 errors
     errors_us07 = us07(individuals)
@@ -468,6 +474,26 @@ def main():
             print(error)
     else:
         print('\nNo Errors in US22')
+
+
+
+    # Check for US02 anomalies
+    anomalies_us02 = us02_anom(individuals, families)    
+    if anomalies_us02:
+        print(f"\nAnomalies in US02:")
+        for anomaly in anomalies_us02:
+            print(anomaly)
+    else:
+        print(f"\nNo anomalies in US02")
+
+    too_old = us12(individuals, families)
+    if too_old:
+        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
+        for parent in too_old:
+            print(parent)
+    else:
+        print(f"\nNone of the parents are too old to have kids in US12")
+
 
     #US29: List all deceased individuals
     deceased = us29(individuals)
