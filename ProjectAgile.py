@@ -157,7 +157,7 @@ def parse_gedcom_file(filename):
     print("\nFamilies:")
     print(fam_table)
 
-    return individuals, families 
+    return individuals, families
 
 # User Story 02 - Check for Error: Birth should occur before marriage
 def us02_err(individuals, families):
@@ -298,6 +298,108 @@ def us22(individuals, families):
             errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
     return errors
 
+def us27():
+    errors = []
+    filename = "sera.ged"  
+    file = open(filename, 'r')
+    lines = file.readlines()
+    
+    individuals = []
+    families = []
+    current_indi = None
+    current_fam = None
+    date_type = None
+
+    for line in lines:
+        line = line.strip()
+        # print("--> " + line)#.strip()) #remove return char for easier reading
+        
+        level, tag, is_valid, args = parse_gedcom_line(line)
+
+        if level == '0':
+            if current_indi:
+                individuals.append(current_indi)
+                current_indi = None
+            if current_fam:
+                families.append(current_fam)
+                current_fam = None
+
+            if tag == "INDI":
+                current_indi = {"ID": args, "Name": "NA", "Gender": "NA", "Birthday": "NA", "Death": "NA", "Child": "NA", "Spouse": []}
+            elif tag == "FAM":
+                current_fam = {"ID": args, "Married": "NA", "Divorced": "NA", "Husband": "NA", "HusbandName": "Unknown", "Wife": "NA", "WifeName": "Unknown", "Children": []}
+
+        if current_indi:
+            if tag == "NAME":
+                current_indi["Name"] = args
+            elif tag == "SEX":
+                current_indi["Gender"] = args
+            elif tag in ["BIRT", "DEAT"]:
+                date_type = tag
+            elif tag == "DATE" and date_type:
+                if date_type == "BIRT":
+                    current_indi["Birthday"] = args
+                elif date_type == "DEAT":
+                    current_indi["Death"] = args
+                date_type = None
+            elif tag == "FAMC":
+                current_indi["Child"] = args
+            elif tag == "FAMS":
+                current_indi["Spouse"].append(args)
+            elif level == "0":
+                indi_id = line.split()[1]
+                current_indi["ID"] = indi_id
+
+        if current_fam:
+            if tag == "DATE":
+                date_type = tag
+                current_fam["Married"] = args
+            elif tag == "DATE":
+                date_type = tag
+                current_fam["Divorced"] = args
+            elif tag == "HUSB":
+                current_fam["Husband"] = args
+                for indi in individuals:
+                    if indi["ID"] == args:
+                        current_fam["HusbandName"] = indi["Name"]
+            elif tag == "WIFE":
+                current_fam["Wife"] = args
+                for indi in individuals:
+                    if indi["ID"] == args:
+                        current_fam["WifeName"] = indi["Name"]
+            elif tag == "CHIL":
+                current_fam["Children"].append(args)
+            else: 
+                if level == "0":
+                    tokens = line.split()
+                    current_fam["ID"] = tokens[1]
+
+    if current_indi:
+        # print(f'{current_indi["ID"]}')
+        individuals.append(current_indi)
+    if current_fam:
+        families.append(current_fam)
+
+    for indi in individuals:
+        if not indi["Spouse"]:
+            indi["Spouse"] = ["NA"]
+
+    # Print the individuals and families
+
+    indi_table = PrettyTable()
+    indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
+    
+    for indi in individuals:
+        alive = indi['Death'] == "NA"
+        if alive:
+            age = calculate_age(indi["Birthday"])
+        else: 
+            age = -1
+            errors.append(f"No age listed for {indi["ID"]}")
+        indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
+            
+    return errors
+
 # list all deceased individuals
 def us29(individuals):
     deceased_individuals = []
@@ -417,7 +519,6 @@ def main():
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
 
-
     # Check for US02 errors
     errors_us02 = us02_err(individuals, families)
     if errors_us02:
@@ -493,6 +594,14 @@ def main():
             print(parent)
     else:
         print(f"\nNone of the parents are too old to have kids in US12")
+
+    errors_us27 = us27()
+    if errors_us27:
+        print(f"\nErrors in US27:")
+        for error in errors_us27:
+            print(error)
+    else:
+        print('\nNo Errors in US27')
 
 
     #US29: List all deceased individuals
