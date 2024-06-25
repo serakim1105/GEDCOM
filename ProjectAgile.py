@@ -508,6 +508,19 @@ def us36(individuals):
                 listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
+#US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
+def us38(individuals):
+    
+    listName = []
+    today = datetime.now().date()
+    for indi in individuals:
+        if indi['Death'] == 'NA':
+            birthday = indi['Birthday']
+            if birthday != 'NA':
+                
+                listName.append(f'INDIVIDUAL: US35: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birthday}')
+    return listName
+
 def main():
     # To read file from command line
     if len(sys.argv) != 2:
@@ -651,6 +664,14 @@ def main():
             print("\n",val)
     else:
         print('\nUS36: No one died in the last 30 days.')
+
+    list_us38 = us38(individuals)
+    if list_us38:
+        print('\nUS38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days')
+        for val in list_us38:
+            print("\n",val)
+    else:
+        print('\nUS38: No one has birthyday in the next 30 days.')
         
 if __name__ == "__main__":
     main()
