@@ -395,7 +395,7 @@ def us27():
             age = calculate_age(indi["Birthday"])
         else: 
             age = -1
-            errors.append(f"No age listed for {indi["ID"]}")
+            errors.append(f'No age listed for {indi["ID"]}')
         indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
             
     return errors
