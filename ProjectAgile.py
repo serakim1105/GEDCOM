@@ -508,6 +508,12 @@ def us36(individuals):
                 listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
+#US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
+def us37(individuals,families):
+    listName=[]
+
+    return listName
+
 #US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
 def us38(individuals):
     
@@ -666,6 +672,14 @@ def main():
             print("\n",val)
     else:
         print('\nUS36: No one died in the last 30 days.')
+
+    list_us37 = us37(individuals,families)
+    if list_us37:
+        print('\nUS37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days')
+        for val in list_us37:
+            print("\n",val)
+    else:
+        print('\nUS37: No one died in the last 30 days.')
 
     list_us38 = us38(individuals)
     if list_us38:
