@@ -395,12 +395,57 @@ def us27():
             age = calculate_age(indi["Birthday"])
         else: 
             age = -1
-            errors.append(f"No age listed for {indi["ID"]}")
+            errors.append(f'No age listed for {indi["ID"]}')
         indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
             
     return errors
 
-# list all deceased individuals
+#US28: Order siblings by age in decreasing order (oldest to youngest)
+def us28(individuals, families):
+    sibling1 = []
+    sibling2 = []
+    sibling3 = []
+    sibling4 = []
+    sibling5 = []
+    print(" ")
+    print("US28: Order siblings by age in decreasing order (oldest to youngest)")
+    for fam in families:
+        childrenFam = fam["ID"]
+        for indi in individuals:  
+                if(fam["ID"] == indi["Child"]):
+                        if '1' in indi["Child"]:
+                            birthday = indi['Birthday']
+                            age = calculate_age(indi["Birthday"])
+                            name = indi["Name"]
+                            sibling1.append(f'{age}:{name}')
+                            sibling1.sort(reverse = True) 
+                        if '2' in indi["Child"]:
+                            birthday = indi['Birthday']
+                            age = calculate_age(indi["Birthday"])
+                            name = indi["Name"]
+                            sibling2.append(f'{age}:{name}')
+                            sibling2.sort(reverse = True)
+                        if '3' in indi["Child"]:
+                            birthday = indi['Birthday']
+                            age = calculate_age(indi["Birthday"])
+                            name = indi["Name"]
+                            sibling3.append(f'{age}:{name}')
+                            sibling3.sort(reverse = True)      
+                        if '4' in indi["Child"]:
+                            birthday = indi['Birthday']
+                            age = calculate_age(indi["Birthday"])
+                            name = indi["Name"]
+                            sibling4.append(f'{age}:{name}')
+                            sibling4.sort(reverse = True) 
+                        if '5' in indi["Child"]:
+                            birthday = indi['Birthday']
+                            age = calculate_age(indi["Birthday"])
+                            name = indi["Name"]
+                            sibling5.append(f'{age}:{name}')
+                            sibling5.sort(reverse = True) 
+    return sibling1,sibling2,sibling3,sibling4,sibling5
+
+#Check for US29: List all deceased individuals
 def us29(individuals):
     deceased_individuals = []
     for indi in individuals:
@@ -410,7 +455,7 @@ def us29(individuals):
             deceased_individuals.append(f'Individual: {indi["ID"]}: {name}\n')
     return deceased_individuals       
 
-## List all living married individuals
+##Check for US30: List all living married individuals
 def us30(individuals):
     errors = []
     living_married_individuals = []
@@ -426,7 +471,7 @@ def us30(individuals):
     print ("\n".join(living_married_individuals)) 
     return errors
 
-#List all individuals who are 30 and have never been married
+#Check for US31: List all individuals who are 30 and have never been married
 def us31(individuals):
     errors = []
     living_single_individuals = []
@@ -508,6 +553,27 @@ def us36(individuals):
                 listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
+#US39: List upcoming anniversaries
+def us39(families):
+    anniversaries = []
+    todayMonth = (datetime.now().date().month) * 31
+    todayDay = (datetime.now().date().day) 
+    todayYear = (datetime.now().date().year)
+    today = abs((todayMonth + todayDay))
+    for fam in families:
+        weddingDate = fam["Married"]
+        if weddingDate != 'NA':
+            AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
+            AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
+            AnniversaryYear =  (datetime.strptime(weddingDate, "%d %b %Y").date().year)
+            AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
+            if (today < AnniversaryDate) :
+                anniversaries.append(weddingDate)
+            if (todayYear < AnniversaryYear) :
+                print("Wedding did not happen yet")
+    return anniversaries
+
+
 def main():
     # To read file from command line
     if len(sys.argv) != 2:
@@ -536,9 +602,6 @@ def main():
             print(anomaly)
     else:
         print(f"\nNo anomalies in US02")
-
-
-    
 
     # Check for US07 errors
     errors_us07 = us07(individuals)
@@ -576,8 +639,6 @@ def main():
     else:
         print('\nNo Errors in US22')
 
-
-
     # Check for US02 anomalies
     anomalies_us02 = us02_anom(individuals, families)    
     if anomalies_us02:
@@ -595,6 +656,7 @@ def main():
     else:
         print(f"\nNone of the parents are too old to have kids in US12")
 
+    # Check for US27: Include individual ages
     errors_us27 = us27()
     if errors_us27:
         print(f"\nErrors in US27:")
@@ -602,6 +664,34 @@ def main():
             print(error)
     else:
         print('\nNo Errors in US27')
+
+
+    #Check for US28: Order Siblings By Age
+    sibling1,sibling2,sibling3,sibling4,sibling5 = us28(individuals, families)
+    if sibling1:
+        print("F01 siblings")
+        for value in sibling1:
+            print(value)
+        print(" ")
+    if sibling2:
+        print("F02 siblings")
+        for value in sibling2:
+            print(value)
+        print(" ")
+    if sibling3:
+        print("F03 siblings")
+        for value in sibling3:
+            print(value)
+        print(" ")
+    if sibling4:
+        print("F04 siblings")
+        for value in sibling4:
+            print(value)
+        print(" ")
+    if sibling5:
+        print("F05 siblings")
+        for value in sibling5:
+            print(value)
 
 
     #US29: List all deceased individuals
@@ -651,6 +741,16 @@ def main():
             print("\n",val)
     else:
         print('\nUS36: No one died in the last 30 days.')
+
+    #Check for US39: List Upcoming Anniversaries
+    print(" ")
+    print("US39")
+    weddingDate = us39(families)
+    if weddingDate:
+        for wedding in weddingDate:
+            print(wedding)
+    else:
+        print('No anniversaries/Anniversary date is not after today')
         
 if __name__ == "__main__":
     main()
