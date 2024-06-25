@@ -395,7 +395,7 @@ def us27():
             age = calculate_age(indi["Birthday"])
         else: 
             age = -1
-            errors.append(f"No age listed for {indi["ID"]}")
+            errors.append(f'No age listed for {indi["ID"]}')
         indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
             
     return errors
@@ -514,11 +514,13 @@ def us38(individuals):
     listName = []
     today = datetime.now().date()
     for indi in individuals:
-        if indi['Death'] == 'NA':
-            birthday = indi['Birthday']
-            if birthday != 'NA':
-                
-                listName.append(f'INDIVIDUAL: US35: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birthday}')
+        birth = indi['Birthday']
+        if indi['Death'] == 'NA' and birth != 'NA':
+            birthdate = datetime.strptime(birth, "%d %b %Y").date()
+            birthday = birthdate.replace(year=today.year)
+            if 0 <= (birthday - today).days <= 30:
+                # print(birthday-today)
+                listName.append(f'INDIVIDUAL: US38: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
     return listName
 
 def main():
