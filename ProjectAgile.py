@@ -402,48 +402,20 @@ def us27():
 
 #US28: Order siblings by age in decreasing order (oldest to youngest)
 def us28(individuals, families):
-    sibling1 = []
-    sibling2 = []
-    sibling3 = []
-    sibling4 = []
-    sibling5 = []
+    sibling = []
     print(" ")
     print("US28: Order siblings by age in decreasing order (oldest to youngest)")
     for fam in families:
         childrenFam = fam["ID"]
         for indi in individuals:  
-                if(fam["ID"] == indi["Child"]):
-                        if '1' in indi["Child"]:
-                            birthday = indi['Birthday']
-                            age = calculate_age(indi["Birthday"])
-                            name = indi["Name"]
-                            sibling1.append(f'{age}:{name}')
-                            sibling1.sort(reverse = True) 
-                        if '2' in indi["Child"]:
-                            birthday = indi['Birthday']
-                            age = calculate_age(indi["Birthday"])
-                            name = indi["Name"]
-                            sibling2.append(f'{age}:{name}')
-                            sibling2.sort(reverse = True)
-                        if '3' in indi["Child"]:
-                            birthday = indi['Birthday']
-                            age = calculate_age(indi["Birthday"])
-                            name = indi["Name"]
-                            sibling3.append(f'{age}:{name}')
-                            sibling3.sort(reverse = True)      
-                        if '4' in indi["Child"]:
-                            birthday = indi['Birthday']
-                            age = calculate_age(indi["Birthday"])
-                            name = indi["Name"]
-                            sibling4.append(f'{age}:{name}')
-                            sibling4.sort(reverse = True) 
-                        if '5' in indi["Child"]:
-                            birthday = indi['Birthday']
-                            age = calculate_age(indi["Birthday"])
-                            name = indi["Name"]
-                            sibling5.append(f'{age}:{name}')
-                            sibling5.sort(reverse = True) 
-    return sibling1,sibling2,sibling3,sibling4,sibling5
+            if(fam["ID"] == indi["Child"]):
+                id = indi['ID']
+                birthday = indi['Birthday']
+                age = calculate_age(birthday)
+                name = indi["Name"]
+                sibling.append(f'{age}:{name}')
+                sibling.sort(reverse = True) 
+    return sibling
 
 #Check for US29: List all deceased individuals
 def us29(individuals):
@@ -711,32 +683,13 @@ def main():
 
 
     #Check for US28: Order Siblings By Age
-    sibling1,sibling2,sibling3,sibling4,sibling5 = us28(individuals, families)
-    if sibling1:
-        print("F01 siblings")
-        for value in sibling1:
-            print(value)
+    sibling = us28(individuals, families)
+    if sibling:
+        print("Siblings list")
         print(" ")
-    if sibling2:
-        print("F02 siblings")
-        for value in sibling2:
+        for value in sibling:
             print(value)
-        print(" ")
-    if sibling3:
-        print("F03 siblings")
-        for value in sibling3:
-            print(value)
-        print(" ")
-    if sibling4:
-        print("F04 siblings")
-        for value in sibling4:
-            print(value)
-        print(" ")
-    if sibling5:
-        print("F05 siblings")
-        for value in sibling5:
-            print(value)
-
+            print(" ")
 
     #US29: List all deceased individuals
     deceased = us29(individuals)
