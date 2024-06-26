@@ -10,7 +10,6 @@ def create_date(wedding_date = "NA"):
 def test_1_us39(): 
     date1 = create_date("20 OCT 1942")
     assert us39([date1])
- #weddingDate
 
 def test_2_us39():
     date2 = create_date("15 AUG 1942")
