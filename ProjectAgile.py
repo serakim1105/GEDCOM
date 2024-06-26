@@ -553,6 +553,44 @@ def us36(individuals):
                 listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
+
+#US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
+def us37(individuals,families):
+    listName=[]
+    diedId =[]
+    # theirFam=[]
+    diedLast = us36(individuals)
+    for val in diedLast:
+        id = val.split('ID: ')[1]
+        id = id.split(' ')[0]
+        diedId.append(id)
+    # print(diedId)
+    # for person in diedId:
+    #     for family in families:
+    #         if family['Husband'] == person:
+    #             theirFam.append(family['Wife'].join(family['Children']))
+    #         elif family['Wife'] == person:
+    #             theirFam.append(family['Husband'].join(family['Children']))
+    # print(theirFam)
+                
+
+    return listName
+
+#US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
+def us38(individuals):
+    
+    listName = []
+    today = datetime.now().date()
+    for indi in individuals:
+        birth = indi['Birthday']
+        if indi['Death'] == 'NA' and birth != 'NA':
+            birthdate = datetime.strptime(birth, "%d %b %Y").date()
+            birthday = birthdate.replace(year=today.year)
+            if 0 <= (birthday - today).days <= 30:
+                # print(birthday-today)
+                listName.append(f'INDIVIDUAL: US38: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
+    return listName
+
 #US39: List upcoming anniversaries
 def us39(families):
     anniversaries = []
@@ -572,6 +610,7 @@ def us39(families):
             if (todayYear < AnniversaryYear) :
                 print("Wedding did not happen yet")
     return anniversaries
+
 
 
 def main():
@@ -742,6 +781,22 @@ def main():
     else:
         print('\nUS36: No one died in the last 30 days.')
 
+    list_us37 = us37(individuals,families)
+    if list_us37:
+        print('\nUS37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days')
+        for val in list_us37:
+            print("\n",val)
+    else:
+        print('\nUS37: No one died in the last 30 days.')
+
+    list_us38 = us38(individuals)
+    if list_us38:
+        print('\nUS38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days')
+        for val in list_us38:
+            print("\n",val)
+    else:
+        print('\nUS38: No one has birthyday in the next 30 days.')
+
     #Check for US39: List Upcoming Anniversaries
     print(" ")
     print("US39")
@@ -751,6 +806,7 @@ def main():
             print(wedding)
     else:
         print('No anniversaries/Anniversary date is not after today')
+
         
 if __name__ == "__main__":
     main()
