@@ -562,6 +562,8 @@ def us39(families):
     today = abs((todayMonth + todayDay))
     for fam in families:
         weddingDate = fam["Married"]
+        # str(weddingDate)
+        # print(weddingDate)
         if weddingDate != 'NA':
             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
@@ -571,6 +573,8 @@ def us39(families):
                 anniversaries.append(weddingDate)
             if (todayYear < AnniversaryYear) :
                 print("Wedding did not happen yet")
+            if (today > AnniversaryDate) :
+                print("AnniversaryDate before today")
     return anniversaries
 
 
@@ -648,6 +652,7 @@ def main():
     else:
         print(f"\nNo anomalies in US02")
 
+    # Check for US12: Parents are Not Too Old
     too_old = us12(individuals, families)
     if too_old:
         print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
