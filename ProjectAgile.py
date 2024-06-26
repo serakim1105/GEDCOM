@@ -558,12 +558,22 @@ def us36(individuals):
 def us37(individuals,families):
     listName=[]
     diedId =[]
+    # theirFam=[]
     diedLast = us36(individuals)
     for val in diedLast:
         id = val.split('ID: ')[1]
         id = id.split(' ')[0]
         diedId.append(id)
     # print(diedId)
+    # for person in diedId:
+    #     for family in families:
+    #         if family['Husband'] == person:
+    #             theirFam.append(family['Wife'].join(family['Children']))
+    #         elif family['Wife'] == person:
+    #             theirFam.append(family['Husband'].join(family['Children']))
+    # print(theirFam)
+                
+
     return listName
 
 #US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
