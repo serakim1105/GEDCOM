@@ -47,15 +47,5 @@ def test_5_us28():
     indi5 = create_indi("F03", "Kyle /Vannier/", "8", "I11") #siblings
     assert us28([indi5], families)
 
-# def test_3_us28(): 
-#     assert us28([indi3],families) == [f'ERROR: INDIVIDUAL: US28: {indi3["ID"]}: Not a sibling or not yet born.']
-
-
-# def test_4_us28():
-#     assert us28([indi1],families) == [f'ERROR: INDIVIDUAL: US28: {indi2["ID"]}: Not a sibling or not yet born.']
-
-# def test_5_us28():
-#     assert us28([indi1],families) == [f'ERROR: INDIVIDUAL: US28: {indi2["ID"]}: Not a sibling or not yet born.']
-
 if __name__ == "__main__":
     pytest.main()
