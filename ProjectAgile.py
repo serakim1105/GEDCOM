@@ -623,8 +623,6 @@ def us39(families):
     today = abs((todayMonth + todayDay))
     for fam in families:
         weddingDate = fam["Married"]
-        # str(weddingDate)
-        # print(weddingDate)
         if weddingDate != 'NA':
             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
