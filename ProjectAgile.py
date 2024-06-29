@@ -634,8 +634,6 @@ def us39(families):
                 anniversaries.append(weddingDate)
             if (todayYear < AnniversaryYear) :
                 print("Wedding did not happen yet")
-            if (today > AnniversaryDate) :
-                print("AnniversaryDate before today")
     return anniversaries
 
 
