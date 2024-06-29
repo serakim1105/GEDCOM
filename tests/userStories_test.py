@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 from ProjectAgile import us07, us16, parse_gedcom_file, us33
-import test_us29 as test_us29
+import tests.test_us29 as test_us29
 
 # Helper function to create a mock individual
 def create_individual(id, birth_date, death_date="NA"):
