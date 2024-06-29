@@ -17,6 +17,7 @@ Individuals:
 | I12 |   Bonnie /Brown/  |   F    |  3 DEC 1907 |  89 | False | 30 NOV 1997 |   NA  |   F04   |
 | I13 |   Bobby /Brown/   |   M    | 11 FEB 1948 |  40 | False | 30 DEC 1988 |  F04  |    NA   |
 | I14 |    Bobo /Brown/   |   M    | 15 JUN 2024 |  0  |  True |      NA     |  F04  |    NA   |
+| I14 |    Bobo /Brown/   |   M    | 15 JUN 2024 |  0  |  True |      NA     |   NA  |    NA   |
 +-----+-------------------+--------+-------------+-----+-------+-------------+-------+---------+
 
 Families:
@@ -27,19 +28,44 @@ Families:
 | F02 | 18 JUL 1904 |    NA    |    I06    |  Ted /Thompson/  |  I04   | Jenna /Smith/  |   I07,I08   |
 | F03 |  8 AUG 1937 |    NA    |    I07    | Timmy /Thompson/ |  I09   | Linda /Lyster/ |   I10,I11   |
 | F04 | 10 JUN 1945 |    NA    |    I07    | Timmy /Thompson/ |  I12   | Bonnie /Brown/ | I10,I11,I13 |
+| F04 | 10 JUN 1945 |    NA    |    I07    | Timmy /Thompson/ |  I12   | Bonnie /Brown/ |             |
 +-----+-------------+----------+-----------+------------------+--------+----------------+-------------+
-
-Errors in US07:
-US07: INDIVIDUAL: I05: More than 150 years old at death: 159 years
-
-Errors in US16:
-US16: Family F04: Male child (Brown) has a different last name than the father (Thompson)
 
 Errors in US02:
 US02: F01: Sam /Smith/ married before his birthday.
 
 Anomalies in US02:
 US02: F01: Sam /Smith/ married before age of 10.
+
+Errors in US07:
+US07: INDIVIDUAL: I05: More than 150 years old at death: 159 years
+
+Errors in US12: List of miracle parents that are way too old to have kids:
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Timmy Thompson, DOB 20 AUG 1908
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Tabina Thompson, DOB 1 DEC 1911
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Tabina Thompson, DOB 1 DEC 1911
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Timmy Thompson, DOB 20 AUG 1908
+
+Errors in US16:
+US16: Family F04: Male child (Brown) has a different last name than the father (Thompson)
+15 JUL 1850
+18 JUL 1904
+8 AUG 1937
+10 JUN 1945
+10 JUN 1945
+
+Errors in US22:
+Duplicate individual ID, I14, for Bobo /Brown/
+Duplicate family ID, F04, with marriage date 10 JUN 1945
+
+Anomalies in US02:
+US02: F01: Sam /Smith/ married before age of 10.
+
+Errors in US12: List of miracle parents that are way too old to have kids:
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Timmy Thompson, DOB 20 AUG 1908
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Tabina Thompson, DOB 1 DEC 1911
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Tabina Thompson, DOB 1 DEC 1911
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Timmy Thompson, DOB 20 AUG 1908
 
 US29: List of all deceased individuals:
 
@@ -102,6 +128,8 @@ US30: All living married individuals:
 
  ERROR: INDIVIDUAL: US30: I14: Not living and married.
 
+ ERROR: INDIVIDUAL: US30: I14: Not living and married.
+
 
 US31: All living single individuals over the age of 30:
 I03:Jimmy /Smith/
@@ -138,7 +166,12 @@ I13:Bobby /Brown/
 
  ERROR: INDIVIDUAL: US31: I14: Is not alive or single above 30.
 
+ ERROR: INDIVIDUAL: US31: I14: Is not alive or single above 30.
+US33: No orphans under 18 years old
+
  US35: List of all people in a GEDCOM file who were born in the last 30 days. 
+
+ INDIVIDUAL: US35: ID: I14 Name Bobo /Brown/ Birthday 15 JUN 2024
 
  INDIVIDUAL: US35: ID: I14 Name Bobo /Brown/ Birthday 15 JUN 2024
 
