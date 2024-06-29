@@ -417,131 +417,62 @@ def main():
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
 
+    # Function to print out list of errors or anomalies for a user story
+    # Parameters: variable storing result of user story function,
+    # 'user story number', 'Errors' (default) or 'Anomalies'
+    def print_errors(us_result, us_num, errs_or_anoms = 'Errors'):
+        if us_result:
+            print(f"\n{errs_or_anoms} in {us_num}:")
+            for r in us_result:
+                print(r)
+        else:
+            print(f"\nNo {errs_or_anoms} in {us_num}.")
 
-    # Check for US02 errors
+    def print_list(us_result, us_num, list_description):
+        if us_result:
+            print(f"\n{list_description} in {us_num}:")
+            for r in us_result:
+                print(r)
+        else:
+            print(f"\nNo {list_description} in {us_num}.")
+
+    # Check for user story errors and/or print user story result list
     errors_us02 = us02_err(individuals, families)
-    if errors_us02:
-        print(f"\nErrors in US02:")
-        for error in errors_us02:
-            print(error)
-    else:
-        print(f"\nNo errors in US02")
+    print_errors(errors_us02, 'US02')
 
-    # Check for US02 anomalies
     anomalies_us02 = us02_anom(individuals, families)    
-    if anomalies_us02:
-        print(f"\nAnomalies in US02:")
-        for anomaly in anomalies_us02:
-            print(anomaly)
-    else:
-        print(f"\nNo anomalies in US02")
+    print_errors(anomalies_us02, 'US02', 'Anomalies')
 
-
-    
-
-    # Check for US07 errors
     errors_us07 = us07(individuals)
-    if errors_us07:
-        print(f"\nErrors in US07:")
-        for error in errors_us07:
-            print(error)
-    else:
-        print(f"\nNo errors in us07")
+    print_errors(errors_us07, 'US07')
 
-    #Check for US12 errors
     too_old = us12(individuals, families)
-    if too_old:
-        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
-        for parent in too_old:
-            print(parent)
-    else:
-        print(f"\nNone of the parents are too old to have kids in US12")
+    print_errors(too_old, 'US12: Parents that are way too old to have kids')
 
-    # Check for US16 errors
     errors_us16 = us16(individuals, families)
-    if errors_us16:
-        print(f"\nErrors in US16:")
-        for error in errors_us16:
-            print(error)
-    else:
-        print(f"\nNo errors in US16")
+    print_errors(errors_us16, 'US16')
 
-    #Check for US22 errors
-    errors = us22(individuals, families)
-    if errors:
-        print(f"\nErrors in US22:")
-        for error in errors:
-            print(error)
-    else:
-        print('\nNo Errors in US22')
+    errors_us22 = us22(individuals, families)
+    print_errors(errors_us22, 'US22')
 
-
-
-    # Check for US02 anomalies
-    anomalies_us02 = us02_anom(individuals, families)    
-    if anomalies_us02:
-        print(f"\nAnomalies in US02:")
-        for anomaly in anomalies_us02:
-            print(anomaly)
-    else:
-        print(f"\nNo anomalies in US02")
-
-    too_old = us12(individuals, families)
-    if too_old:
-        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
-        for parent in too_old:
-            print(parent)
-    else:
-        print(f"\nNone of the parents are too old to have kids in US12")
-
-
-    #US29: List all deceased individuals
     deceased = us29(individuals)
-    if deceased:
-        print("\nUS29: List of all deceased individuals:\n")
-        print("\n".join(us29(individuals)))    
-    else:
-        print(f"\nUS29: No deceased individuals")
+    print_list(deceased, 'US29', 'Deceased individuals')
 
-    #Check for US30 errors
     errors_us30 = us30(individuals)
-    if errors_us30:
-        for error in errors_us30:
-            print("\n",error)
-    else:
-        print('No Error in US30')
+    print_errors(errors_us30, 'US30')
 
-    #Check for US31 errors
     errors_us31 = us31(individuals)
-    if errors_us31:
-        for error in errors_us31:
-            print("\n",error)
-    else:
-        print('No Error in US31')
+    print_errors(errors_us31, 'US31')
 
-    # Check for US33 error
     errors_us33 = us33(individuals,families)
-    if errors_us33:
-        for error in errors_us33:
-            print("\n",error)
-    else:
-        print("US33: No orphans under 18 years old")
+    print_list(errors_us33, 'US33', 'Orphans under 18 years old')
 
     list_us35 = us35(individuals)
-    if list_us35:
-        print('\n US35: List of all people in a GEDCOM file who were born in the last 30 days. ')
-        for val in list_us35:
-            print("\n",val)
-    else:
-        print('\nUS35: No one was born in the last 30 days.')
+    print_list(list_us35, 'US35', 'Indivuduals who were born in the last 30 days')
 
     list_us36 = us36(individuals)
-    if list_us36:
-        print('\nUS36: List of all people in a GEDCOM file who died in the last 30 days')
-        for val in list_us36:
-            print("\n",val)
-    else:
-        print('\nUS36: No one died in the last 30 days.')
+    print_list(list_us36, 'US36', 'Individuals who died in the last 30 days')
         
+
 if __name__ == "__main__":
     main()
