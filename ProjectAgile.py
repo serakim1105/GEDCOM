@@ -592,11 +592,9 @@ def us37(individuals,families):
         else:
             curFamName.append('They do not have living spouse or desendants')
 
-                
-    # print(theirFam)
         listName.append(curFamName)
-        print(curFamName)
-    print(listName)
+        # print(curFamName)
+        # print(listName)
     return listName
 
 #US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
