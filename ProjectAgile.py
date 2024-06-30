@@ -544,57 +544,57 @@ def us37(individuals,families):
             alive.add(indi['ID']) 
         idName[indi['ID']] = indi['Name']
     # check if people died in last 30days have spose and descendants and append it to theirFam list
-    
-    for family in families:
-        curFam =[]
-        if family['Husband'] in diedId:
-            curFam.append(family['Husband'])
-            if family['Wife'] in alive:
-                curFam.append(family['Wife'])
-            else:
-                curFam.append('NA')
-            if len(family['Children']) > 0:
-                for child in family['Children']:
-                    if child in alive:
-                        curFam.append(child)
-        if family['Wife'] in diedId:
-            curFam.append(family['Wife'])
-            if family['Husband'] in alive:
+    for person in diedId:
+        for family in families:
+            curFam =[]
+            if family['Husband'] == person:
                 curFam.append(family['Husband'])
-            else:
-                curFam.append('NA')
-            if len(family['Children']) > 0:
-                for child in family['Children']:
-                    if child in alive:
-                        curFam.append(child)
-        if len(curFam) > 1:
-            theirFam.append(curFam)
+                if family['Wife'] in alive:
+                    curFam.append(family['Wife'])
+                else:
+                    curFam.append('NA')
+                if len(family['Children']) > 0:
+                    for child in family['Children']:
+                        if child in alive:
+                            curFam.append(child)
+            elif family['Wife'] == person:
+                curFam.append(family['Wife'])
+                if family['Husband'] in alive:
+                    curFam.append(family['Husband'])
+                else:
+                    curFam.append('NA')
+                if len(family['Children']) > 0:
+                    for child in family['Children']:
+                        if child in alive:
+                            curFam.append(child)
+            if curFam not in theirFam and len(curFam) >0 :
+                theirFam.append(curFam)
 
-    for val in theirFam:
-        indi_id = val[0]
-        indi_name = idName.get(indi_id, "NA")
-        curFamName =[]
-        curFamName.append(f'INDIVIDUAL: {indi_id} Name: {indi_name} died in the last 30 days')
-        
-        if len(val) > 1:
-            curFamName.append(f'Thier family:')
-            if val[1] != 'NA':
-                spouse_id = val[1]
-                spouse_name = idName.get(spouse_id, "NA")
-                curFamName.append(f'\tSpouse: {spouse_id} Name: {spouse_name}')
+        for val in theirFam:
+            indi_id = val[0]
+            indi_name = idName.get(indi_id, "NA")
+            curFamName =[]
+            curFamName.append(f'INDIVIDUAL: {indi_id} Name: {indi_name} died in the last 30 days')
             
-            for child_id in val[2:]:
-                child_name = idName.get(child_id, "NA")
-                curFamName.append(f'\tChild: {child_id} Name: {child_name}') 
-            if len(curFamName) < 3:
+            if len(val) > 1:
+                curFamName.append(f'Thier family:')
+                if val[1] != 'NA':
+                    spouse_id = val[1]
+                    spouse_name = idName.get(spouse_id, "NA")
+                    curFamName.append(f'\tSpouse: {spouse_id} Name: {spouse_name}')
+                
+                for child_id in val[2:]:
+                    child_name = idName.get(child_id, "NA")
+                    curFamName.append(f'\tChild: {child_id} Name: {child_name}') 
+                if len(curFamName) < 3:
+                    curFamName.append('They do not have living spouse or desendants')
+
+            else:
                 curFamName.append('They do not have living spouse or desendants')
 
-        else:
-            curFamName.append('They do not have living spouse or desendants')
-
-        listName.append(curFamName)
-        # print(curFamName)
-        # print(listName)
+            listName.append(curFamName)
+            # print(curFamName)
+            # print(listName)
     return listName
 
 #US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
