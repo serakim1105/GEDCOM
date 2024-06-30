@@ -17,6 +17,11 @@ Individuals:
 | I12 |   Bonnie /Brown/  |   F    |  3 DEC 1907 |  89 | False | 30 NOV 1997 |   NA  |   F04   |
 | I13 |   Bobby /Brown/   |   M    | 11 FEB 1948 |  40 | False | 30 DEC 1988 |  F04  |    NA   |
 | I14 |    Bobo /Brown/   |   M    | 15 JUN 2024 |  0  |  True |      NA     |  F04  |    NA   |
+| I14 |    Bobo /Brown/   |   M    | 15 JUN 2024 |  0  |  True |      NA     |   NA  |    NA   |
+| I15 |    Rajesh /Pai/   |   M    | 15 JUL 1940 |  70 | False | 30 DEC 2010 |   NA  |   F05   |
+| I16 |    Meera /Pai/    |   F    | 20 OCT 1942 |  81 | False | 16 JUN 2024 |   NA  |   F05   |
+| I17 |    Arjun /Pai/    |   M    | 05 AUG 1965 |  58 |  True |      NA     |  F05  |    NA   |
+| I18 |    Aakash /Pai/   |   M    | 25 JUL 1995 |  28 |  True |      NA     |   NA  |    NA   |
 +-----+-------------------+--------+-------------+-----+-------+-------------+-------+---------+
 
 Families:
@@ -27,19 +32,82 @@ Families:
 | F02 | 18 JUL 1904 |    NA    |    I06    |  Ted /Thompson/  |  I04   | Jenna /Smith/  |   I07,I08   |
 | F03 |  8 AUG 1937 |    NA    |    I07    | Timmy /Thompson/ |  I09   | Linda /Lyster/ |   I10,I11   |
 | F04 | 10 JUN 1945 |    NA    |    I07    | Timmy /Thompson/ |  I12   | Bonnie /Brown/ | I10,I11,I13 |
+| F04 | 10 JUN 1945 |    NA    |    I07    | Timmy /Thompson/ |  I12   | Bonnie /Brown/ |             |
+| F05 | 14 FEB 1960 |    NA    |    I15    |   Rajesh /Pai/   |  I16   |  Meera /Pai/   |     I17     |
 +-----+-------------+----------+-----------+------------------+--------+----------------+-------------+
-
-Errors in US07:
-US07: INDIVIDUAL: I05: More than 150 years old at death: 159 years
-
-Errors in US16:
-US16: Family F04: Male child (Brown) has a different last name than the father (Thompson)
 
 Errors in US02:
 US02: F01: Sam /Smith/ married before his birthday.
 
 Anomalies in US02:
 US02: F01: Sam /Smith/ married before age of 10.
+
+Errors in US07:
+US07: INDIVIDUAL: I05: More than 150 years old at death: 159 years
+
+Errors in US12: List of miracle parents that are way too old to have kids:
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Tabina Thompson, DOB 1 DEC 1911
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Timmy Thompson, DOB 20 AUG 1908
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Tabina Thompson, DOB 1 DEC 1911
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Timmy Thompson, DOB 20 AUG 1908
+
+Errors in US16:
+US16: Family F04: Male child (Brown) has a different last name than the father (Thompson)
+15 JUL 1850
+18 JUL 1904
+8 AUG 1937
+10 JUN 1945
+10 JUN 1945
+14 FEB 1960
+
+Errors in US22:
+Duplicate individual ID, I14, for Bobo /Brown/
+Duplicate family ID, F04, with marriage date 10 JUN 1945
+
+Anomalies in US02:
+US02: F01: Sam /Smith/ married before age of 10.
+
+Errors in US12: List of miracle parents that are way too old to have kids:
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Tabina Thompson, DOB 1 DEC 1911
+Individual I06, family F02: Ted Thompson, DOB 3 MAR 1822 is more than 80 yrs older than his child Timmy Thompson, DOB 20 AUG 1908
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Tabina Thompson, DOB 1 DEC 1911
+Individual I04, family F02: Jenna Smith, DOB 1 DEC 1832 is more than 60 yrs older than her child Timmy Thompson, DOB 20 AUG 1908
+
+Errors in US27:
+No age listed for I03
+No age listed for I05
+ 
+US28: Order siblings by age in decreasing order (oldest to youngest)
+Siblings list
+ 
+84:Zach /Thompson/
+ 
+84:Zach /Thompson/
+ 
+81:Zelda /Thompson/
+ 
+81:Zelda /Thompson/
+ 
+76:Bobby /Brown/
+ 
+76:Bobby /Brown/
+ 
+58:Arjun /Pai/
+ 
+193:Jimmy /Smith/
+ 
+191:Jenna /Smith/
+ 
+186:Jesus /Smith/
+ 
+115:Timmy /Thompson/
+ 
+112:Tabina /Thompson/
+ 
+0:Bobo /Brown/
+ 
+0:Bobo /Brown/
+ 
 
 US29: List of all deceased individuals:
 
@@ -68,6 +136,10 @@ Individual: I11: Zelda Thompson
 Individual: I12: Bonnie Brown
 
 Individual: I13: Bobby Brown
+
+Individual: I15: Rajesh Pai
+
+Individual: I16: Meera Pai
 
 
 US30: All living married individuals:
@@ -102,6 +174,16 @@ US30: All living married individuals:
 
  ERROR: INDIVIDUAL: US30: I14: Not living and married.
 
+ ERROR: INDIVIDUAL: US30: I14: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I15: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I16: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I17: Not living and married.
+
+ ERROR: INDIVIDUAL: US30: I18: Not living and married.
+
 
 US31: All living single individuals over the age of 30:
 I03:Jimmy /Smith/
@@ -109,6 +191,7 @@ I08:Tabina /Thompson/
 I10:Zach /Thompson/
 I11:Zelda /Thompson/
 I13:Bobby /Brown/
+I17:Arjun /Pai/
 
  ERROR: INDIVIDUAL: US31: I01: Is not alive or single above 30.
 
@@ -138,8 +221,38 @@ I13:Bobby /Brown/
 
  ERROR: INDIVIDUAL: US31: I14: Is not alive or single above 30.
 
+ ERROR: INDIVIDUAL: US31: I14: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I15: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I16: Is not alive or single above 30.
+
+ ERROR: INDIVIDUAL: US31: I18: Is not alive or single above 30.
+US33: No orphans under 18 years old
+
  US35: List of all people in a GEDCOM file who were born in the last 30 days. 
 
  INDIVIDUAL: US35: ID: I14 Name Bobo /Brown/ Birthday 15 JUN 2024
 
-US36: No one died in the last 30 days.
+ INDIVIDUAL: US35: ID: I14 Name Bobo /Brown/ Birthday 15 JUN 2024
+
+US36: List of all people in a GEDCOM file who died in the last 30 days
+
+ INDIVIDUAL: US36: ID: I16 Name Meera /Pai/ Death 16 JUN 2024
+
+US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
+
+ INDIVIDUAL: I16 Name: Meera /Pai/ died in the last 30 days
+
+ Thier family:
+
+ 	Child: I17 Name: Arjun /Pai/
+
+US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
+
+ INDIVIDUAL: US38: ID: I18 Name Aakash /Pai/ Birthday 25 JUL 1995
+ 
+US39
+15 JUL 1850
+18 JUL 1904
+8 AUG 1937
