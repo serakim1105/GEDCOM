@@ -415,14 +415,13 @@ def us28(individuals, families):
                 if(death_date != "NA"):
                     age = calculate_age(birthday, death_date)
                     name = indi["Name"]
-                    sibling.append(f'{age}:{indi["Name"]}')
+                    sibling.append(f'{age}:{name}')
                     sibling.sort(reverse = True) 
                 if(death_date == "NA"):
                     age = calculate_age(birthday)
-                    #name = indi["Name"]
-                    sibling.append(f'{age}:{indi["Name"]}')
+                    name = indi["Name"]
+                    sibling.append(f'{age}:{name}')
                     sibling.sort(reverse = True) 
-                print(age)
     return sibling
 
 #Check for US29: List all deceased individuals
