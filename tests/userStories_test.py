@@ -1,7 +1,12 @@
 import pytest
 from datetime import datetime
+<<<<<<< HEAD:tests/userStories_test.py
 from ProjectAgile import us07, us16, parse_gedcom_file, us33
 import tests.test_us29 as test_us29
+=======
+from ProjectAgile import us07, us16, parse_gedcom_file, us33, us27
+import test_us29 as test_us29
+>>>>>>> master:userStories_test.py
 
 # Helper function to create a mock individual
 def create_individual(id, birth_date, death_date="NA"):
@@ -58,7 +63,13 @@ def test_7_us16():
     expected_num_errors = 1
     assert len(errors) == expected_num_errors
 
-def test_8_us33():
+def test_8_us27():
+    errors = us27()
+    print(errors)
+    expected_num_errors = 2
+    assert len(errors) == expected_num_errors
+
+def test_9_us33():
     # Test case 8: Check if there is one orphaned child
     individuals, families = parse_gedcom_file("sera.ged")
     errors = us33(individuals, families)

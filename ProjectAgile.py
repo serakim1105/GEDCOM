@@ -157,7 +157,7 @@ def parse_gedcom_file(filename):
     print("\nFamilies:")
     print(fam_table)
 
-    return individuals, families 
+    return individuals, families
 
 # User Story 02 - Check for Error: Birth should occur before marriage
 def us02_err(individuals, families):
@@ -298,7 +298,133 @@ def us22(individuals, families):
             errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
     return errors
 
-# list all deceased individuals
+def us27():
+    errors = []
+    filename = "sera.ged"  
+    file = open(filename, 'r')
+    lines = file.readlines()
+    
+    individuals = []
+    families = []
+    current_indi = None
+    current_fam = None
+    date_type = None
+
+    for line in lines:
+        line = line.strip()
+        # print("--> " + line)#.strip()) #remove return char for easier reading
+        
+        level, tag, is_valid, args = parse_gedcom_line(line)
+
+        if level == '0':
+            if current_indi:
+                individuals.append(current_indi)
+                current_indi = None
+            if current_fam:
+                families.append(current_fam)
+                current_fam = None
+
+            if tag == "INDI":
+                current_indi = {"ID": args, "Name": "NA", "Gender": "NA", "Birthday": "NA", "Death": "NA", "Child": "NA", "Spouse": []}
+            elif tag == "FAM":
+                current_fam = {"ID": args, "Married": "NA", "Divorced": "NA", "Husband": "NA", "HusbandName": "Unknown", "Wife": "NA", "WifeName": "Unknown", "Children": []}
+
+        if current_indi:
+            if tag == "NAME":
+                current_indi["Name"] = args
+            elif tag == "SEX":
+                current_indi["Gender"] = args
+            elif tag in ["BIRT", "DEAT"]:
+                date_type = tag
+            elif tag == "DATE" and date_type:
+                if date_type == "BIRT":
+                    current_indi["Birthday"] = args
+                elif date_type == "DEAT":
+                    current_indi["Death"] = args
+                date_type = None
+            elif tag == "FAMC":
+                current_indi["Child"] = args
+            elif tag == "FAMS":
+                current_indi["Spouse"].append(args)
+            elif level == "0":
+                indi_id = line.split()[1]
+                current_indi["ID"] = indi_id
+
+        if current_fam:
+            if tag == "DATE":
+                date_type = tag
+                current_fam["Married"] = args
+            elif tag == "DATE":
+                date_type = tag
+                current_fam["Divorced"] = args
+            elif tag == "HUSB":
+                current_fam["Husband"] = args
+                for indi in individuals:
+                    if indi["ID"] == args:
+                        current_fam["HusbandName"] = indi["Name"]
+            elif tag == "WIFE":
+                current_fam["Wife"] = args
+                for indi in individuals:
+                    if indi["ID"] == args:
+                        current_fam["WifeName"] = indi["Name"]
+            elif tag == "CHIL":
+                current_fam["Children"].append(args)
+            else: 
+                if level == "0":
+                    tokens = line.split()
+                    current_fam["ID"] = tokens[1]
+
+    if current_indi:
+        # print(f'{current_indi["ID"]}')
+        individuals.append(current_indi)
+    if current_fam:
+        families.append(current_fam)
+
+    for indi in individuals:
+        if not indi["Spouse"]:
+            indi["Spouse"] = ["NA"]
+
+    # Print the individuals and families
+
+    indi_table = PrettyTable()
+    indi_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"]
+    
+    for indi in individuals:
+        alive = indi['Death'] == "NA"
+        if alive:
+            age = calculate_age(indi["Birthday"])
+        else: 
+            age = -1
+            errors.append(f'No age listed for {indi["ID"]}')
+        indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
+            
+    return errors
+
+#US28: Order siblings by age in decreasing order (oldest to youngest)
+def us28(individuals, families):
+    sibling = []
+    print(" ")
+    print("US28: Order siblings by age in decreasing order (oldest to youngest)")
+    for fam in families:
+        childrenFam = fam["ID"]
+        for indi in individuals:  
+            if(childrenFam == indi["Child"]):
+                id = indi['ID']
+                birthday = indi['Birthday']
+                death_date = indi['Death']
+                if(death_date != "NA"):
+                    age = calculate_age(birthday, death_date)
+                    name = indi["Name"]
+                    sibling.append(f'{age}:{name}')
+                    sibling.sort(reverse = True) 
+                if(death_date == "NA"):
+                    age = calculate_age(birthday)
+                    name = indi["Name"]
+                    sibling.append(f'{age}:{name}')
+                    sibling.sort(reverse = True) 
+    return sibling
+
+#Check for US29: List all deceased individuals
 def us29(individuals):
     deceased_individuals = []
     for indi in individuals:
@@ -308,7 +434,7 @@ def us29(individuals):
             deceased_individuals.append(f'Individual: {indi["ID"]}: {name}\n')
     return deceased_individuals       
 
-## List all living married individuals
+##Check for US30: List all living married individuals
 def us30(individuals):
     errors = []
     living_married_individuals = []
@@ -324,7 +450,7 @@ def us30(individuals):
     print ("\n".join(living_married_individuals)) 
     return errors
 
-#List all individuals who are 30 and have never been married
+#Check for US31: List all individuals who are 30 and have never been married
 def us31(individuals):
     errors = []
     living_single_individuals = []
@@ -406,6 +532,115 @@ def us36(individuals):
                 listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
+
+#US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
+def us37(individuals,families):
+    listName=[]
+    diedId =[]
+    theirFam=[]
+    alive = set()
+    idName ={}
+    diedLast = us36(individuals)
+    for val in diedLast:
+        id = val.split('ID: ')[1]
+        id = id.split(' ')[0]
+        diedId.append(id)
+    # print(diedId)
+    for indi in individuals:
+        if indi['Death'] == 'NA':
+            alive.add(indi['ID']) 
+        idName[indi['ID']] = indi['Name']
+    # check if people died in last 30days have spose and descendants and append it to theirFam list
+    for person in diedId:
+        for family in families:
+            curFam =[]
+            if family['Husband'] == person:
+                curFam.append(family['Husband'])
+                if family['Wife'] in alive:
+                    curFam.append(family['Wife'])
+                else:
+                    curFam.append('NA')
+                if len(family['Children']) > 0:
+                    for child in family['Children']:
+                        if child in alive:
+                            curFam.append(child)
+            elif family['Wife'] == person:
+                curFam.append(family['Wife'])
+                if family['Husband'] in alive:
+                    curFam.append(family['Husband'])
+                else:
+                    curFam.append('NA')
+                if len(family['Children']) > 0:
+                    for child in family['Children']:
+                        if child in alive:
+                            curFam.append(child)
+            if curFam not in theirFam and len(curFam) >0 :
+                theirFam.append(curFam)
+
+        for val in theirFam:
+            indi_id = val[0]
+            indi_name = idName.get(indi_id, "NA")
+            curFamName =[]
+            curFamName.append(f'INDIVIDUAL: {indi_id} Name: {indi_name} died in the last 30 days')
+            
+            if len(val) > 1:
+                curFamName.append(f'Thier family:')
+                if val[1] != 'NA':
+                    spouse_id = val[1]
+                    spouse_name = idName.get(spouse_id, "NA")
+                    curFamName.append(f'\tSpouse: {spouse_id} Name: {spouse_name}')
+                
+                for child_id in val[2:]:
+                    child_name = idName.get(child_id, "NA")
+                    curFamName.append(f'\tChild: {child_id} Name: {child_name}') 
+                if len(curFamName) < 3:
+                    curFamName.append('They do not have living spouse or desendants')
+
+            else:
+                curFamName.append('They do not have living spouse or desendants')
+
+            listName.append(curFamName)
+            # print(curFamName)
+            # print(listName)
+    return listName
+
+#US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
+def us38(individuals):
+    
+    listName = []
+    today = datetime.now().date()
+    for indi in individuals:
+        birth = indi['Birthday']
+        if indi['Death'] == 'NA' and birth != 'NA':
+            birthdate = datetime.strptime(birth, "%d %b %Y").date()
+            birthday = birthdate.replace(year=today.year)
+            if 0 <= (birthday - today).days <= 30:
+                # print(birthday-today)
+                listName.append(f'INDIVIDUAL: US38: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
+    return listName
+
+#US39: List upcoming anniversaries
+def us39(families):
+    anniversaries = []
+    todayMonth = (datetime.now().date().month) * 31
+    todayDay = (datetime.now().date().day) 
+    todayYear = (datetime.now().date().year)
+    today = abs((todayMonth + todayDay))
+    for fam in families:
+        weddingDate = fam["Married"]
+        if weddingDate != 'NA':
+            AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
+            AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
+            AnniversaryYear =  (datetime.strptime(weddingDate, "%d %b %Y").date().year)
+            AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
+            if (today < AnniversaryDate) :
+                anniversaries.append(weddingDate)
+            if (todayYear < AnniversaryYear) :
+                print("Wedding did not happen yet")
+    return anniversaries
+
+
+
 def main():
     # To read file from command line
     if len(sys.argv) != 2:
@@ -473,6 +708,34 @@ def main():
     list_us36 = us36(individuals)
     print_list(list_us36, 'US36', 'Individuals who died in the last 30 days')
         
+
+    list_us37 = us37(individuals,families)
+    if list_us37:
+        print('\nUS37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days')
+        for val in list_us37:
+            for output in val:
+                print("\n",output)
+    else:
+        print('\nUS37: No one died in the last 30 days.')
+
+    list_us38 = us38(individuals)
+    if list_us38:
+        print('\nUS38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days')
+        for val in list_us38:
+            print("\n",val)
+    else:
+        print('\nUS38: No one has birthyday in the next 30 days.')
+
+    #Check for US39: List Upcoming Anniversaries
+    print(" ")
+    print("US39")
+    weddingDate = us39(families)
+    if weddingDate:
+        for wedding in weddingDate:
+            print(wedding)
+    else:
+        print('No anniversaries/Anniversary date is not after today')
+
 
 if __name__ == "__main__":
     main()
