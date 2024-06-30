@@ -408,13 +408,20 @@ def us28(individuals, families):
     for fam in families:
         childrenFam = fam["ID"]
         for indi in individuals:  
-            if(fam["ID"] == indi["Child"]):
+            if(childrenFam == indi["Child"]):
                 id = indi['ID']
                 birthday = indi['Birthday']
-                age = calculate_age(birthday)
-                name = indi["Name"]
-                sibling.append(f'{age}:{name}')
-                sibling.sort(reverse = True) 
+                death_date = indi['Death']
+                if(death_date != "NA"):
+                    age = calculate_age(birthday, death_date)
+                    name = indi["Name"]
+                    sibling.append(f'{age}:{name}')
+                    sibling.sort(reverse = True) 
+                if(death_date == "NA"):
+                    age = calculate_age(birthday)
+                    name = indi["Name"]
+                    sibling.append(f'{age}:{name}')
+                    sibling.sort(reverse = True) 
     return sibling
 
 #Check for US29: List all deceased individuals
