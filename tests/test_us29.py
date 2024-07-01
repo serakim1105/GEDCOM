@@ -1,7 +1,7 @@
 import pytest
 from ProjectAgile import us29
 
-
+# List all deceased individuals
 # Helper function to create a mock individual
 def create_indi(id, name, death_date="NA"):
     return {
@@ -20,7 +20,7 @@ individuals.append(indi02)
 individuals.append(indi03)
 
 def test_1_us29(): 
-    assert us29(individuals) == ["Individual: I01: Christine Anthony\n", "Individual: I02: Sriya Bhamidipati\n"] #should pass
+    assert us29(individuals) == ["Individual: I01: Christine Anthony", "Individual: I02: Sriya Bhamidipati"] #should pass
 
 def test_2_us29():
     assert len(us29(individuals)) == 2

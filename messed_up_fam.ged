@@ -52,7 +52,7 @@
 1 FAMC F01
 1 NOTE 2nd son of Sam and Jane.
 1 FAMS F02
-2 NOTE Previous surname Smith. New role from daughter in F01 to mother in F02.
+0 NOTE GEN2
 0 NOTE GEN2
 0 I06 INDI
 1 NAME Ted /Thompson/

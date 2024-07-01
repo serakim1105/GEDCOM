@@ -435,7 +435,7 @@ def us29(individuals):
         if indi["Death"] != "NA":
             # id = indi["ID"]
             name = indi["Name"].replace("/", "")
-            deceased_individuals.append(f'Individual: {indi["ID"]}: {name}\n')
+            deceased_individuals.append(f'Individual: {indi["ID"]}: {name}')
     return deceased_individuals       
 
 ##Check for US30: List all living married individuals
@@ -656,172 +656,107 @@ def main():
     individuals, families = parse_gedcom_file(filename)
     #print("\n".join(us02(individuals, families)))
 
-    # Check for US02 errors
+    # Function to print out list of errors or anomalies for a user story
+    # Parameters: variable storing result of user story function,
+    # 'user story number', 'Errors' (default) or 'Anomalies'
+    def print_errors(us_result, us_num, errs_or_anoms = 'Errors'):
+        if us_result:
+            #print(f"\n\x1B[4m{us_num} {errs_or_anoms}\x1B[0m")
+            print(f"\n__{us_num} {errs_or_anoms}__")
+
+            for r in us_result:
+                print(r)
+        else:
+            print(f"\n__No {errs_or_anoms} in {us_num}__.")
+
+    def print_list(us_result, us_num, list_description):
+        if us_result:
+            print(f"\n__{us_num}__")
+            print(f"{list_description}:")
+            for r in us_result:
+                print(r)
+        else:
+            print(f"\n__{us_num}__")
+            print(f"No {list_description}.")
+
+    # The following section validates the data in the GEDCOM file
+    # and prints out any discrepancies
+
+    # Check for US02: Birth before marriage
     errors_us02 = us02_err(individuals, families)
-    if errors_us02:
-        print(f"\nErrors in US02:")
-        for error in errors_us02:
-            print(error)
-    else:
-        print(f"\nNo errors in US02")
+    print_errors(errors_us02, 'US02')
 
-    # Check for US02 anomalies
+    # Check for US02: Birth before marriage
     anomalies_us02 = us02_anom(individuals, families)    
-    if anomalies_us02:
-        print(f"\nAnomalies in US02:")
-        for anomaly in anomalies_us02:
-            print(anomaly)
-    else:
-        print(f"\nNo anomalies in US02")
+    print_errors(anomalies_us02, 'US02', 'Anomalies')
 
-    # Check for US07 errors
+    # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
-    if errors_us07:
-        print(f"\nErrors in US07:")
-        for error in errors_us07:
-            print(error)
-    else:
-        print(f"\nNo errors in us07")
+    print_errors(errors_us07, 'US07')
 
-    #Check for US12 errors
+    # Check for US12: Parents not too old
     too_old = us12(individuals, families)
-    if too_old:
-        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
-        for parent in too_old:
-            print(parent)
-    else:
-        print(f"\nNone of the parents are too old to have kids in US12")
+    print_errors(too_old, 'US12: Parents that are way too old to have kids')
 
-    # Check for US16 errors
+    # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
-    if errors_us16:
-        print(f"\nErrors in US16:")
-        for error in errors_us16:
-            print(error)
-    else:
-        print(f"\nNo errors in US16")
+    print_errors(errors_us16, 'US16')
 
-    #Check for US22 errors
-    errors = us22(individuals, families)
-    if errors:
-        print(f"\nErrors in US22:")
-        for error in errors:
-            print(error)
-    else:
-        print('\nNo Errors in US22')
-
-    # Check for US02 anomalies
-    anomalies_us02 = us02_anom(individuals, families)    
-    if anomalies_us02:
-        print(f"\nAnomalies in US02:")
-        for anomaly in anomalies_us02:
-            print(anomaly)
-    else:
-        print(f"\nNo anomalies in US02")
-
-    # Check for US12: Parents are Not Too Old
-    too_old = us12(individuals, families)
-    if too_old:
-        print(f"\nErrors in US12: List of miracle parents that are way too old to have kids:")
-        for parent in too_old:
-            print(parent)
-    else:
-        print(f"\nNone of the parents are too old to have kids in US12")
+    # Check for US22: Unique IDs
+    errors_us22 = us22(individuals, families)
+    print_errors(errors_us22, 'US22')
 
     # Check for US27: Include individual ages
     errors_us27 = us27()
-    if errors_us27:
-        print(f"\nErrors in US27:")
-        for error in errors_us27:
-            print(error)
-    else:
-        print('\nNo Errors in US27')
-
+    print_errors(errors_us27, 'US27')
 
     #Check for US28: Order Siblings By Age
     sibling = us28(individuals, families)
-    if sibling:
-        print("Siblings list")
-        print(" ")
-        for value in sibling:
-            print(value)
-            print(" ")
+    print_list(sibling, 'US28', 'Siblings')
 
-    #US29: List all deceased individuals
+    # Check for US29: List deceased
     deceased = us29(individuals)
-    if deceased:
-        print("\nUS29: List of all deceased individuals:\n")
-        print("\n".join(us29(individuals)))    
-    else:
-        print(f"\nUS29: No deceased individuals")
+    print_list(deceased, 'US29', 'Deceased individuals')
 
-    #Check for US30 errors
+    # Check for US30: List living married
     errors_us30 = us30(individuals)
-    if errors_us30:
-        for error in errors_us30:
-            print("\n",error)
-    else:
-        print('No Error in US30')
+    print_errors(errors_us30, 'US30')
 
-    #Check for US31 errors
+    # Check for US31: List living single
     errors_us31 = us31(individuals)
-    if errors_us31:
-        for error in errors_us31:
-            print("\n",error)
-    else:
-        print('No Error in US31')
+    print_errors(errors_us31, 'US31')
 
-    # Check for US33 error
+    # Check for US33: List orphans
     errors_us33 = us33(individuals,families)
-    if errors_us33:
-        for error in errors_us33:
-            print("\n",error)
-    else:
-        print("US33: No orphans under 18 years old")
+    print_list(errors_us33, 'US33', 'Orphans under 18 years old')
 
+    # Check for US35: List recent births
     list_us35 = us35(individuals)
-    if list_us35:
-        print('\n US35: List of all people in a GEDCOM file who were born in the last 30 days. ')
-        for val in list_us35:
-            print("\n",val)
-    else:
-        print('\nUS35: No one was born in the last 30 days.')
+    print_list(list_us35, 'US35', 'Indivuduals who were born in the last 30 days')
 
+    # Check for US36: List recent deaths
     list_us36 = us36(individuals)
-    if list_us36:
-        print('\nUS36: List of all people in a GEDCOM file who died in the last 30 days')
-        for val in list_us36:
-            print("\n",val)
-    else:
-        print('\nUS36: No one died in the last 30 days.')
-
+    print_list(list_us36, 'US36', 'Individuals who died in the last 30 days')
+        
+    # Check for US37: List recent survivors
     list_us37 = us37(individuals,families)
+    #print_list(list_us37, 'US37', 'Living spouses and descendants who died in the last 30 days')
     if list_us37:
-        print('\nUS37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days')
+        print('\n__US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days__')
         for val in list_us37:
             for output in val:
                 print("\n",output)
     else:
         print('\nUS37: No one died in the last 30 days.')
 
+    # Check for US38: List upcoming birthdays
     list_us38 = us38(individuals)
-    if list_us38:
-        print('\nUS38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days')
-        for val in list_us38:
-            print("\n",val)
-    else:
-        print('\nUS38: No one has birthyday in the next 30 days.')
+    print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
     #Check for US39: List Upcoming Anniversaries
-    print(" ")
-    print("US39")
     weddingDate = us39(families)
-    if weddingDate:
-        for wedding in weddingDate:
-            print(wedding)
-    else:
-        print('No anniversaries/Anniversary date is not after today')
+    print_list(weddingDate, 'US39', 'Upcoming Anniversaries')
 
-        
+
 if __name__ == "__main__":
     main()
