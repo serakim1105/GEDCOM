@@ -657,20 +657,22 @@ def main():
     # 'user story number', 'Errors' (default) or 'Anomalies'
     def print_errors(us_result, us_num, errs_or_anoms = 'Errors'):
         if us_result:
-            print(f"\n\x1B[4m{us_num} {errs_or_anoms}\x1B[0m")
+            #print(f"\n\x1B[4m{us_num} {errs_or_anoms}\x1B[0m")
+            print(f"\n__{us_num} {errs_or_anoms}__")
+
             for r in us_result:
                 print(r)
         else:
-            print(f"\n\x1B[4m No {errs_or_anoms} in {us_num}\x1B[0m.")
+            print(f"\n\__No {errs_or_anoms} in {us_num}__.")
 
     def print_list(us_result, us_num, list_description):
         if us_result:
-            print(f"\n\x1B[4m{us_num}\x1B[0m")
+            print(f"\n__{us_num}__")
             print(f"{list_description}:")
             for r in us_result:
                 print(r)
         else:
-            print(f"\n\x1B[4m{us_num}\x1B[0m")
+            print(f"\n__{us_num}__")
             print(f"No {list_description}.")
 
     # The following section validates the data in the GEDCOM file
