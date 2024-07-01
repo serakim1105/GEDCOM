@@ -431,7 +431,7 @@ def us29(individuals):
         if indi["Death"] != "NA":
             # id = indi["ID"]
             name = indi["Name"].replace("/", "")
-            deceased_individuals.append(f'Individual: {indi["ID"]}: {name}\n')
+            deceased_individuals.append(f'Individual: {indi["ID"]}: {name}')
     return deceased_individuals       
 
 ##Check for US30: List all living married individuals
@@ -657,84 +657,92 @@ def main():
     # 'user story number', 'Errors' (default) or 'Anomalies'
     def print_errors(us_result, us_num, errs_or_anoms = 'Errors'):
         if us_result:
-            print(f"\n{errs_or_anoms} in {us_num}:")
+            print(f"\n\x1B[4m{us_num} {errs_or_anoms}\x1B[0m")
             for r in us_result:
                 print(r)
         else:
-            print(f"\nNo {errs_or_anoms} in {us_num}.")
+            print(f"\n\x1B[4m No {errs_or_anoms} in {us_num}\x1B[0m.")
 
     def print_list(us_result, us_num, list_description):
         if us_result:
-            print(f"\n{list_description} in {us_num}:")
+            print(f"\n\x1B[4m{us_num}\x1B[0m")
+            print(f"{list_description}:")
             for r in us_result:
                 print(r)
         else:
-            print(f"\nNo {list_description} in {us_num}.")
+            print(f"\n\x1B[4m{us_num}\x1B[0m")
+            print(f"No {list_description}.")
 
-    # Check for user story errors and/or print user story result list
+    # The following section validates the data in the GEDCOM file
+    # and prints out any discrepancies
+
+    # Check for US02: Birth before marriage
     errors_us02 = us02_err(individuals, families)
     print_errors(errors_us02, 'US02')
 
+    # Check for US02: Birth before marriage
     anomalies_us02 = us02_anom(individuals, families)    
     print_errors(anomalies_us02, 'US02', 'Anomalies')
 
+    # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
     print_errors(errors_us07, 'US07')
 
+    # Check for US12: Parents not too old
     too_old = us12(individuals, families)
     print_errors(too_old, 'US12: Parents that are way too old to have kids')
 
+    # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
     print_errors(errors_us16, 'US16')
 
+    # Check for US22: Unique IDs
     errors_us22 = us22(individuals, families)
     print_errors(errors_us22, 'US22')
 
+    # Check for US27: Include individual ages
+    errors_us27 = us27()
+    print_errors(errors_us27, 'US27')
+
+    #Check for US28: Order Siblings By Age
+    sibling = us28(individuals, families)
+    print_list(sibling, 'US28', 'Siblings')
+
+    # Check for US29: List deceased
     deceased = us29(individuals)
     print_list(deceased, 'US29', 'Deceased individuals')
 
+    # Check for US30: List living married
     errors_us30 = us30(individuals)
     print_errors(errors_us30, 'US30')
 
+    # Check for US31: List living single
     errors_us31 = us31(individuals)
     print_errors(errors_us31, 'US31')
 
+    # Check for US33: List orphans
     errors_us33 = us33(individuals,families)
     print_list(errors_us33, 'US33', 'Orphans under 18 years old')
 
+    # Check for US35: List recent births
     list_us35 = us35(individuals)
     print_list(list_us35, 'US35', 'Indivuduals who were born in the last 30 days')
 
+    # Check for US36: List recent deaths
     list_us36 = us36(individuals)
     print_list(list_us36, 'US36', 'Individuals who died in the last 30 days')
         
-
+    # Check for US37: List recent survivors
     list_us37 = us37(individuals,families)
-    if list_us37:
-        print('\nUS37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days')
-        for val in list_us37:
-            for output in val:
-                print("\n",output)
-    else:
-        print('\nUS37: No one died in the last 30 days.')
+    print_list(list_us37, 'US37', 'Living spouses and descendants who died in the last 30 days')
 
+    # Check for US38: List upcoming birthdays
     list_us38 = us38(individuals)
-    if list_us38:
-        print('\nUS38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days')
-        for val in list_us38:
-            print("\n",val)
-    else:
-        print('\nUS38: No one has birthyday in the next 30 days.')
+    print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
     #Check for US39: List Upcoming Anniversaries
-    print(" ")
-    print("US39")
     weddingDate = us39(families)
-    if weddingDate:
-        for wedding in weddingDate:
-            print(wedding)
-    else:
-        print('No anniversaries/Anniversary date is not after today')
+    print_list(weddingDate, 'US39', 'Upcoming Anniversaries')
 
 
 if __name__ == "__main__":
