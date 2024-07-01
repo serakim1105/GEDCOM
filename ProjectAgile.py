@@ -1,6 +1,10 @@
 from datetime import datetime, timedelta
 import sys
+import os
 from prettytable import PrettyTable
+
+# importing input gedcom file from the input files folder
+inputGedFileSera = 'inputFiles/sera.ged'
 
 
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
@@ -300,7 +304,7 @@ def us22(individuals, families):
 
 def us27():
     errors = []
-    filename = "sera.ged"  
+    filename = inputGedFileSera 
     file = open(filename, 'r')
     lines = file.readlines()
     
@@ -651,9 +655,11 @@ def main():
         print("Please enter an input file name when running the command")
         return
     filename = sys.argv[1]
+    inputFilePath = os.path.join('inputFiles/',filename)
+    # print(inputFilePath)
 
     # Pull out individuals and families list from parse_gedcom_file()
-    individuals, families = parse_gedcom_file(filename)
+    individuals, families = parse_gedcom_file(inputFilePath)
     #print("\n".join(us02(individuals, families)))
 
     # Check for US02 errors
