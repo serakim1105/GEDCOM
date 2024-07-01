@@ -736,7 +736,14 @@ def main():
         
     # Check for US37: List recent survivors
     list_us37 = us37(individuals,families)
-    print_list(list_us37, 'US37', 'Living spouses and descendants who died in the last 30 days')
+    #print_list(list_us37, 'US37', 'Living spouses and descendants who died in the last 30 days')
+    if list_us37:
+        print('\n__US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days__')
+        for val in list_us37:
+            for output in val:
+                print("\n",output)
+    else:
+        print('\nUS37: No one died in the last 30 days.')
 
     # Check for US38: List upcoming birthdays
     list_us38 = us38(individuals)
