@@ -663,7 +663,7 @@ def main():
             for r in us_result:
                 print(r)
         else:
-            print(f"\n\__No {errs_or_anoms} in {us_num}__.")
+            print(f"\n__No {errs_or_anoms} in {us_num}__.")
 
     def print_list(us_result, us_num, list_description):
         if us_result:
