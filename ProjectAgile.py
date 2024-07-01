@@ -416,12 +416,16 @@ def us28(individuals, families):
                     age = calculate_age(birthday, death_date)
                     name = indi["Name"]
                     sibling.append(f'{age}:{name}')
-                    sibling.sort(reverse = True) 
                 if(death_date == "NA"):
                     age = calculate_age(birthday)
                     name = indi["Name"]
                     sibling.append(f'{age}:{name}')
-                    sibling.sort(reverse = True) 
+    def extractAge(sibling):
+        ageStr = sibling.split(':')[0]
+        ageInt = int(ageStr)
+        return ageInt      
+    sibling.sort(key = extractAge,reverse=True)
+
     return sibling
 
 #Check for US29: List all deceased individuals
