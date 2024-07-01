@@ -24,5 +24,5 @@ def test_4_us39():
     assert us39([date4])
 
 def test_5_us39():
-    date5 = create_date("1 JUL 2000")
+    date5 = create_date("15 JUL 2000")
     assert us39([date5])

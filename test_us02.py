@@ -1,6 +1,8 @@
 import pytest
 from ProjectAgile import us02_err, parse_gedcom_file
 from datetime import datetime
+# importing input gedcom file from the input files folder
+inputGedFile = 'inputFiles/messed_up_fam.ged'
 
 # Sample data from sera.ged
 individuals = [
@@ -43,7 +45,7 @@ def test_4_us02():
 
 # test some marriages before birthday
 def test_5_us02():
-    individuals, families_tmp5 = parse_gedcom_file("messed_up_fam.ged")
+    individuals, families_tmp5 = parse_gedcom_file(inputGedFile)
     families_tmp5[2]['Married'] = '1 MAR 1909'
     result = us02_err(individuals, families_tmp5)
     assert len(result) == 2, "Expected 2 results: F01 Sam Smith (from test_01_us02) born 1851, F03 Lyna Lester born 1910"
@@ -55,7 +57,7 @@ def test_6_us02():
 
 # test 
 def test_7_us02():
-    individuals, families = parse_gedcom_file("messed_up_fam.ged")
+    individuals, families = parse_gedcom_file(inputGedFile)
     errors = us02_err(individuals, families)
     print(errors)
     assert len(errors) == 1

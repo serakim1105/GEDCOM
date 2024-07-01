@@ -1,7 +1,8 @@
 import pytest
 from datetime import datetime, timedelta
 from ProjectAgile import us35, us36, parse_gedcom_file
-
+# importing input gedcom file from the input files folder
+inputGedFile= 'inputFiles/navya.ged'
 # Helper function to create a mock individual
 def create_individual(id, birth_date, name="NA", death_date="NA" ):
     return {
@@ -45,7 +46,7 @@ def test_5_us36():
 
 def test_6_us35():
     # Test case 6: Check if expected 1 error come out of navya.ged from Pro3_2.py for US35
-    individuals, _ = parse_gedcom_file("navya.ged")
+    individuals, _ = parse_gedcom_file(inputGedFile)
     errors = us35(individuals)
     print(errors) 
     expected_num_errors = 1
@@ -53,7 +54,7 @@ def test_6_us35():
 
 def test_7_us36():
     # Test case 7: Check if expected 1 error come out of navya.ged for US36
-    individuals, _ = parse_gedcom_file("navya.ged")
+    individuals, _ = parse_gedcom_file(inputGedFile)
     errors = us36(individuals)
     print(errors)
     expected_num_errors = 1

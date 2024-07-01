@@ -2,7 +2,8 @@ import pytest
 from datetime import datetime
 from ProjectAgile import us07, us16, parse_gedcom_file, us33, us27
 import test_us29 as test_us29
-
+# importing input gedcom file from the input files folder
+inputGedFile = 'inputFiles/sera.ged'
 # Helper function to create a mock individual
 def create_individual(id, birth_date, death_date="NA"):
     return {
@@ -44,7 +45,7 @@ def test_5_us07():
 
 def test_6_us07():
     # Test case 6: Check if expected 2 errors come out of sera.ged as tested from Pro3_2.py
-    individuals, _ = parse_gedcom_file("sera.ged")
+    individuals, _ = parse_gedcom_file(inputGedFile)
     errors = us07(individuals)
     print(errors) 
     expected_num_errors = 1
@@ -52,7 +53,7 @@ def test_6_us07():
 
 def test_7_us16():
     # Test case 7: 
-    individuals, families = parse_gedcom_file("sera.ged")
+    individuals, families = parse_gedcom_file(inputGedFile)
     errors = us16(individuals, families)
     print(errors)
     expected_num_errors = 1
@@ -66,7 +67,7 @@ def test_8_us27():
 
 def test_9_us33():
     # Test case 8: Check if there is one orphaned child
-    individuals, families = parse_gedcom_file("sera.ged")
+    individuals, families = parse_gedcom_file(inputGedFile)
     errors = us33(individuals, families)
     print(errors)
     expected_num_errors = 1
