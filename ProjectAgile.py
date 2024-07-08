@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import sys
 from prettytable import PrettyTable
 
@@ -203,6 +203,51 @@ def us02_anom(individuals, families):
             if wdob_plus10 > fam['Married']:
                 anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
     return anomalies
+
+#US03 - Birth before Death
+def us03(individuals):
+    birthBeforeDeath = []
+    for indi in individuals:
+        birth_date_str = indi['Birthday']
+        death_date_str = indi['Death']
+        indi_name = indi["Name"]
+        if birth_date_str != "NA" and death_date_str != "NA":
+            #today info
+            todayYear = (datetime.now().date().year)
+            today = datetime.now().timetuple().tm_yday 
+            print(today)
+            #birth info
+            birthMonth = (datetime.strptime(birth_date_str, "%d %b %Y").date().month) * 31
+            birthDay =  (datetime.strptime(birth_date_str, "%d %b %Y").date().day)
+            birthYear =  (datetime.strptime(birth_date_str, "%d %b %Y").date().year)
+            birthDate = abs((birthDay + birthMonth + birthYear))
+            #death info
+            deathMonth = (datetime.strptime(death_date_str, "%d %b %Y").date().month) * 31
+            deathDay =  (datetime.strptime(death_date_str, "%d %b %Y").date().day)
+            deathYear =  (datetime.strptime(death_date_str, "%d %b %Y").date().year)
+            deathDate = abs(deathDay + deathMonth + deathYear)
+            today = datetime.today()
+            if ((deathMonth, deathDay, deathYear) > (birthMonth, birthDay, birthYear)):
+                birthBeforeDeath.append(f'{indi_name} BirthDay: {birth_date_str}, DeathDay: {death_date_str}')
+    return birthBeforeDeath
+
+#US05 - Marriage before Death
+def us05(individuals, families):
+    marriageBeforeDeath = []
+    for fam in families:
+        wedding_date_str = fam['Married']
+        husbandName = fam['HusbandName']
+        wifeName = fam['WifeName']
+        weddingDate = datetime.strptime(wedding_date_str, "%d %b %Y").timetuple().tm_yday 
+        for indi in individuals:
+            husband_deathDay_str = indi['Death']
+            wife_deathDay_str = indi['Death']
+            if husbandName == indi['Name'] and wifeName == indi['Name'] and husband_deathDay_str != "NA" and wife_deathDay_str != "NA":
+                husband_deathDay = datetime.strptime(husband_deathDay_str, "%d %b %Y").timetuple().tm_yday 
+                wife_deathDay = datetime.strptime(wife_deathDay_str, "%d %b %Y").timetuple().tm_yday 
+                if weddingDate < husband_deathDay and weddingDate < wife_deathDay:
+                    marriageBeforeDeath.append(weddingDate)
+    return marriageBeforeDeath
 
 def us07(individuals):
     errors = []
@@ -626,21 +671,16 @@ def us38(individuals):
 #US39: List upcoming anniversaries
 def us39(families):
     anniversaries = []
-    todayMonth = (datetime.now().date().month) * 31
-    todayDay = (datetime.now().date().day) 
     todayYear = (datetime.now().date().year)
-    today = abs((todayMonth + todayDay))
+    today = datetime.now().timetuple().tm_yday 
     for fam in families:
         weddingDate = fam["Married"]
         if weddingDate != 'NA':
-            AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
-            AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
-            AnniversaryYear =  (datetime.strptime(weddingDate, "%d %b %Y").date().year)
-            AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
-            if (today < AnniversaryDate) :
-                anniversaries.append(weddingDate)
-            if (todayYear < AnniversaryYear) :
-                print("Wedding did not happen yet")
+             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
+             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
+             AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
+        if (today < AnniversaryDate):
+            anniversaries.append(f'{weddingDate}')
     return anniversaries
 
 
@@ -689,6 +729,18 @@ def main():
     # Check for US02: Birth before marriage
     anomalies_us02 = us02_anom(individuals, families)    
     print_errors(anomalies_us02, 'US02', 'Anomalies')
+
+    #Check for US03: Birth before death
+    birthDates = us03(individuals)    
+    print_list(birthDates, 'US03', 'Birthdays before Deathdays')
+    
+    #Check for US05: Marriage Before Either Spouse Death
+    weddingBeforeDeath = us05(individuals, families)
+    if weddingBeforeDeath:
+        print('\nUS05', 'WeddingDates Before Either Spouse DeathDays')
+        print(" ")
+    for weddingDates in weddingBeforeDeath:
+        print(weddingDates)
 
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
@@ -749,13 +801,17 @@ def main():
     else:
         print('\nUS37: No one died in the last 30 days.')
 
-    # Check for US38: List upcoming birthdays
+   #Check for US38: List upcoming birthdays
     list_us38 = us38(individuals)
     print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
     #Check for US39: List Upcoming Anniversaries
     weddingDate = us39(families)
-    print_list(weddingDate, 'US39', 'Upcoming Anniversaries')
+    if weddingDate:
+        print('\nUS39', 'Upcoming Anniversaries')
+        print(" ")
+    for anniversary in weddingDate:
+        print(anniversary)
 
 
 if __name__ == "__main__":
