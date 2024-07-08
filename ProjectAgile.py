@@ -672,7 +672,7 @@ def us38(individuals):
 def us39(families):
     anniversaries = []
     todayYear = (datetime.now().date().year)
-    today = datetime.now().timetuple().tm_yday 
+    today = abs((todayMonth + todayDay))
     for fam in families:
         weddingDate = fam["Married"]
         if weddingDate != 'NA':
@@ -682,8 +682,6 @@ def us39(families):
         if (today < AnniversaryDate):
             anniversaries.append(f'{weddingDate}')
     return anniversaries
-
-
 
 def main():
     # To read file from command line
@@ -805,13 +803,9 @@ def main():
     list_us38 = us38(individuals)
     print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
-    #Check for US39: List Upcoming Anniversaries
+     #Check for US39: List Upcoming Anniversaries
     weddingDate = us39(families)
-    if weddingDate:
-        print('\nUS39', 'Upcoming Anniversaries')
-        print(" ")
-    for anniversary in weddingDate:
-        print(anniversary)
+    print_list(weddingDate, 'US39', 'Upcoming Anniversaries')
 
 
 if __name__ == "__main__":
