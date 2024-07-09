@@ -99,11 +99,20 @@ def parse_gedcom_file(filename):
 
         if current_fam:
             if tag == "DATE":
-                date_type = tag
-                current_fam["Married"] = args
-            elif tag == "DATE":
-                date_type = tag
-                current_fam["Divorced"] = args
+                if date_type == "MARR":
+                    current_fam["Married"] = args
+                elif date_type == "DIV":
+                    current_fam["Divorced"] = args
+            elif tag == "MARR":
+                date_type = "MARR"
+            elif tag == "DIV":
+                date_type = "DIV"
+            # if tag == "DATE":
+            #     date_type = tag
+            #     current_fam["Married"] = args
+            # elif tag == "DATE":
+            #     date_type = tag
+            #     current_fam["Divorced"] = args
             elif tag == "HUSB":
                 current_fam["Husband"] = args
                 for indi in individuals:
@@ -224,8 +233,31 @@ def us07(individuals):
     return errors
 #US06 Divorce can only occur before death of both spouses
 def us06(individuals, families):
+    familyId =[]
     errors = []
-
+    idDeath ={}
+    def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
+    def countDays(member, divorceDate, famId):
+        if member in idDeath:
+            diff = str_to_date(idDeath[member]) - str_to_date(divorceDate)
+            diff = str(diff).split(' ')[0]
+            if int(diff) < 0 :
+                if famId not in familyId:
+                    familyId.append(famId)
+                return True   
+        return False
+       
+    for indi in individuals:
+        if indi['Death'] != 'NA':
+            idDeath[indi['ID']] = indi['Death']
+    print("US06",familyId)
+    for fam in families:
+        if fam['Divorced'] != 'NA':
+            husbandResult = countDays(fam['Husband'], fam['Divorced'], fam['ID'])
+            wifeResult = countDays(fam['Wife'], fam['Divorced'], fam['ID'])
+            if husbandResult or wifeResult:
+                errors.append(f'Error: US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
     return errors
 
 # Helper function for us09 and us10
