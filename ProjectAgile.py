@@ -223,6 +223,76 @@ def us07(individuals):
                 errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 
+# Helper function for us09 and us10
+def date_to_number(date_str):
+    if date_str == 'NA':
+        return 999999999999
+    date_object = datetime.strptime(date_str, '%d %b %Y')
+    timestamp = date_object.timestamp() 
+    
+    return timestamp  
+
+# Child should be born before death of mother and before 9 months after death of father
+def us09(individuals, families):
+    errors = []
+
+    def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
+
+    for fam in families:
+        husband_id = fam["Husband"]
+        wife_id = fam["Wife"]
+        children_ids = fam["Children"]
+        husband_death = next((indi["Death"] for indi in individuals if indi["ID"] == husband_id), None)
+        wife_death = next((indi["Death"] for indi in individuals if indi["ID"] == wife_id), None)
+
+        if husband_death and husband_death != "NA" and husband_death is not None:
+            husband_death_new = str_to_date(husband_death)
+            print(husband_death_new)
+            husband_death_plus9 = husband_death_new + timedelta(days = 274)
+            print(husband_death_plus9)
+
+            for child_id in children_ids:
+                child_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == child_id), None)
+                if child_birth:
+                    child_bir = date_to_number(child_birth)
+                    if child_bir > husband_death_plus9.timestamp():
+                        errors.append(f"US09: Family {fam['ID']}: Child {child_id} born more than 9 months after father's death.")
+
+        if wife_death:
+            for child_id in children_ids:
+                child_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == child_id), None)
+                if child_birth:
+                    child_bir = date_to_number(child_birth)
+                    if child_bir > date_to_number(wife_death):
+                        errors.append(f"US09: Family {fam['ID']}: Child {child_id} born after mother's death.")
+
+    return errors
+
+# Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
+def us10(individuals, families):
+    errors = []
+    for fam in families:
+        husband_id = fam["Husband"]
+        wife_id = fam["Wife"]
+        husband_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == husband_id), None)
+        wife_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == wife_id), None)
+        married_date = fam["Married"]
+
+        def str_to_date(date_str):
+            return datetime.strptime(date_str, '%d %b %Y')
+        
+        husb_dob = str_to_date(husband_birth)
+        wife_dob = str_to_date(wife_birth)
+        married = str_to_date(married_date)
+
+        if husb_dob and married and married < husb_dob + timedelta(days=5110):
+            errors.append(f"US10: Family {fam['ID']}: {fam['HusbandName']} married before age 14.")
+        if wife_dob and married and married < wife_dob + timedelta(days=5110):
+            errors.append(f"US10: Family {fam['ID']}: {fam['WifeName']} married before age 14.")
+
+    return errors
+
 #Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
 def us12(individuals, families):
     too_old_parents = []
@@ -687,6 +757,14 @@ def main():
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
     print_errors(errors_us07, 'US07')
+
+    # Check for US09
+    errors_us09 = us09(individuals, families)
+    print_errors(errors_us09, 'US09')
+
+    # Check for US10
+    errors_us10 = us10(individuals, families)
+    print_errors(errors_us10, 'US10')
 
     # Check for US12: Parents not too old
     too_old = us12(individuals, families)
