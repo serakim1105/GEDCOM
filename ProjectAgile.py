@@ -222,6 +222,11 @@ def us07(individuals):
             if age >= 150:
                 errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
+#US06 Divorce can only occur before death of both spouses
+def us06(individuals, families):
+    errors = []
+
+    return errors
 
 # Helper function for us09 and us10
 def date_to_number(date_str):
@@ -753,6 +758,10 @@ def main():
     # Check for US02: Birth before marriage
     anomalies_us02 = us02_anom(individuals, families)    
     print_errors(anomalies_us02, 'US02', 'Anomalies')
+
+    # Check for US06: Divorce before death
+    errors_us06 = us06(individuals, families)
+    print_errors(errors_us06, 'US06')
 
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
