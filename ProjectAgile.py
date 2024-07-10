@@ -251,7 +251,7 @@ def us06(individuals, families):
     for indi in individuals:
         if indi['Death'] != 'NA':
             idDeath[indi['ID']] = indi['Death']
-    print("US06",familyId)
+    # print("US06",familyId)
     for fam in families:
         if fam['Divorced'] != 'NA':
             husbandResult = countDays(fam['Husband'], fam['Divorced'], fam['ID'])
