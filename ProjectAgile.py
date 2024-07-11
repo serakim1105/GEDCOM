@@ -260,6 +260,12 @@ def us06(individuals, families):
                 errors.append(f'Error: US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
     return errors
 
+#US08: Birth before marriage of parents: Children should be born after marriage of parents (and not more than 9 months after their divorce)
+def us08(individuals, families):
+    errors =[]
+    return errors
+
+
 # Helper function for us09 and us10
 def date_to_number(date_str):
     if date_str == 'NA':
@@ -798,6 +804,10 @@ def main():
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
     print_errors(errors_us07, 'US07')
+
+    # Check for US08: Birth before marriage of parents
+    errors_us08 = us08(individuals, families)
+    print_errors(errors_us08, 'US08')
 
     # Check for US09
     errors_us09 = us09(individuals, families)
