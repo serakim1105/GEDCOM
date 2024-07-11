@@ -232,12 +232,12 @@ def us07(individuals):
                 errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 #US06 Divorce can only occur before death of both spouses
+def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
 def us06(individuals, families):
     familyId =[]
     errors = []
     idDeath ={}
-    def str_to_date(date_str):
-        return datetime.strptime(date_str, '%d %b %Y')
     def countDays(member, divorceDate, famId):
         if member in idDeath:
             diff = str_to_date(idDeath[member]) - str_to_date(divorceDate)
@@ -263,6 +263,26 @@ def us06(individuals, families):
 #US08: Birth before marriage of parents: Children should be born after marriage of parents (and not more than 9 months after their divorce)
 def us08(individuals, families):
     errors =[]
+    
+    def is_valid_birth(marriage_date, birth_date, divorce_date=None):
+        if birth_date < marriage_date:
+            return False
+        if divorce_date:
+            if birth_date > divorce_date + timedelta(days=9*30):
+                return False
+        return True
+
+    for fam in families:
+        if fam['Married'] != 'NA':
+            marriage_date = str_to_date(fam['Married'])
+            divorce_date = str_to_date(fam['Divorced']) if fam['Divorced'] != 'NA' else None
+            for child_id in fam['Children']:
+                for indi in individuals:
+                    if indi['ID'] == child_id:
+                        if indi['Birthday'] != 'NA':
+                            birth_date = str_to_date(indi['Birthday'])
+                            if not is_valid_birth(marriage_date, birth_date, divorce_date):
+                                errors.append(f'Error: US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
     return errors
 
 
