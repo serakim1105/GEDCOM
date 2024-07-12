@@ -311,9 +311,9 @@ def us09(individuals, families):
 
         if husband_death and husband_death != "NA" and husband_death is not None:
             husband_death_new = str_to_date(husband_death)
-            print(husband_death_new)
+            # print(husband_death_new)
             husband_death_plus9 = husband_death_new + timedelta(days = 274)
-            print(husband_death_plus9)
+            # print(husband_death_plus9)
 
             for child_id in children_ids:
                 child_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == child_id), None)
