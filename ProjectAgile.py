@@ -213,24 +213,6 @@ def us02_anom(individuals, families):
                 anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
     return anomalies
 
-def us07(individuals):
-    errors = []
-    for indi in individuals:
-        birth_date_str = indi['Birthday']
-        death_date_str = indi['Death']
-        
-        if birth_date_str == "NA":
-            continue
-        
-        if death_date_str != "NA":
-            age_at_death = calculate_age(birth_date_str, death_date_str)
-            if age_at_death >= 150:
-                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
-        else:
-            age = calculate_age(birth_date_str)
-            if age >= 150:
-                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
-    return errors
 #US06 Divorce can only occur before death of both spouses
 def str_to_date(date_str):
         return datetime.strptime(date_str, '%d %b %Y')
@@ -260,6 +242,7 @@ def us06(individuals, families):
                 errors.append(f'Error: US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
     return errors
 
+
 #US08: Birth before marriage of parents: Children should be born after marriage of parents (and not more than 9 months after their divorce)
 def us08(individuals, families):
     errors =[]
@@ -282,6 +265,27 @@ def us08(individuals, families):
                             birth_date = str_to_date(indi['Birthday'])
                             if not is_valid_birth(marriage_date, birth_date, divorce_date):
                                 errors.append(f'Error: US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
+    return errors
+
+
+
+def us07(individuals):
+    errors = []
+    for indi in individuals:
+        birth_date_str = indi['Birthday']
+        death_date_str = indi['Death']
+        
+        if birth_date_str == "NA":
+            continue
+        
+        if death_date_str != "NA":
+            age_at_death = calculate_age(birth_date_str, death_date_str)
+            if age_at_death >= 150:
+                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
+        else:
+            age = calculate_age(birth_date_str)
+            if age >= 150:
+                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 
 
