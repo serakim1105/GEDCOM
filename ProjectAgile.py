@@ -267,8 +267,7 @@ def us08(individuals, families):
     def is_valid_birth(marriage_date, birth_date, divorce_date=None):
         if birth_date < marriage_date:
             return False
-        if divorce_date:
-            if birth_date > divorce_date + timedelta(days=9*30):
+        if divorce_date and birth_date > divorce_date + timedelta(days=274):
                 return False
         return True
 
