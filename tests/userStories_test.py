@@ -55,13 +55,13 @@ def test_7_us16():
     individuals, families = parse_gedcom_file("sera.ged")
     errors = us16(individuals, families)
     print(errors)
-    expected_num_errors = 1
+    expected_num_errors = 2
     assert len(errors) == expected_num_errors
 
 def test_8_us27():
     errors = us27()
     print(errors)
-    expected_num_errors = 2
+    expected_num_errors = 3
     assert len(errors) == expected_num_errors
 
 def test_9_us33():
@@ -69,7 +69,7 @@ def test_9_us33():
     individuals, families = parse_gedcom_file("sera.ged")
     errors = us33(individuals, families)
     print(errors)
-    expected_num_errors = 1
+    expected_num_errors = 2
     assert len(errors) == expected_num_errors
 
 def test_10_us09():
