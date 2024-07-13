@@ -99,11 +99,20 @@ def parse_gedcom_file(filename):
 
         if current_fam:
             if tag == "DATE":
-                date_type = tag
-                current_fam["Married"] = args
-            elif tag == "DATE":
-                date_type = tag
-                current_fam["Divorced"] = args
+                if date_type == "MARR":
+                    current_fam["Married"] = args
+                elif date_type == "DIV":
+                    current_fam["Divorced"] = args
+            elif tag == "MARR":
+                date_type = "MARR"
+            elif tag == "DIV":
+                date_type = "DIV"
+            # if tag == "DATE":
+            #     date_type = tag
+            #     current_fam["Married"] = args
+            # elif tag == "DATE":
+            #     date_type = tag
+            #     current_fam["Divorced"] = args
             elif tag == "HUSB":
                 current_fam["Husband"] = args
                 for indi in individuals:
@@ -249,6 +258,60 @@ def us05(individuals, families):
                     marriageBeforeDeath.append(weddingDate)
     return marriageBeforeDeath
 
+#US06 Divorce can only occur before death of both spouses
+def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
+def us06(individuals, families):
+    familyId =[]
+    errors = []
+    idDeath ={}
+    def countDays(member, divorceDate, famId):
+        if member in idDeath:
+            diff = str_to_date(idDeath[member]) - str_to_date(divorceDate)
+            diff = str(diff).split(' ')[0]
+            if int(diff) < 0 :
+                if famId not in familyId:
+                    familyId.append(famId)
+                return True   
+        return False
+    
+    for indi in individuals:
+        if indi['Death'] != 'NA':
+            idDeath[indi['ID']] = indi['Death']
+    # print("US06",familyId)
+    for fam in families:
+        if fam['Divorced'] != 'NA':
+            husbandResult = countDays(fam['Husband'], fam['Divorced'], fam['ID'])
+            wifeResult = countDays(fam['Wife'], fam['Divorced'], fam['ID'])
+            if husbandResult or wifeResult:
+                errors.append(f'Error: US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
+    return errors
+
+
+#US08: Birth before marriage of parents: Children should be born after marriage of parents (and not more than 9 months after their divorce)
+def us08(individuals, families):
+    errors =[]
+    
+    def is_valid_birth(marriage_date, birth_date, divorce_date=None):
+        if birth_date < marriage_date:
+            return False
+        if divorce_date and birth_date > divorce_date + timedelta(days=274):
+                return False
+        return True
+
+    for fam in families:
+        if fam['Married'] != 'NA':
+            marriage_date = str_to_date(fam['Married'])
+            divorce_date = str_to_date(fam['Divorced']) if fam['Divorced'] != 'NA' else None
+            for child_id in fam['Children']:
+                for indi in individuals:
+                    if indi['ID'] == child_id:
+                        if indi['Birthday'] != 'NA':
+                            birth_date = str_to_date(indi['Birthday'])
+                            if not is_valid_birth(marriage_date, birth_date, divorce_date):
+                                errors.append(f'Error: US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
+    return errors
+
 def us07(individuals):
     errors = []
     for indi in individuals:
@@ -266,6 +329,77 @@ def us07(individuals):
             age = calculate_age(birth_date_str)
             if age >= 150:
                 errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
+    return errors
+
+
+# Helper function for us09 and us10
+def date_to_number(date_str):
+    if date_str == 'NA':
+        return 999999999999
+    date_object = datetime.strptime(date_str, '%d %b %Y')
+    timestamp = date_object.timestamp() 
+    
+    return timestamp  
+
+# Child should be born before death of mother and before 9 months after death of father
+def us09(individuals, families):
+    errors = []
+
+    def str_to_date(date_str):
+        return datetime.strptime(date_str, '%d %b %Y')
+
+    for fam in families:
+        husband_id = fam["Husband"]
+        wife_id = fam["Wife"]
+        children_ids = fam["Children"]
+        husband_death = next((indi["Death"] for indi in individuals if indi["ID"] == husband_id), None)
+        wife_death = next((indi["Death"] for indi in individuals if indi["ID"] == wife_id), None)
+
+        if husband_death and husband_death != "NA" and husband_death is not None:
+            husband_death_new = str_to_date(husband_death)
+            # print(husband_death_new)
+            husband_death_plus9 = husband_death_new + timedelta(days = 274)
+            # print(husband_death_plus9)
+
+            for child_id in children_ids:
+                child_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == child_id), None)
+                if child_birth:
+                    child_bir = date_to_number(child_birth)
+                    if child_bir > husband_death_plus9.timestamp():
+                        errors.append(f"US09: Family {fam['ID']}: Child {child_id} born more than 9 months after father's death.")
+
+        if wife_death:
+            for child_id in children_ids:
+                child_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == child_id), None)
+                if child_birth:
+                    child_bir = date_to_number(child_birth)
+                    if child_bir > date_to_number(wife_death):
+                        errors.append(f"US09: Family {fam['ID']}: Child {child_id} born after mother's death.")
+
+    return errors
+
+# Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
+def us10(individuals, families):
+    errors = []
+    for fam in families:
+        husband_id = fam["Husband"]
+        wife_id = fam["Wife"]
+        husband_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == husband_id), None)
+        wife_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == wife_id), None)
+        married_date = fam["Married"]
+
+        def str_to_date(date_str):
+            return datetime.strptime(date_str, '%d %b %Y')
+        
+        husb_dob = str_to_date(husband_birth)
+        wife_dob = str_to_date(wife_birth)
+        married = str_to_date(married_date)
+
+        if husb_dob and married and married < husb_dob + timedelta(days=5110):
+            errors.append(f"US10: Family {fam['ID']}: {fam['HusbandName']} married before age 14.")
+        if wife_dob and married and married < wife_dob + timedelta(days=5110):
+            errors.append(f"US10: Family {fam['ID']}: {fam['WifeName']} married before age 14.")
+
     return errors
 
 #Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
@@ -341,6 +475,26 @@ def us22(individuals, families):
             uids.append(id)
         else:
             errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
+    return errors
+
+# Check for individuals who have the same name and birth date
+def us23(individuals):
+    # dictionary to store count of individuals with the same name and birth date
+    individual_counts = {}
+    names_birthdays = []
+    errors = []
+    
+    # Iterate through each individual
+    for individual in individuals:
+        # Format the name and birthday for easy comparison
+        formatted_name_birthday = f"{individual['Name']} {individual['Birthday']}"
+        id = individual['ID']
+
+        if formatted_name_birthday not in names_birthdays:
+            names_birthdays.append(formatted_name_birthday)
+        else:
+            errors.append((f"Individual with ID, {id} has the same name and birth date - {formatted_name_birthday} with at least one other individual."))
+
     return errors
 
 def us27():
@@ -473,7 +627,7 @@ def us28(individuals, families):
 
     return sibling
 
-#Check for US29: List all deceased individuals
+#US29: List all deceased individuals
 def us29(individuals):
     deceased_individuals = []
     for indi in individuals:
@@ -483,7 +637,7 @@ def us29(individuals):
             deceased_individuals.append(f'Individual: {indi["ID"]}: {name}')
     return deceased_individuals       
 
-##Check for US30: List all living married individuals
+#US30: List all living married individuals
 def us30(individuals):
     errors = []
     living_married_individuals = []
@@ -499,7 +653,7 @@ def us30(individuals):
     print ("\n".join(living_married_individuals)) 
     return errors
 
-#Check for US31: List all individuals who are 30 and have never been married
+#US31:List all individuals who are 30 and have never been married
 def us31(individuals):
     errors = []
     living_single_individuals = []
@@ -519,7 +673,7 @@ def us31(individuals):
     print ("\n".join(living_single_individuals))
     return errors
 
-# US33: List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
+#US33:List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
 def us33(individuals,families):
     errors = []
     
@@ -554,7 +708,7 @@ def us33(individuals,families):
 
     return errors
 
-#US35: List all people in a GEDCOM file who were born in the last 30 days
+#US35:List all people in a GEDCOM file who were born in the last 30 days
 def us35(individuals):
     listName = []
     today = datetime.now().date()
@@ -567,7 +721,7 @@ def us35(individuals):
                 listName.append(f'INDIVIDUAL: US35: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birthday}')
     return listName
 
-#US36: List all people in a GEDCOM file who died in the last 30 days
+#US36:List all people in a GEDCOM file who died in the last 30 days
 def us36(individuals):
     listName = []
     today = datetime.now().date()
@@ -582,7 +736,7 @@ def us36(individuals):
     return listName
 
 
-#US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
+#US37:List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
 def us37(individuals,families):
     listName=[]
     diedId =[]
@@ -653,7 +807,7 @@ def us37(individuals,families):
             # print(listName)
     return listName
 
-#US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
+#US38:List all living people in a GEDCOM file whose birthdays occur in the next 30 days
 def us38(individuals):
     
     listName = []
@@ -676,9 +830,9 @@ def us39(families):
     for fam in families:
         weddingDate = fam["Married"]
         if weddingDate != 'NA':
-             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
-             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
-             AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
+            AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
+            AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
+            AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
         if (today < AnniversaryDate):
             anniversaries.append(f'{weddingDate}')
     return anniversaries
@@ -739,10 +893,26 @@ def main():
         print(" ")
     for weddingDates in weddingBeforeDeath:
         print(weddingDates)
+        
+    # Check for US06: Divorce before death
+    errors_us06 = us06(individuals, families)
+    print_errors(errors_us06, 'US06')
 
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
     print_errors(errors_us07, 'US07')
+
+    # Check for US08: Birth before marriage of parents
+    errors_us08 = us08(individuals, families)
+    print_errors(errors_us08, 'US08')
+
+    # Check for US09
+    errors_us09 = us09(individuals, families)
+    print_errors(errors_us09, 'US09')
+
+    # Check for US10
+    errors_us10 = us10(individuals, families)
+    print_errors(errors_us10, 'US10')
 
     # Check for US12: Parents not too old
     too_old = us12(individuals, families)
@@ -755,6 +925,10 @@ def main():
     # Check for US22: Unique IDs
     errors_us22 = us22(individuals, families)
     print_errors(errors_us22, 'US22')
+
+    # Check for US23: Unique name & birth date
+    errors_us23 = us23(individuals)
+    print_errors(errors_us23, 'US23')
 
     # Check for US27: Include individual ages
     errors_us27 = us27()
@@ -803,7 +977,7 @@ def main():
     list_us38 = us38(individuals)
     print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
-     #Check for US39: List Upcoming Anniversaries
+    #Check for US39: List Upcoming Anniversaries
     weddingDate = us39(families)
     print_list(weddingDate, 'US39', 'Upcoming Anniversaries')
 
