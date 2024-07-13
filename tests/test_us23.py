@@ -16,3 +16,7 @@ individuals = [
 def test_1_us23(): # 2 dup individuals
     assert len(us23(individuals)) == 2
 
+def test_1_us23(): # 1 dup individuals
+    individuals.pop()
+    assert len(us23(individuals)) == 1
+

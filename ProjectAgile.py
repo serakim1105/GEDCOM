@@ -157,8 +157,8 @@ def parse_gedcom_file(filename):
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
-    print(individuals)
-    print(families)
+    # print(individuals)
+    # print(families)
 
     print("\nIndividuals:")
     print(indi_table)
