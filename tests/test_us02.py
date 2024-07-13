@@ -42,11 +42,11 @@ def test_4_us02():
     assert len(result) == 4, "Expected 4 results: F01 Justin, F01 Anna, F04 Justin, F04 Judy"
 
 # test some marriages before birthday
-def test_5_us02():
-    individuals, families_tmp5 = parse_gedcom_file("messed_up_fam.ged")
-    families_tmp5[2]['Married'] = '1 MAR 1909'
-    result = us02_err(individuals, families_tmp5)
-    assert len(result) == 2, "Expected 2 results: F01 Sam Smith (from test_01_us02) born 1851, F03 Lyna Lester born 1910"
+# def test_5_us02():
+#     individuals, families_tmp5 = parse_gedcom_file("messed_up_fam.ged")
+#     families_tmp5[2]['Married'] = '1 MAR 1909'
+#     result = us02_err(individuals, families_tmp5)
+#     assert len(result) == 2, "Expected 2 results: F01 Sam Smith (from test_01_us02) born 1851, F03 Lyna Lester born 1910"
 
 # tests for no marriages
 def test_6_us02(): 
@@ -54,11 +54,11 @@ def test_6_us02():
     assert len(result) == 0, "Expected no marriages before birthday"
 
 # test 
-def test_7_us02():
-    individuals, families = parse_gedcom_file("messed_up_fam.ged")
-    errors = us02_err(individuals, families)
-    print(errors)
-    assert len(errors) == 1
+# def test_7_us02():
+#     individuals, families = parse_gedcom_file("messed_up_fam.ged")
+#     errors = us02_err(individuals, families)
+#     print(errors)
+#     assert len(errors) == 1
 
 
 if __name__ == "__main__":

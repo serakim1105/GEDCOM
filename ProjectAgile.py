@@ -229,7 +229,7 @@ def us06(individuals, families):
                     familyId.append(famId)
                 return True   
         return False
-       
+    
     for indi in individuals:
         if indi['Death'] != 'NA':
             idDeath[indi['ID']] = indi['Death']
@@ -432,6 +432,26 @@ def us22(individuals, families):
             uids.append(id)
         else:
             errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
+    return errors
+
+# Check for individuals who have the same name and birth date
+def us23(individuals):
+    # dictionary to store count of individuals with the same name and birth date
+    individual_counts = {}
+    names_birthdays = []
+    errors = []
+    
+    # Iterate through each individual
+    for individual in individuals:
+        # Format the name and birthday for easy comparison
+        formatted_name_birthday = f"{individual['Name']} {individual['Birthday']}"
+        id = individual['ID']
+
+        if formatted_name_birthday not in names_birthdays:
+            names_birthdays.append(formatted_name_birthday)
+        else:
+            errors.append((f"Individual with ID, {id} has the same name and birth date - {formatted_name_birthday} with at least one other individual."))
+
     return errors
 
 def us27():
@@ -768,9 +788,9 @@ def us39(families):
     for fam in families:
         weddingDate = fam["Married"]
         if weddingDate != 'NA':
-             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
-             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
-             AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
+            AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
+            AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
+            AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
         if (today < AnniversaryDate):
             anniversaries.append(f'{weddingDate}')
     return anniversaries
@@ -852,6 +872,10 @@ def main():
     errors_us22 = us22(individuals, families)
     print_errors(errors_us22, 'US22')
 
+    # Check for US23: Unique name & birth date
+    errors_us23 = us23(individuals)
+    print_errors(errors_us23, 'US23')
+
     # Check for US27: Include individual ages
     errors_us27 = us27()
     print_errors(errors_us27, 'US27')
@@ -899,7 +923,7 @@ def main():
     list_us38 = us38(individuals)
     print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
-     #Check for US39: List Upcoming Anniversaries
+    #Check for US39: List Upcoming Anniversaries
     weddingDate = us39(families)
     if weddingDate:
         print('\nUS39', 'Upcoming Anniversaries')
