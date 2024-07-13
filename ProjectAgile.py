@@ -157,8 +157,8 @@ def parse_gedcom_file(filename):
     for fam in families:
         fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
-    # print(individuals)
-    # print(families)
+    print(individuals)
+    print(families)
 
     print("\nIndividuals:")
     print(indi_table)
@@ -229,7 +229,7 @@ def us06(individuals, families):
                     familyId.append(famId)
                 return True   
         return False
-       
+    
     for indi in individuals:
         if indi['Death'] != 'NA':
             idDeath[indi['ID']] = indi['Death']
@@ -432,6 +432,26 @@ def us22(individuals, families):
             uids.append(id)
         else:
             errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
+    return errors
+
+# Check for individuals who have the same name and birth date
+def us23(individuals):
+    # dictionary to store count of individuals with the same name and birth date
+    individual_counts = {}
+    names_birthdays = []
+    errors = []
+    
+    # Iterate through each individual
+    for individual in individuals:
+        # Format the name and birthday for easy comparison
+        formatted_name_birthday = f"{individual['Name']} {individual['Birthday']}"
+        id = individual['ID']
+
+        if formatted_name_birthday not in names_birthdays:
+            names_birthdays.append(formatted_name_birthday)
+        else:
+            errors.append((f"Individual with ID, {id} has the same name and birth date - {formatted_name_birthday} with at least one other individual."))
+
     return errors
 
 def us27():
@@ -768,9 +788,9 @@ def us39(families):
     for fam in families:
         weddingDate = fam["Married"]
         if weddingDate != 'NA':
-             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
-             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
-             AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
+            AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
+            AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
+            AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
         if (today < AnniversaryDate):
             anniversaries.append(f'{weddingDate}')
     return anniversaries
@@ -852,60 +872,64 @@ def main():
     errors_us22 = us22(individuals, families)
     print_errors(errors_us22, 'US22')
 
-    # Check for US27: Include individual ages
-    errors_us27 = us27()
-    print_errors(errors_us27, 'US27')
+    # Check for US23: Unique name & birth date
+    errors_us23 = us23(individuals)
+    print_errors(errors_us23, 'US23')
 
-    #Check for US28: Order Siblings By Age
-    sibling = us28(individuals, families)
-    print_list(sibling, 'US28', 'Siblings')
+    # # Check for US27: Include individual ages
+    # errors_us27 = us27()
+    # print_errors(errors_us27, 'US27')
 
-    # Check for US29: List deceased
-    deceased = us29(individuals)
-    print_list(deceased, 'US29', 'Deceased individuals')
+    # #Check for US28: Order Siblings By Age
+    # sibling = us28(individuals, families)
+    # print_list(sibling, 'US28', 'Siblings')
 
-    # Check for US30: List living married
-    errors_us30 = us30(individuals)
-    print_errors(errors_us30, 'US30')
+    # # Check for US29: List deceased
+    # deceased = us29(individuals)
+    # print_list(deceased, 'US29', 'Deceased individuals')
 
-    # Check for US31: List living single
-    errors_us31 = us31(individuals)
-    print_errors(errors_us31, 'US31')
+    # # Check for US30: List living married
+    # errors_us30 = us30(individuals)
+    # print_errors(errors_us30, 'US30')
 
-    # Check for US33: List orphans
-    errors_us33 = us33(individuals,families)
-    print_list(errors_us33, 'US33', 'Orphans under 18 years old')
+    # # Check for US31: List living single
+    # errors_us31 = us31(individuals)
+    # print_errors(errors_us31, 'US31')
 
-    # Check for US35: List recent births
-    list_us35 = us35(individuals)
-    print_list(list_us35, 'US35', 'Indivuduals who were born in the last 30 days')
+    # # Check for US33: List orphans
+    # errors_us33 = us33(individuals,families)
+    # print_list(errors_us33, 'US33', 'Orphans under 18 years old')
 
-    # Check for US36: List recent deaths
-    list_us36 = us36(individuals)
-    print_list(list_us36, 'US36', 'Individuals who died in the last 30 days')
+    # # Check for US35: List recent births
+    # list_us35 = us35(individuals)
+    # print_list(list_us35, 'US35', 'Indivuduals who were born in the last 30 days')
+
+    # # Check for US36: List recent deaths
+    # list_us36 = us36(individuals)
+    # print_list(list_us36, 'US36', 'Individuals who died in the last 30 days')
         
-    # Check for US37: List recent survivors
-    list_us37 = us37(individuals,families)
-    #print_list(list_us37, 'US37', 'Living spouses and descendants who died in the last 30 days')
-    if list_us37:
-        print('\n__US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days__')
-        for val in list_us37:
-            for output in val:
-                print("\n",output)
-    else:
-        print('\nUS37: No one died in the last 30 days.')
+    # # Check for US37: List recent survivors
+    # list_us37 = us37(individuals,families)
+    # #print_list(list_us37, 'US37', 'Living spouses and descendants who died in the last 30 days')
+    # if list_us37:
+    #     print('\n__US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days__')
+    #     for val in list_us37:
+    #         for output in val:
+    #             print("\n",output)
+    # else:
+    #     print('\nUS37: No one died in the last 30 days.')
 
-    # Check for US38: List upcoming birthdays
-    list_us38 = us38(individuals)
-    print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
+    # # Check for US38: List upcoming birthdays
+    # list_us38 = us38(individuals)
+    # print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
-     #Check for US39: List Upcoming Anniversaries
-    weddingDate = us39(families)
-    if weddingDate:
-        print('\nUS39', 'Upcoming Anniversaries')
-        print(" ")
-    for anniversary in weddingDate:
-        print(anniversary)
+    # #Check for US39: List Upcoming Anniversaries
+    # weddingDate = us39(families)
+    # if weddingDate:
+    #     print('\nUS39', 'Upcoming Anniversaries')
+    #     print(" ")
+    # for anniversary in weddingDate:
+    #     print(anniversary)
 
 
 
