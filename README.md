@@ -7,11 +7,11 @@ This program checks for valid family data in a gedcom file.
 Python3
 
 ## Usage
-'''
+```
 python3 program.py family_tree.ged
-'''
+```
 
-## returns 
+## Returns 
 * Table of individuals
 * Table of families
 * Errors and anomalies
