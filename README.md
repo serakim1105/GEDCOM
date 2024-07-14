@@ -1,18 +1,23 @@
 # GEDCOM
 
-# Description
-This program checks if the GEDCOM tags are in the subset of tags used in this project as defined in the Project Overview.
+## Description
+This program checks for valid family data in a gedcom file.
+
+## Dependencies
+Python3
 
 ## Usage
-'''python source.py test.ged'''
+'''
+python3 program.py family_tree.ged
+'''
 
-# returns [People table and Families table]
+## returns 
+* Table of individuals
+* Table of families
+* Errors and anomalies
 
-# Student Team
-Sera
-Christine
-Sriya
-Navya
-
-# License
-[MIT]
+## Student Team
+* Sera Kim
+* Christine Anthony
+* Sriya Bhamidipati
+* Navya Pai
