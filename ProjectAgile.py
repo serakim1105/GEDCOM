@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import sys
 from prettytable import PrettyTable
 
@@ -217,6 +217,61 @@ def us02_anom(individuals, families):
                 anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
     return anomalies
 
+#US03 - Birth before Death
+def us03(individuals):
+    errors = []
+    for indi in individuals:
+        birth_date_str = indi['Birthday']
+        death_date_str = indi['Death']
+        indi_name = indi["Name"]
+        if birth_date_str != "NA" and death_date_str != "NA":
+            #birth info
+            birthMonth = (datetime.strptime(birth_date_str, "%d %b %Y").date().month) * 31
+            birthDay =  (datetime.strptime(birth_date_str, "%d %b %Y").date().day)
+            birthYear =  (datetime.strptime(birth_date_str, "%d %b %Y").date().year) * 365
+            birthDate = abs((birthDay + birthMonth + birthYear))
+            #death info
+            deathMonth = (datetime.strptime(death_date_str, "%d %b %Y").date().month) * 31
+            deathDay =  (datetime.strptime(death_date_str, "%d %b %Y").date().day)
+            deathYear =  (datetime.strptime(death_date_str, "%d %b %Y").date().year) * 365
+            deathDate = abs(deathDay + deathMonth + deathYear)
+            if (birthDate > deathDate):
+                errors.append(f'Error: US05:{indi_name}, BirthDay: {birth_date_str}, DeathDay: {death_date_str}')
+    return errors
+
+#US05 - Marriage before Death
+def us05(individuals, families):
+    errors = []
+    for fam in families:
+        wedding_date_str = fam['Married']
+        husbandName = fam['HusbandName']
+        wifeName = fam['WifeName']
+        #wedding info
+        weddingMonth = (datetime.strptime(wedding_date_str, "%d %b %Y").date().month) * 31
+        weddingDay = (datetime.strptime(wedding_date_str, "%d %b %Y").date().day)
+        weddingYear = (datetime.strptime(wedding_date_str, "%d %b %Y").date().year) * 365
+        weddingDate = abs((weddingDay + weddingMonth + weddingYear))
+        for indi in individuals:
+            if(husbandName == indi["Name"] ):
+                husband_death_str = indi['Death']
+                if husband_death_str != "NA":
+                    #husband death info
+                    husbandDeathMonth = (datetime.strptime(husband_death_str, "%d %b %Y").date().month) * 31
+                    husbandDeathDay =  (datetime.strptime(husband_death_str, "%d %b %Y").date().day)
+                    husbandDeathYear =  (datetime.strptime(husband_death_str, "%d %b %Y").date().year) * 365
+                    husbandDeathDate = abs(husbandDeathDay + husbandDeathMonth + husbandDeathYear)
+            if(wifeName == indi["Name"] ):
+                wife_death_str = indi['Death']
+                if wife_death_str != "NA":
+                    # wife death info
+                    wifeDeathMonth = (datetime.strptime(wife_death_str, "%d %b %Y").date().month) * 31
+                    wifeDeathDay =  (datetime.strptime(wife_death_str, "%d %b %Y").date().day)
+                    wifeDeathYear =  (datetime.strptime(wife_death_str, "%d %b %Y").date().year) * 365
+                    wifeDeathDate = abs(wifeDeathDay + wifeDeathMonth + wifeDeathYear)
+                if weddingDate > husbandDeathDate or weddingDate > wifeDeathDate:
+                    errors.append(f'Error: US05: Family {fam["Married"]}: Marriage date not listed before either spouse death.')
+        return errors
+
 #US06 Divorce can only occur before death of both spouses
 def str_to_date(date_str):
         return datetime.strptime(date_str, '%d %b %Y')
@@ -246,6 +301,26 @@ def us06(individuals, families):
                 errors.append(f'Error: US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
     return errors
 
+#US07: Death should be less than 150 years after birth for dead people, 
+#and current date should be less than 150 years after birth for all living people
+def us07(individuals):
+    errors = []
+    for indi in individuals:
+        birth_date_str = indi['Birthday']
+        death_date_str = indi['Death']
+        
+        if birth_date_str == "NA":
+            continue
+        
+        if death_date_str != "NA":
+            age_at_death = calculate_age(birth_date_str, death_date_str)
+            if age_at_death >= 150:
+                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
+        else:
+            age = calculate_age(birth_date_str)
+            if age >= 150:
+                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
+    return errors
 
 #US08: Birth before marriage of parents: Children should be born after marriage of parents (and not more than 9 months after their divorce)
 def us08(individuals, families):
@@ -271,38 +346,16 @@ def us08(individuals, families):
                                 errors.append(f'Error: US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
     return errors
 
-
-
-def us07(individuals):
-    errors = []
-    for indi in individuals:
-        birth_date_str = indi['Birthday']
-        death_date_str = indi['Death']
-        
-        if birth_date_str == "NA":
-            continue
-        
-        if death_date_str != "NA":
-            age_at_death = calculate_age(birth_date_str, death_date_str)
-            if age_at_death >= 150:
-                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
-        else:
-            age = calculate_age(birth_date_str)
-            if age >= 150:
-                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
-    return errors
-
-
-# Helper function for us09 and us10
+#Helper function for us09 and us10
 def date_to_number(date_str):
     if date_str == 'NA':
         return 999999999999
     date_object = datetime.strptime(date_str, '%d %b %Y')
     timestamp = date_object.timestamp() 
     
-    return timestamp  
+    return timestamp   
 
-# Child should be born before death of mother and before 9 months after death of father
+#US09: Child should be born before death of mother and before 9 months after death of father
 def us09(individuals, families):
     errors = []
 
@@ -339,7 +392,7 @@ def us09(individuals, families):
 
     return errors
 
-# Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
+#Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
 def us10(individuals, families):
     errors = []
     for fam in families:
@@ -610,7 +663,7 @@ def us28(individuals, families):
 
     return sibling
 
-#Check for US29: List all deceased individuals
+#US29: List all deceased individuals
 def us29(individuals):
     deceased_individuals = []
     for indi in individuals:
@@ -620,7 +673,7 @@ def us29(individuals):
             deceased_individuals.append(f'Individual: {indi["ID"]}: {name}')
     return deceased_individuals       
 
-##Check for US30: List all living married individuals
+#US30: List all living married individuals
 def us30(individuals):
     errors = []
     living_married_individuals = []
@@ -636,7 +689,7 @@ def us30(individuals):
     print ("\n".join(living_married_individuals)) 
     return errors
 
-#Check for US31: List all individuals who are 30 and have never been married
+#US31:List all individuals who are 30 and have never been married
 def us31(individuals):
     errors = []
     living_single_individuals = []
@@ -656,7 +709,7 @@ def us31(individuals):
     print ("\n".join(living_single_individuals))
     return errors
 
-# US33: List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
+#US33:List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
 def us33(individuals,families):
     errors = []
     
@@ -691,7 +744,7 @@ def us33(individuals,families):
 
     return errors
 
-#US35: List all people in a GEDCOM file who were born in the last 30 days
+#US35:List all people in a GEDCOM file who were born in the last 30 days
 def us35(individuals):
     listName = []
     today = datetime.now().date()
@@ -704,7 +757,7 @@ def us35(individuals):
                 listName.append(f'INDIVIDUAL: US35: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birthday}')
     return listName
 
-#US36: List all people in a GEDCOM file who died in the last 30 days
+#US36:List all people in a GEDCOM file who died in the last 30 days
 def us36(individuals):
     listName = []
     today = datetime.now().date()
@@ -719,7 +772,7 @@ def us36(individuals):
     return listName
 
 
-#US37: List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
+#US37:List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
 def us37(individuals,families):
     listName=[]
     diedId =[]
@@ -790,9 +843,8 @@ def us37(individuals,families):
             # print(listName)
     return listName
 
-#US38: List all living people in a GEDCOM file whose birthdays occur in the next 30 days
+#US38:List all living people in a GEDCOM file whose birthdays occur in the next 30 days
 def us38(individuals):
-    
     listName = []
     today = datetime.now().date()
     for indi in individuals:
@@ -808,17 +860,21 @@ def us38(individuals):
 #US39: List upcoming anniversaries
 def us39(families):
     anniversaries = []
+    todayMonth = (datetime.now().date().month) * 31
+    todayDay = (datetime.now().date().day) 
     todayYear = (datetime.now().date().year)
-    today = datetime.now().timetuple().tm_yday 
-    print(today)
+    today = abs((todayMonth + todayDay))
     for fam in families:
         weddingDate = fam["Married"]
         if weddingDate != 'NA':
             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
+            AnniversaryYear =  (datetime.strptime(weddingDate, "%d %b %Y").date().year)
             AnniversaryDate = abs((AnniversaryDay + AnniversaryMonth))
-        if (today < AnniversaryDate):
-            anniversaries.append(f'{weddingDate}')
+            if (today < AnniversaryDate) :
+                anniversaries.append(weddingDate)
+            if (todayYear < AnniversaryYear) :
+                print("Wedding did not happen yet")
     return anniversaries
 
 def main():
@@ -866,9 +922,18 @@ def main():
     anomalies_us02 = us02_anom(individuals, families)    
     print_errors(anomalies_us02, 'US02', 'Anomalies')
 
+    #Check for US03: Birth before death
+    birthDates = us03(individuals)    
+    print_errors(birthDates, 'US03')
+
+    #Check for US05: Marriage Before Either Spouse Death
+    errors_us05 = us05(individuals, families)
+    print_errors(errors_us05, 'US05')
+
     # Check for US06: Divorce before death
     errors_us06 = us06(individuals, families)
     print_errors(errors_us06, 'US06')
+
 
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
@@ -882,7 +947,7 @@ def main():
     errors_us09 = us09(individuals, families)
     print_errors(errors_us09, 'US09')
 
-    # Check for US10
+    # # Check for US10
     errors_us10 = us10(individuals, families)
     print_errors(errors_us10, 'US10')
 
@@ -949,18 +1014,13 @@ def main():
     else:
         print('\nUS37: No one died in the last 30 days.')
 
-    # Check for US38: List upcoming birthdays
+   #Check for US38: List upcoming birthdays
     list_us38 = us38(individuals)
     print_list(list_us38, 'US38', 'Living people whose birthdays occur in the next 30 days')
 
     #Check for US39: List Upcoming Anniversaries
     weddingDate = us39(families)
-    if weddingDate:
-        print('\nUS39', 'Upcoming Anniversaries')
-        print(" ")
-    for anniversary in weddingDate:
-        print(anniversary)
-
+    print_list(weddingDate, 'US39', 'Upcoming Anniversaries')
 
 
 if __name__ == "__main__":
