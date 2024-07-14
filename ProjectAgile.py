@@ -242,16 +242,31 @@ def us05(individuals, families):
         wedding_date_str = fam['Married']
         husbandName = fam['HusbandName']
         wifeName = fam['WifeName']
-        weddingDate = datetime.strptime(wedding_date_str, "%d %b %Y").timetuple().tm_yday 
         for indi in individuals:
-            husband_deathDay_str = indi['Death']
-            wife_deathDay_str = indi['Death']
-            if husbandName == indi['Name'] and wifeName == indi['Name'] and husband_deathDay_str != "NA" and wife_deathDay_str != "NA":
-                husband_deathDay = datetime.strptime(husband_deathDay_str, "%d %b %Y").timetuple().tm_yday 
-                wife_deathDay = datetime.strptime(wife_deathDay_str, "%d %b %Y").timetuple().tm_yday 
-                if weddingDate < husband_deathDay and weddingDate < wife_deathDay:
-                    marriageBeforeDeath.append(weddingDate)
-    return marriageBeforeDeath
+            husband_death_str = indi['Death']
+            wife_death_str = indi['Death']
+            if husbandName == indi['Name'] and wifeName == indi['Name'] and husband_death_str != 'NA' and wife_death_str != 'NA':
+            #wedding info
+                weddingMonth = (datetime.strptime(wedding_date_str, "%d %b %Y").date().month) * 31
+                weddingDay =  (datetime.strptime(wedding_date_str, "%d %b %Y").date().day)
+                weddingYear =  (datetime.strptime(wedding_date_str, "%d %b %Y").date().year) * 365
+                weddingDate = abs((weddingDay + weddingMonth + weddingYear))
+            # husband death info
+                husbandDeathMonth = (datetime.strptime(husband_death_str, "%d %b %Y").date().month) * 31
+                husbandDeathDay =  (datetime.strptime(husband_death_str, "%d %b %Y").date().day)
+                husbandDeathYear =  (datetime.strptime(husband_death_str, "%d %b %Y").date().year) * 365
+                husbandDeathDate = abs(husbandDeathDay + husbandDeathMonth + husbandDeathYear)
+                print(husbandDeathDate)
+             # wife death info
+                wifeDeathMonth = (datetime.strptime(wife_death_str, "%d %b %Y").date().month) * 31
+                wifeDeathDay =  (datetime.strptime(wife_death_str, "%d %b %Y").date().day)
+                wifeDeathYear =  (datetime.strptime(wife_death_str, "%d %b %Y").date().year) * 365
+                wifeDeathDate = abs(wifeDeathDay + wifeDeathMonth + wifeDeathYear)
+                print(wifeDeathDate)
+                if weddingDate < husbandDeathDate:
+                    marriageBeforeDeath.append(wedding_date_str)
+                    print(weddingDate)
+        return marriageBeforeDeath
 
 #US06 Divorce can only occur before death of both spouses
 def str_to_date(date_str):
@@ -886,8 +901,10 @@ def main():
     print_list(birthDates, 'US03', 'Birthdays before Deathdays')
     
     # #Check for US05: Marriage Before Either Spouse Death
-    weddingBeforeDeathDates = us05(individuals, families)
-    print_list(weddingBeforeDeathDates, 'US05', 'Marriage Before Either Spouse Death')
+    marriageBeforeDeath = us05(individuals, families)
+    print_list(marriageBeforeDeath,'US05', 'WeddingDates Before Spouse DeathDates')
+    # else:
+    #     print('\nUS37: No one died in the last 30 days.')
 
     # Check for US06: Divorce before death
     errors_us06 = us06(individuals, families)
