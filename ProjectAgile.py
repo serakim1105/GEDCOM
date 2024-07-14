@@ -140,6 +140,10 @@ def parse_gedcom_file(filename):
         if not indi["Spouse"]:
             indi["Spouse"] = ["NA"]
 
+    for fam in families:
+        if not fam["Children"]:
+            fam["Children"] = ["none"]
+
     # Print the individuals and families
 
     indi_table = PrettyTable()
@@ -489,21 +493,43 @@ def us22(individuals, families):
 
 # Check for individuals who have the same name and birth date
 def us23(individuals):
-    # dictionary to store count of individuals with the same name and birth date
-    individual_counts = {}
     names_birthdays = []
     errors = []
     
-    # Iterate through each individual
     for individual in individuals:
-        # Format the name and birthday for easy comparison
+        # format the name and birthday for easy comparison
         formatted_name_birthday = f"{individual['Name']} {individual['Birthday']}"
         id = individual['ID']
 
         if formatted_name_birthday not in names_birthdays:
             names_birthdays.append(formatted_name_birthday)
         else:
-            errors.append((f"Individual with ID, {id} has the same name and birth date - {formatted_name_birthday} with at least one other individual."))
+            errors.append((f"Individual {id} has the same name and birth date - {formatted_name_birthday} - with at least one other individual in this GEDCOM."))
+
+    return errors
+
+def us25(individuals, families):
+    names_birthdays = []
+    errors = []
+
+    for family in families:
+        family_id = family['ID']
+        children = family['Children']
+        
+        for child_id in children:
+            child = next((i for i in individuals if i['ID'] == child_id), None)
+
+            # Skip if its not a child
+            if not child:
+                continue
+
+            formatted_name_birthday = f"{child['Name']} {child['Birthday']}"
+            id = child['ID']
+
+            if formatted_name_birthday not in names_birthdays:
+                names_birthdays.append(formatted_name_birthday)
+            else:
+                errors.append((f"Child with ID {id} in family {family_id} has the same name and birth date - {formatted_name_birthday} - as another child in family {family_id}."))
 
     return errors
 
@@ -941,6 +967,10 @@ def main():
     # Check for US23: Unique name & birth date
     errors_us23 = us23(individuals)
     print_errors(errors_us23, 'US23')
+
+    # Check for US25: Unique first names in families
+    errors_us25 = us25(individuals, families)
+    print_errors(errors_us25, 'US25')
 
     # Check for US27: Include individual ages
     errors_us27 = us27()
