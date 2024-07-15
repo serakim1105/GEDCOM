@@ -25,7 +25,6 @@ def test_2():
     indi2 = create_individual("I04", "NA", ["NA"])
     assert us30([indi2]) == [f'ERROR: INDIVIDUAL: US30: I04: Not living and married.']
 
-
 def test_3():
     # Test case 2: Individual who is not alive and never married
     indi3 = create_individual("I05", "Nov 5 2000", ["NA"])

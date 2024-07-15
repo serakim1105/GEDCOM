@@ -4,7 +4,7 @@ from ProjectAgile import us39, parse_gedcom_file
 
 def create_date(wedding_date = "NA"):
     return {
-        'Married': wedding_date,
+        'Married': wedding_date
     }
 
 def test_1_us39(): 
