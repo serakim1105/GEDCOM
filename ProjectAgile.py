@@ -221,22 +221,23 @@ def us02_anom(individuals, families):
 def us03(individuals):
     errors = []
     for indi in individuals:
-        birth_date_str = indi['Birthday']
-        death_date_str = indi['Death']
-        indi_name = indi["Name"]
-        if birth_date_str != "NA" and death_date_str != "NA":
-            #birth info
+        birth_date_str = indi["Birthday"]
+        death_date_str = indi["Death"]
+        indi_name = indi["Name"] != "NA"
+        #birth info
+        if birth_date_str != "NA":
             birthMonth = (datetime.strptime(birth_date_str, "%d %b %Y").date().month) * 31
             birthDay =  (datetime.strptime(birth_date_str, "%d %b %Y").date().day)
             birthYear =  (datetime.strptime(birth_date_str, "%d %b %Y").date().year) * 365
-            birthDate = abs((birthDay + birthMonth + birthYear))
-            #death info
+            birthDate = abs(birthDay + birthMonth + birthYear)
+        #death info
+        if death_date_str != "NA":
             deathMonth = (datetime.strptime(death_date_str, "%d %b %Y").date().month) * 31
             deathDay =  (datetime.strptime(death_date_str, "%d %b %Y").date().day)
             deathYear =  (datetime.strptime(death_date_str, "%d %b %Y").date().year) * 365
             deathDate = abs(deathDay + deathMonth + deathYear)
-            if (birthDate > deathDate):
-                errors.append(f'Error: US05:{indi_name}, BirthDay: {birth_date_str}, DeathDay: {death_date_str}')
+        if (birthDate > deathDate):
+            errors.append(f'Error: US05:{indi_name}, BirthDay: {birth_date_str}, DeathDay: {death_date_str}')
     return errors
 
 #US05 - Marriage before Death
@@ -268,8 +269,8 @@ def us05(individuals, families):
                     wifeDeathDay =  (datetime.strptime(wife_death_str, "%d %b %Y").date().day)
                     wifeDeathYear =  (datetime.strptime(wife_death_str, "%d %b %Y").date().year) * 365
                     wifeDeathDate = abs(wifeDeathDay + wifeDeathMonth + wifeDeathYear)
-                if weddingDate > husbandDeathDate or weddingDate > wifeDeathDate:
-                    errors.append(f'Error: US05: Family {fam["Married"]}: Marriage date not listed before either spouse death.')
+                    if weddingDate > husbandDeathDate or weddingDate > wifeDeathDate:
+                        errors.append(f'Error: US05: Family {fam["Married"]}: Marriage date not listed before either spouse death.')
         return errors
 
 #US06 Divorce can only occur before death of both spouses
@@ -389,7 +390,6 @@ def us09(individuals, families):
                     child_bir = date_to_number(child_birth)
                     if child_bir > date_to_number(wife_death):
                         errors.append(f"US09: Family {fam['ID']}: Child {child_id} born after mother's death.")
-
     return errors
 
 #Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)

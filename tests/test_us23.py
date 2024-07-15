@@ -9,10 +9,6 @@ individuals = [
     {'ID': 'I04', 'Name': 'Jimmy /Smith/', 'Gender': 'M', 'Birthday': '20 AUG 1830', 'Death': '30 NOV 1910', 'Child': 'F01', 'Spouse': ['NA']}]
 
 
-
-
-
-
 def test_1_us23(): # 2 dup individuals
     assert len(us23(individuals)) == 2
 
