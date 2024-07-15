@@ -226,18 +226,12 @@ def us03(individuals):
         indi_name = indi["Name"] != "NA"
         #birth info
         if birth_date_str != "NA":
-            birthMonth = (datetime.strptime(birth_date_str, "%d %b %Y").date().month) * 31
-            birthDay =  (datetime.strptime(birth_date_str, "%d %b %Y").date().day)
-            birthYear =  (datetime.strptime(birth_date_str, "%d %b %Y").date().year) * 365
-            birthDate = abs(birthDay + birthMonth + birthYear)
+            birthDate = datetime.strptime(birth_date_str, "%d %b %Y").toordinal()
         #death info
         if death_date_str != "NA":
-            deathMonth = (datetime.strptime(death_date_str, "%d %b %Y").date().month) * 31
-            deathDay =  (datetime.strptime(death_date_str, "%d %b %Y").date().day)
-            deathYear =  (datetime.strptime(death_date_str, "%d %b %Y").date().year) * 365
-            deathDate = abs(deathDay + deathMonth + deathYear)
+            deathDate = datetime.strptime(death_date_str, "%d %b %Y").toordinal()
         if (birthDate > deathDate):
-            errors.append(f'Error: US05:{indi_name}, BirthDay: {birth_date_str}, DeathDay: {death_date_str}')
+            errors.append(f'ERROR: INDIVIDUAL: US03: {indi["ID"]}:{indi["Name"]}:{indi["Birthday"]}:{indi["Death"]} - Birth date not before death date.')
     return errors
 
 #US05 - Marriage before Death
@@ -248,29 +242,20 @@ def us05(individuals, families):
         husbandName = fam['HusbandName']
         wifeName = fam['WifeName']
         #wedding info
-        weddingMonth = (datetime.strptime(wedding_date_str, "%d %b %Y").date().month) * 31
-        weddingDay = (datetime.strptime(wedding_date_str, "%d %b %Y").date().day)
-        weddingYear = (datetime.strptime(wedding_date_str, "%d %b %Y").date().year) * 365
-        weddingDate = abs((weddingDay + weddingMonth + weddingYear))
+        weddingDate = datetime.strptime(wedding_date_str, "%d %b %Y").toordinal()
         for indi in individuals:
-            if(husbandName == indi["Name"] ):
+            if(husbandName == indi["Name"]):
                 husband_death_str = indi['Death']
                 if husband_death_str != "NA":
                     #husband death info
-                    husbandDeathMonth = (datetime.strptime(husband_death_str, "%d %b %Y").date().month) * 31
-                    husbandDeathDay =  (datetime.strptime(husband_death_str, "%d %b %Y").date().day)
-                    husbandDeathYear =  (datetime.strptime(husband_death_str, "%d %b %Y").date().year) * 365
-                    husbandDeathDate = abs(husbandDeathDay + husbandDeathMonth + husbandDeathYear)
+                    husbandDeathDate = datetime.strptime(husband_death_str, "%d %b %Y").toordinal()
             if(wifeName == indi["Name"] ):
                 wife_death_str = indi['Death']
                 if wife_death_str != "NA":
                     # wife death info
-                    wifeDeathMonth = (datetime.strptime(wife_death_str, "%d %b %Y").date().month) * 31
-                    wifeDeathDay =  (datetime.strptime(wife_death_str, "%d %b %Y").date().day)
-                    wifeDeathYear =  (datetime.strptime(wife_death_str, "%d %b %Y").date().year) * 365
-                    wifeDeathDate = abs(wifeDeathDay + wifeDeathMonth + wifeDeathYear)
+                    wifeDeathDate = datetime.strptime(wife_death_str, "%d %b %Y").toordinal()
                     if weddingDate > husbandDeathDate or weddingDate > wifeDeathDate:
-                        errors.append(f'Error: US05: Family {fam["Married"]}: Marriage date not listed before either spouse death.')
+                        errors.append(f'Error: US05: Marriage date not listed before either spouse death.')
         return errors
 
 #US06 Divorce can only occur before death of both spouses
