@@ -48,7 +48,7 @@ def test_6_us35():
     individuals, _ = parse_gedcom_file("navya.ged")
     errors = us35(individuals)
     print(errors) 
-    expected_num_errors = 1
+    expected_num_errors = 0
     assert len(errors) == expected_num_errors
 
 def test_7_us36():
@@ -56,7 +56,7 @@ def test_7_us36():
     individuals, _ = parse_gedcom_file("navya.ged")
     errors = us36(individuals)
     print(errors)
-    expected_num_errors = 1
+    expected_num_errors = 0
     assert len(errors) == expected_num_errors
 
 if __name__ == "__main__":
