@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from ProjectAgile import us07, us16, parse_gedcom_file, us33, us27, us09, us10
+from ProjectAgile import us07, us16, parse_gedcom_file, us33, us27, us09, us10, us32, us34
 import tests.test_us29 as test_us29
 
 # Helper function to create a mock individual
@@ -83,8 +83,23 @@ def test_11_us10():
     individuals, families = parse_gedcom_file("sera.ged")
     errors = us10(individuals, families)
     print(errors)
-    expected_num_errors = 2
+    expected_num_errors = 3
     assert len(errors) == expected_num_errors
+
+def test_12_us32():
+    individuals, families = parse_gedcom_file("sera.ged")
+    errors = us32(families)
+    print(errors)
+    expected_num_errors = 1
+    assert len(errors) == expected_num_errors
+
+def test_13_us34():
+    individuals, families = parse_gedcom_file("sera.ged")
+    errors = us34(individuals, families)
+    print(errors)
+    expected_num_errors = 1
+    assert len(errors) == expected_num_errors
+
 
 if __name__ == "__main__":
     pytest.main()

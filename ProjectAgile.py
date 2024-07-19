@@ -700,6 +700,20 @@ def us31(individuals):
     print ("\n".join(living_single_individuals))
     return errors
 
+
+# List all multiple births in a GEDCOM file
+def us32(families):
+    errors = []
+
+    for fam in families:
+        if len(fam["Children"]) > 1:
+            error_msg = (
+                f"Family ID {fam['ID']} has multiple ( {len(fam['Children'])} ) children."
+            )
+            errors.append(error_msg)
+
+    return errors
+
 #US33:List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
 def us33(individuals,families):
     errors = []
@@ -733,6 +747,48 @@ def us33(individuals,families):
                         if age < 18:
                             errors.append(f'US33: INDIVIDUAL: Orphaned child: {child["Name"]} (ID: {child["ID"]}), Age: {age}')
 
+    return errors
+
+
+# List all couples who were married when the older spouse was more than twice as old as the younger spouse
+def us34(individuals, families):
+    errors = []
+
+    def find_individual_by_id(indi_id):
+        for indi in individuals:
+            if indi["ID"] == indi_id:
+                return indi
+        return None
+
+    for fam in families:
+        marriage_date = fam.get("Married")
+        if not marriage_date:
+            continue
+        
+        husband_id = fam.get("Husband")
+        wife_id = fam.get("Wife")
+
+        husband = find_individual_by_id(husband_id)
+        wife = find_individual_by_id(wife_id)
+
+        if husband and wife:
+            husband_birth_date = husband.get("Birthday")
+            wife_birth_date = wife.get("Birthday")
+
+            if husband_birth_date and wife_birth_date:
+                husband_age_at_marriage = calculate_age(husband_birth_date, marriage_date)
+                wife_age_at_marriage = calculate_age(wife_birth_date, marriage_date)
+
+                older_age = max(husband_age_at_marriage, wife_age_at_marriage)
+                younger_age = min(husband_age_at_marriage, wife_age_at_marriage)
+
+                if older_age > 2 * younger_age:
+                    error_msg = (
+                        f"Family ID {fam['ID']} married on {marriage_date}: "
+                        f"Older spouse ({'Husband' if older_age == husband_age_at_marriage else 'Wife'}) "
+                        f"was more than twice as old as the younger spouse."
+                    )
+                    errors.append(error_msg)
     return errors
 
 #US35:List all people in a GEDCOM file who were born in the last 30 days
@@ -982,9 +1038,17 @@ def main():
     errors_us31 = us31(individuals)
     print_errors(errors_us31, 'US31')
 
+    # Check for US32
+    errors_us32 = us32(families)
+    print_errors(errors_us32, 'US32')
+
     # Check for US33: List orphans
     errors_us33 = us33(individuals,families)
     print_list(errors_us33, 'US33', 'Orphans under 18 years old')
+
+    # Check for US34
+    errors_us34 = us34(individuals, families)
+    print_errors(errors_us34, 'US34')
 
     # Check for US35: List recent births
     list_us35 = us35(individuals)
