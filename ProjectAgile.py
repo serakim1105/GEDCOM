@@ -231,7 +231,7 @@ def us03(individuals):
         if death_date_str != "NA":
             deathDate = datetime.strptime(death_date_str, "%d %b %Y").toordinal()
         if (birthDate > deathDate):
-            errors.append(f'ERROR: INDIVIDUAL: US03: {indi["ID"]}:{indi["Name"]}:{indi["Birthday"]}:{indi["Death"]} - Birth date not before death date.')
+                errors.append(f'ERROR: INDIVIDUAL: US03: {indi["ID"]}:{indi["Name"]}:{indi["Birthday"]}:{indi["Death"]} - Birth date not before death date.')
     return errors
 
 #US05 - Marriage before Death
@@ -436,6 +436,12 @@ def us12(individuals, families):
                         too_old_parents.append(f"Individual {husband['ID']}, family {family['ID']}: {family['HusbandName'].replace('/', '')}, DOB {husband['Birthday']} is more than 80 yrs older than his child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
 
     return list(set(too_old_parents))  # Remove duplicates
+
+#US13: Sibling Spacing
+# def us13():
+
+#US15: Fewer Than 15 Siblings
+# def us15():
 
 def us16(individuals, families):
     errors = []
