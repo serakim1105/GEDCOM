@@ -216,9 +216,9 @@ def us02_anom(individuals, families):
             wdob_plus10 = wife_birthday + timedelta(days = 3650)
             #print(f"husband birthday + 10 yrs: {hdob_plus10}")
             if hdob_plus10 > fam['Married']:
-                anomalies.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before age of 10.")
+                anomalies.append(f"Line {fam['line']} - {fam['ID']}: {fam['HusbandName']} married before age of 10.")
             if wdob_plus10 > fam['Married']:
-                anomalies.append(f"US02: {fam['ID']}: {fam['WifeName']} married before age of 10.")
+                anomalies.append(f"Line {fam['line']} - {fam['ID']}: {fam['WifeName']} married before age of 10.")
     return anomalies
 
 #US03 - Birth before Death
@@ -235,7 +235,7 @@ def us03(individuals):
         if death_date_str != "NA":
             deathDate = datetime.strptime(death_date_str, "%d %b %Y").toordinal()
         if (birthDate > deathDate):
-                errors.append(f'ERROR: INDIVIDUAL: US03: {indi["ID"]}:{indi["Name"]}:{indi["Birthday"]}:{indi["Death"]} - Birth date not before death date.')
+                errors.append(f'Line {indi['line']} - INDIVIDUAL: US03: {indi["ID"]}:{indi["Name"]}:{indi["Birthday"]}:{indi["Death"]} - Birth date not before death date.')
     return errors
 
 #US05 - Marriage before Death
@@ -247,6 +247,7 @@ def us05(individuals, families):
         wifeName = fam['WifeName']
         #wedding info
         weddingDate = datetime.strptime(wedding_date_str, "%d %b %Y").toordinal()
+        line = fam['line']
         for indi in individuals:
             if(husbandName == indi["Name"]):
                 husband_death_str = indi['Death']
@@ -259,7 +260,7 @@ def us05(individuals, families):
                     # wife death info
                     wifeDeathDate = datetime.strptime(wife_death_str, "%d %b %Y").toordinal()
                     if weddingDate > husbandDeathDate or weddingDate > wifeDeathDate:
-                        errors.append(f'Error: US05: Marriage date not listed before either spouse death.')
+                        errors.append(f'Line {line} - US05: Marriage date not listed before either spouse death.')
         return errors
 
 #US06 Divorce can only occur before death of both spouses
