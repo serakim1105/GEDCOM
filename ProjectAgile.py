@@ -56,9 +56,11 @@ def parse_gedcom_file(filename):
     current_indi = None
     current_fam = None
     date_type = None
+    line_num = 0
 
     for line in lines:
         line = line.strip()
+        line_num += 1
         # print("--> " + line)#.strip()) #remove return char for easier reading
         
         level, tag, is_valid, args = parse_gedcom_line(line)
@@ -72,7 +74,7 @@ def parse_gedcom_file(filename):
                 current_fam = None
 
             if tag == "INDI":
-                current_indi = {"ID": args, "Name": "NA", "Gender": "NA", "Birthday": "NA", "Death": "NA", "Child": "NA", "Spouse": []}
+                current_indi = {"line": line_num, "ID": args, "Name": "NA", "Gender": "NA", "Birthday": "NA", "Death": "NA", "Child": "NA", "Spouse": []}
             elif tag == "FAM":
                 current_fam = {"ID": args, "Married": "NA", "Divorced": "NA", "Husband": "NA", "HusbandName": "Unknown", "Wife": "NA", "WifeName": "Unknown", "Children": []}
 
@@ -94,6 +96,7 @@ def parse_gedcom_file(filename):
             elif tag == "FAMS":
                 current_indi["Spouse"].append(args)
             elif level == "0":
+                current_indi["line"] = line_num
                 indi_id = line.split()[1]
                 current_indi["ID"] = indi_id
 
@@ -127,6 +130,7 @@ def parse_gedcom_file(filename):
                 current_fam["Children"].append(args)
             else: 
                 if level == "0":
+                    current_fam["line"] = line_num
                     tokens = line.split()
                     current_fam["ID"] = tokens[1]
 
@@ -188,9 +192,9 @@ def us02_err(individuals, families):
         wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
         if husband_birthday and wife_birthday:
             if husband_birthday > fam['Married']:
-                errors.append(f"US02: {fam['ID']}: {fam['HusbandName']} married before his birthday.")
+                errors.append(f"Line {fam['line']} - {fam['ID']}: {fam['HusbandName']} married before his birthday.")
             if wife_birthday > fam['Married']:
-                errors.append(f"US02: {fam['ID']}: {fam['WifeName']} married before her birthday.")
+                errors.append(f"Line {fam['line']} - {fam['ID']}: {fam['WifeName']} married before her birthday.")
     return errors
 
 # User Story 02 - Check for Anomoly: Marriage should occur 10 years after birth
@@ -944,6 +948,7 @@ def main():
             print(f"\n__{us_num} {errs_or_anoms}__")
 
             for r in us_result:
+                #l = get_line()
                 print(r)
         else:
             print(f"\n__No {errs_or_anoms} in {us_num}__.")

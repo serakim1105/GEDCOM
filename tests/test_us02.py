@@ -14,10 +14,10 @@ individuals = [
 ]
 
 families = [
-    {'ID': 'F01', 'Married': '1 MAR 1970', 'Divorced': 'NA', 'Husband': 'I01', 'HusbandName': 'Justin /Lee/', 'Wife': 'I02', 'WifeName': 'Anna /Lee/', 'Children': ['I05']},
-    {'ID': 'F02', 'Married': '1 AUG 1995', 'Divorced': 'NA', 'Husband': 'I05', 'HusbandName': 'Cody /Lee/', 'Wife': 'I03', 'WifeName': 'Hannah /Lee/', 'Children': ['I06']},
-    {'ID': 'F03', 'Married': '1 DEC 1999', 'Divorced': 'NA', 'Husband': 'I05', 'HusbandName': 'Cody /Lee/', 'Wife': 'I04', 'WifeName': 'Judy /Lee/', 'Children': ['I07']}, 
-    {'ID': 'F04', 'Married': '1 JAN 2024', 'Divorced': 'NA', 'Husband': 'I01', 'HusbandName': 'Justin /Lee/', 'Wife': 'I04', 'WifeName': 'Judy /Lee/'}
+    {'line': 1, 'ID': 'F01', 'Married': '1 MAR 1970', 'Divorced': 'NA', 'Husband': 'I01', 'HusbandName': 'Justin /Lee/', 'Wife': 'I02', 'WifeName': 'Anna /Lee/', 'Children': ['I05']},
+    {'line': 2, 'ID': 'F02', 'Married': '1 AUG 1995', 'Divorced': 'NA', 'Husband': 'I05', 'HusbandName': 'Cody /Lee/', 'Wife': 'I03', 'WifeName': 'Hannah /Lee/', 'Children': ['I06']},
+    {'line': 3, 'ID': 'F03', 'Married': '1 DEC 1999', 'Divorced': 'NA', 'Husband': 'I05', 'HusbandName': 'Cody /Lee/', 'Wife': 'I04', 'WifeName': 'Judy /Lee/', 'Children': ['I07']}, 
+    {'line': 4, 'ID': 'F04', 'Married': '1 JAN 2024', 'Divorced': 'NA', 'Husband': 'I01', 'HusbandName': 'Justin /Lee/', 'Wife': 'I04', 'WifeName': 'Judy /Lee/'}
 ]
 # test output of sample data
 def test_1_us02(): 
@@ -27,7 +27,7 @@ def test_1_us02():
 def test_2_us02(): 
     families_tmp = families
     families_tmp[0]["Married"] = '1 MAR 1949'
-    assert us02_err(individuals, families_tmp) == ['US02: F01: Justin /Lee/ married before his birthday.', 'US02: F01: Anna /Lee/ married before her birthday.'], "Expected Justin and Anna both married before birthdays"
+    assert us02_err(individuals, families_tmp) == ['Line 1 - F01: Justin /Lee/ married before his birthday.', 'Line 1 - F01: Anna /Lee/ married before her birthday.'], "Expected Justin and Anna both married before birthdays"
 
 # test for empty .ged
 def test_3_us02():
