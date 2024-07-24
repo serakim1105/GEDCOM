@@ -371,7 +371,7 @@ def us09(individuals, families):
                 if child_birth:
                     child_bir = date_to_number(child_birth)
                     if child_bir > husband_death_plus9.timestamp():
-                        errors.append(f"US09: Family {fam['ID']}: Child {child_id} born more than 9 months after father's death.")
+                        errors.append(f"Line {fam['line']} - Family {fam['ID']}: Child {child_id} born more than 9 months after father's death.")
 
         if wife_death:
             for child_id in children_ids:
@@ -379,7 +379,7 @@ def us09(individuals, families):
                 if child_birth:
                     child_bir = date_to_number(child_birth)
                     if child_bir > date_to_number(wife_death):
-                        errors.append(f"US09: Family {fam['ID']}: Child {child_id} born after mother's death.")
+                        errors.append(f"Line {fam['line']} - Family {fam['ID']}: Child {child_id} born after mother's death.")
     return errors
 
 #Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
@@ -400,9 +400,9 @@ def us10(individuals, families):
         married = str_to_date(married_date)
 
         if husb_dob and married and married < husb_dob + timedelta(days=5110):
-            errors.append(f"US10: Family {fam['ID']}: {fam['HusbandName']} married before age 14.")
+            errors.append(f"Line {fam['line']} - Family {fam['ID']}: {fam['HusbandName']} married before age 14.")
         if wife_dob and married and married < wife_dob + timedelta(days=5110):
-            errors.append(f"US10: Family {fam['ID']}: {fam['WifeName']} married before age 14.")
+            errors.append(f"Line {fam['line']} - Family {fam['ID']}: {fam['WifeName']} married before age 14.")
 
     return errors
 
@@ -435,10 +435,10 @@ def us12(individuals, families):
                     
                     if (wife_age - child_age > 60):
                         #name = indi["Name"].replace("/", "")
-                        too_old_parents.append(f"Individual {wife['ID']}, family {family['ID']}: {family['WifeName'].replace('/', '')}, DOB {wife['Birthday']} is more than 60 yrs older than her child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
+                        too_old_parents.append(f"Line {wife['line']} - Individual {wife['ID']}, family {family['ID']}: {family['WifeName'].replace('/', '')}, DOB {wife['Birthday']} is more than 60 yrs older than her child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
                         #break  # Stop checking once a parent doesn't meet the criteria
                     if (husband_age - child_age > 80):
-                        too_old_parents.append(f"Individual {husband['ID']}, family {family['ID']}: {family['HusbandName'].replace('/', '')}, DOB {husband['Birthday']} is more than 80 yrs older than his child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
+                        too_old_parents.append(f"Line {husband['line']} -Individual {husband['ID']}, family {family['ID']}: {family['HusbandName'].replace('/', '')}, DOB {husband['Birthday']} is more than 80 yrs older than his child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
 
     return list(set(too_old_parents))  # Remove duplicates
 
@@ -448,6 +448,7 @@ def us12(individuals, families):
 #US15: Fewer Than 15 Siblings
 # def us15():
 
+#All male members of a family should have the same last name
 def us16(individuals, families):
     errors = []
     individual_last_names = {indi["ID"]: indi["Name"].split('/')[-2] for indi in individuals}
@@ -462,7 +463,7 @@ def us16(individuals, families):
                 if indi["ID"] == child_id and indi["Gender"] == "M":
                     child_last_name = individual_last_names[child_id]
                     if husband_last_name and child_last_name != husband_last_name:
-                        errors.append(f'US16: Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
+                        errors.append(f'Line {indi['line']} - Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
     
 # Test unique IDs
