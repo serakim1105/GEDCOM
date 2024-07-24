@@ -13,21 +13,22 @@ def create_individual(id, birth_date, name="NA", death_date="NA"):
         "Spouse": ["NA"]
     }
 
-def create_family(id, husband_id, wife_id, children_ids,married_date="NA", divorced_date="NA"):
+def create_family(id, husband_id, wife_id, children_ids,married_date="NA", divorced_date="NA", line="NA"):
     return {
         "ID": id,
         "Husband": husband_id,
         "Wife": wife_id,
         "Children": children_ids,
         "Married": married_date,
-        "Divorced": divorced_date
+        "Divorced": divorced_date,
+        "line": line
     }
 
 def test_1_us06():
     # Test case 1: Divorce before death of both spouses
     indi1 = create_individual("I01", "1 JAN 1900", "John Doe", "10 JUN 1980")
     indi2 = create_individual("I02", "2 JAN 1900", "Jane Doe", "10 JUN 1990")
-    family1 = create_family("F01", "I01", "I02", [],"", "10 JUN 1970")
+    family1 = create_family("F01", "I01", "I02", [],"", "10 JUN 1970", 1)
     individuals = [indi1, indi2]
     families = [family1]
 
@@ -39,11 +40,11 @@ def test_2_us06():
     # Test case 2: Divorce after death of one spouse
     indi1 = create_individual("I01", "1 JAN 1900", "John Doe", "10 JUN 1980")
     indi2 = create_individual("I02", "2 JAN 1900", "Jane Doe")
-    family1 = create_family("F01", "I01", "I02", [],"", "10 JUN 1985")
+    family1 = create_family("F01", "I01", "I02", [],"", "10 JUN 1985", 2)
     individuals = [indi1, indi2]
     families = [family1]
 
-    expected_output = ['Error: US06: Family F01: Divorce can only occur before death of spouses']
+    expected_output = ['Line 2 - US06: Family F01: Divorce can only occur before death of spouses']
 
     assert us06(individuals, families) == expected_output
 
@@ -51,11 +52,11 @@ def test_3_us06():
     # Test case 3: Divorce after death of both spouses
     indi1 = create_individual("I01", "1 JAN 1900", "John Doe", "10 JUN 1980")
     indi2 = create_individual("I02", "2 JAN 1900", "Jane Doe", "10 JUN 1985")
-    family1 = create_family("F01", "I01", "I02", [],"", "10 JUN 1990")
+    family1 = create_family("F01", "I01", "I02", [],"", "10 JUN 1990", 3)
     individuals = [indi1, indi2]
     families = [family1]
 
-    expected_output = ['Error: US06: Family F01: Divorce can only occur before death of spouses']
+    expected_output = ['Line 3 - US06: Family F01: Divorce can only occur before death of spouses']
 
     assert us06(individuals, families) == expected_output
 
@@ -76,11 +77,11 @@ def test_1_us08():
     indi1 = create_individual("I01", "1 JAN 1900", "John Doe")
     indi2 = create_individual("I02", "2 JAN 1900", "Jane Doe")
     indi3 = create_individual("I03", "1 DEC 1980", "Michael Doe")
-    family1 = create_family("F01", "I01", "I02", ["I03"], "1 JAN 1970", "1 JAN 1980")
+    family1 = create_family("F01", "I01", "I02", ["I03"], "1 JAN 1970", "1 JAN 1980", 1)
     individuals = [indi1, indi2, indi3]
     families = [family1]
 
-    expected_output = ['Error: US08: Family F01: Child I03 born before marriage or more than 9 months after divorce.']
+    expected_output = ['Line 1 - US08: Family F01: Child I03 born before marriage or more than 9 months after divorce.']
 
     assert us08(individuals, families) == expected_output
 
@@ -89,11 +90,11 @@ def test_2_us08():
     indi1 = create_individual("I01", "1 JAN 1900", "John Doe")
     indi2 = create_individual("I02", "2 JAN 1900", "Jane Doe")
     indi3 = create_individual("I03", "1 DEC 1969", "Michael Doe")
-    family1 = create_family("F01", "I01", "I02", ["I03"], "1 JAN 1970")
+    family1 = create_family("F01", "I01", "I02", ["I03"], "1 JAN 1970", "NA", 2)
     individuals = [indi1, indi2, indi3]
     families = [family1]
 
-    expected_output = ['Error: US08: Family F01: Child I03 born before marriage or more than 9 months after divorce.']
+    expected_output = ['Line 2 - US08: Family F01: Child I03 born before marriage or more than 9 months after divorce.']
 
     assert us08(individuals, families) == expected_output
 
@@ -102,11 +103,11 @@ def test_3_us08():
     indi1 = create_individual("I01", "1 JAN 1900", "John Doe")
     indi2 = create_individual("I02", "2 JAN 1900", "Jane Doe")
     indi3 = create_individual("I03", "1 NOV 1981", "Michael Doe")
-    family1 = create_family("F01", "I01", "I02", ["I03"], "1 JAN 1970", "1 JAN 1980")
+    family1 = create_family("F01", "I01", "I02", ["I03"], "1 JAN 1970", "1 JAN 1980", 3)
     individuals = [indi1, indi2, indi3]
     families = [family1]
 
-    expected_output = ['Error: US08: Family F01: Child I03 born before marriage or more than 9 months after divorce.']
+    expected_output = ['Line 3 - US08: Family F01: Child I03 born before marriage or more than 9 months after divorce.']
 
     assert us08(individuals, families) == expected_output
 
@@ -115,7 +116,7 @@ def test_4_us08():
     indi1 = create_individual("I01", "1 JAN 1900", "John Doe")
     indi2 = create_individual("I02", "2 JAN 1900", "Jane Doe")
     indi3 = create_individual("I03", "1 DEC 1980", "Michael Doe")
-    family1 = create_family("F01", "I01", "I02", ["I03"])
+    family1 = create_family("F01", "I01", "I02", ["I03"], "NA", "NA", 4)
     individuals = [indi1, indi2, indi3]
     families = [family1]
 

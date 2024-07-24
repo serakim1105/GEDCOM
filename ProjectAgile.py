@@ -289,7 +289,7 @@ def us06(individuals, families):
             husbandResult = countDays(fam['Husband'], fam['Divorced'], fam['ID'])
             wifeResult = countDays(fam['Wife'], fam['Divorced'], fam['ID'])
             if husbandResult or wifeResult:
-                errors.append(f'Error: US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
+                errors.append(f'Line {fam['line']} - US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
     return errors
 
 #US07: Death should be less than 150 years after birth for dead people, 
@@ -306,11 +306,11 @@ def us07(individuals):
         if death_date_str != "NA":
             age_at_death = calculate_age(birth_date_str, death_date_str)
             if age_at_death >= 150:
-                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
+                errors.append(f"Line {indi['line']} - INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
         else:
             age = calculate_age(birth_date_str)
             if age >= 150:
-                errors.append(f"US07: INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
+                errors.append(f"Line {indi['line']} - INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
     return errors
 
 #US08: Birth before marriage of parents: Children should be born after marriage of parents (and not more than 9 months after their divorce)
@@ -334,7 +334,7 @@ def us08(individuals, families):
                         if indi['Birthday'] != 'NA':
                             birth_date = str_to_date(indi['Birthday'])
                             if not is_valid_birth(marriage_date, birth_date, divorce_date):
-                                errors.append(f'Error: US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
+                                errors.append(f'Line {fam["line"]} - US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
     return errors
 
 #Helper function for us09 and us10
