@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
 import sys
 from prettytable import PrettyTable
+from parseDate import parse_date, safe_parse_date
 
 
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
@@ -86,6 +87,7 @@ def parse_gedcom_file(filename):
             elif tag in ["BIRT", "DEAT"]:
                 date_type = tag
             elif tag == "DATE" and date_type:
+                
                 if date_type == "BIRT":
                     current_indi["Birthday"] = args
                 elif date_type == "DEAT":
@@ -147,6 +149,10 @@ def parse_gedcom_file(filename):
     for fam in families:
         if not fam["Children"]:
             fam["Children"] = ["none"]
+
+    for indi in individuals:
+        indi['Birthday'] = safe_parse_date(indi['Birthday'])
+        indi['Death'] = safe_parse_date(indi['Death'])
 
     # Print the individuals and families
 
