@@ -434,9 +434,7 @@ def us12(individuals, families):
                     child_age = calculate_age(child['Birthday'], None if alive else child["Death"]) if child["Birthday"] != "NA" else "NA"
                     
                     if (wife_age - child_age > 60):
-                        #name = indi["Name"].replace("/", "")
                         too_old_parents.append(f"Line {wife['line']} - Individual {wife['ID']}, family {family['ID']}: {family['WifeName'].replace('/', '')}, DOB {wife['Birthday']} is more than 60 yrs older than her child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
-                        #break  # Stop checking once a parent doesn't meet the criteria
                     if (husband_age - child_age > 80):
                         too_old_parents.append(f"Line {husband['line']} -Individual {husband['ID']}, family {family['ID']}: {family['HusbandName'].replace('/', '')}, DOB {husband['Birthday']} is more than 80 yrs older than his child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
 
@@ -448,7 +446,7 @@ def us12(individuals, families):
 #US15: Fewer Than 15 Siblings
 # def us15():
 
-#All male members of a family should have the same last name
+#US16: All male members of a family should have the same last name
 def us16(individuals, families):
     errors = []
     individual_last_names = {indi["ID"]: indi["Name"].split('/')[-2] for indi in individuals}
@@ -466,7 +464,7 @@ def us16(individuals, families):
                         errors.append(f'Line {indi['line']} - Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
     
-# Test unique IDs
+# US22: All individual IDs should be unique and all family IDs should be unique
 def us22(individuals, families):
     errors = []
     uids = [] 
@@ -476,19 +474,19 @@ def us22(individuals, families):
         if id not in uids:
             uids.append(id)
         else:
-            errors.append(f"Duplicate individual ID, {id}, for {indi['Name']}")
+            errors.append(f"Line {indi['line']} - Duplicate individual ID, {id}, for {indi['Name']}")
     
     for fam in families:
         id = fam['ID']
         marr = fam['Married']
-        print(marr)
+        #print(marr)
         if id not in uids:
             uids.append(id)
         else:
-            errors.append(f"Duplicate family ID, {id}, with marriage date {marr}")
+            errors.append(f"Line {fam['line']} - Duplicate family ID, {id}, with marriage date {marr}")
     return errors
 
-# Check for individuals who have the same name and birth date
+# US23: Check for individuals who have the same name and birth date
 def us23(individuals):
     names_birthdays = []
     errors = []
@@ -501,10 +499,11 @@ def us23(individuals):
         if formatted_name_birthday not in names_birthdays:
             names_birthdays.append(formatted_name_birthday)
         else:
-            errors.append((f"Individual {id} has the same name and birth date - {formatted_name_birthday} - with at least one other individual in this GEDCOM."))
+            errors.append((f"Line {individual['line']} - Individual {id} has the same name and birth date - {formatted_name_birthday} - with at least one other individual in this GEDCOM."))
 
     return errors
 
+#US:25 No more than one child with the same name and birth date should appear in a family
 def us25(individuals, families):
     names_birthdays = []
     errors = []
@@ -526,7 +525,7 @@ def us25(individuals, families):
             if formatted_name_birthday not in names_birthdays:
                 names_birthdays.append(formatted_name_birthday)
             else:
-                errors.append((f"Child with ID {id} in family {family_id} has the same name and birth date - {formatted_name_birthday} - as another child in family {family_id}."))
+                errors.append((f"Line {child['line']} - Child with ID {id} in family {family_id} has the same name and birth date - {formatted_name_birthday} - as another child in family {family_id}."))
 
     return errors
 
@@ -682,8 +681,8 @@ def us30(individuals):
         if not dead and married:
             living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}\n')
         if dead or notMarried:
-            errors.append(f'ERROR: INDIVIDUAL: US30: {indi["ID"]}: Not living and married.')  
-    print ("\n".join(living_married_individuals)) 
+            errors.append(f'Line {indi['line']} - Individual {indi["ID"]}: Not living and married.')  
+    print ("".join(living_married_individuals)) 
     return errors
 
 #US31:List all individuals who are 30 and have never been married
@@ -700,7 +699,7 @@ def us31(individuals):
             living_single_individuals.append(f'{indi["ID"]}:{indi["Name"]}')
         #Living individuals not over 30 or not single
         if age < 30 or not noSpouse or (not alive):
-            errors.append(f'ERROR: INDIVIDUAL: US31: {indi["ID"]}: Is not alive or single above 30.')
+            errors.append(f'Line {indi['line']} - Individual {indi["ID"]}: Is not alive or single above 30.')
     if len(living_single_individuals) == 0:
         print("No results")
     print ("\n".join(living_single_individuals))
@@ -1040,6 +1039,7 @@ def main():
     # Check for US30: List living married
     errors_us30 = us30(individuals)
     print_errors(errors_us30, 'US30')
+    #print_list(errors_us30, 'US30', 'All living married individuals')
 
     # Check for US31: List living single
     errors_us31 = us31(individuals)
