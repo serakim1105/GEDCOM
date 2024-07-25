@@ -156,14 +156,14 @@ def parse_gedcom_file(filename):
     for indi in individuals:
         alive = indi['Death'] == "NA"
         age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
-        indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
+        indi_table.add_row([indi["ID"], indi["Name"], indi['Gender'], indi["Birthday"], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
     
     
     fam_table = PrettyTable()
     fam_table.field_names = ["ID", "Married", "Divorced", "HusbandID", "HusbandName", "WifeID", "WifeName", "Children"]
     
     for fam in families:
-        fam_table.add_row([fam['ID'], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
+        fam_table.add_row([fam["ID"], fam['Married'], fam['Divorced'], fam['Husband'], fam['HusbandName'], fam['Wife'], fam['WifeName'], ','.join(fam['Children'])])
 
     # print(individuals)
     # print(families)
@@ -182,19 +182,19 @@ def us02_err(individuals, families):
         return datetime.strptime(date_str, '%d %b %Y')
 
     # convert birthdates and married to datestring objects
-    individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
+    individuals_new = [{**i, "Birthday": str_to_date(i["Birthday"])} for i in individuals]
     familes_new = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
 
     # find errors
     errors = []
     for fam in familes_new:
-        husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
-        wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
+        husband_birthday = next((i for i in individuals_new if i["ID"] == fam['Husband']), None)["Birthday"]
+        wife_birthday = next((i for i in individuals_new if i["ID"] == fam['Wife']), None)["Birthday"]
         if husband_birthday and wife_birthday:
             if husband_birthday > fam['Married']:
-                errors.append(f"Line {fam['line']} - {fam['ID']}: {fam['HusbandName']} married before his birthday.")
+                errors.append(f'Line {fam["line"]} - US02_Err: FAMILY:{fam["ID"]}: {fam["HusbandName"]} married before his birthday.')
             if wife_birthday > fam['Married']:
-                errors.append(f"Line {fam['line']} - {fam['ID']}: {fam['WifeName']} married before her birthday.")
+                errors.append(f'Line {fam["line"]} - US02_Err: FAMILY: {fam["ID"]}: {fam["WifeName"]} married before her birthday.')
     return errors
 
 # User Story 02 - Check for Anomoly: Marriage should occur 10 years after birth
@@ -203,22 +203,22 @@ def us02_anom(individuals, families):
         return datetime.strptime(date_str, '%d %b %Y')
 
     # convert birthdates and married to datestring objects
-    individuals_new = [{**i, 'Birthday': str_to_date(i['Birthday'])} for i in individuals]
+    individuals_new = [{**i, "Birthday": str_to_date(i["Birthday"])} for i in individuals]
     familes_new = [{**f, 'Married': str_to_date(f['Married'])} for f in families]
 
     # find anomalies
     anomalies = []
     for fam in familes_new:
-        husband_birthday = next((i for i in individuals_new if i['ID'] == fam['Husband']), None)['Birthday']
-        wife_birthday = next((i for i in individuals_new if i['ID'] == fam['Wife']), None)['Birthday']
+        husband_birthday = next((i for i in individuals_new if i["ID"] == fam['Husband']), None)["Birthday"]
+        wife_birthday = next((i for i in individuals_new if i["ID"] == fam['Wife']), None)["Birthday"]
         if husband_birthday and wife_birthday:
             hdob_plus10 = husband_birthday + timedelta(days = 3650)
             wdob_plus10 = wife_birthday + timedelta(days = 3650)
             #print(f"husband birthday + 10 yrs: {hdob_plus10}")
             if hdob_plus10 > fam['Married']:
-                anomalies.append(f"Line {fam['line']} - {fam['ID']}: {fam['HusbandName']} married before age of 10.")
+                anomalies.append(f'Line {fam["line"]} - US02_Anom: FAMILY: {fam["ID"]}: {fam["HusbandName"]} married before age of 10.')
             if wdob_plus10 > fam['Married']:
-                anomalies.append(f"Line {fam['line']} - {fam['ID']}: {fam['WifeName']} married before age of 10.")
+                anomalies.append(f'Line {fam["line"]} - US02_Anom: FAMILY: {fam["ID"]}: {fam["WifeName"]} married before age of 10.')
     return anomalies
 
 #US03 - Birth before Death
@@ -235,7 +235,7 @@ def us03(individuals):
         if death_date_str != "NA":
             deathDate = datetime.strptime(death_date_str, "%d %b %Y").toordinal()
         if (birthDate > deathDate):
-                errors.append(f'Line {indi['line']} - INDIVIDUAL: US03: {indi["ID"]}:{indi["Name"]}:{indi["Birthday"]}:{indi["Death"]} - Birth date not before death date.')
+                errors.append(f'Line {indi["line"]} - US03: INDIVIDUAL: {indi["ID"]}:{indi["Name"]}:{indi["Birthday"]}:{indi["Death"]} - Birth date not before death date.')
     return errors
 
 #US05 - Marriage before Death
@@ -250,7 +250,7 @@ def us05(individuals, families):
         line = fam['line']
         for indi in individuals:
             if(husbandName == indi["Name"]):
-                husband_death_str = indi['Death']
+                husband_death_str = indi["Death"]
                 if husband_death_str != "NA":
                     #husband death info
                     husbandDeathDate = datetime.strptime(husband_death_str, "%d %b %Y").toordinal()
@@ -260,7 +260,7 @@ def us05(individuals, families):
                     # wife death info
                     wifeDeathDate = datetime.strptime(wife_death_str, "%d %b %Y").toordinal()
                     if weddingDate > husbandDeathDate or weddingDate > wifeDeathDate:
-                        errors.append(f'Line {line} - US05: Marriage date not listed before either spouse death.')
+                        errors.append(f'Line {fam["line"]} - US05: FAMILY: Marriage date not listed before either spouse death.')
         return errors
 
 #US06 Divorce can only occur before death of both spouses
@@ -282,14 +282,14 @@ def us06(individuals, families):
     
     for indi in individuals:
         if indi['Death'] != 'NA':
-            idDeath[indi['ID']] = indi['Death']
+            idDeath[indi["ID"]] = indi['Death']
     # print("US06",familyId)
     for fam in families:
         if fam['Divorced'] != 'NA':
-            husbandResult = countDays(fam['Husband'], fam['Divorced'], fam['ID'])
-            wifeResult = countDays(fam['Wife'], fam['Divorced'], fam['ID'])
+            husbandResult = countDays(fam['Husband'], fam['Divorced'], fam["ID"])
+            wifeResult = countDays(fam['Wife'], fam['Divorced'], fam["ID"])
             if husbandResult or wifeResult:
-                errors.append(f'Line {fam['line']} - US06: Family {fam["ID"]}: Divorce can only occur before death of spouses')
+                errors.append(f'Line {fam["line"]} - US06: FAMILY: {fam["ID"]}: Divorce can only occur before death of spouses')
     return errors
 
 #US07: Death should be less than 150 years after birth for dead people, 
@@ -297,7 +297,7 @@ def us06(individuals, families):
 def us07(individuals):
     errors = []
     for indi in individuals:
-        birth_date_str = indi['Birthday']
+        birth_date_str = indi["Birthday"]
         death_date_str = indi['Death']
         
         if birth_date_str == "NA":
@@ -306,11 +306,11 @@ def us07(individuals):
         if death_date_str != "NA":
             age_at_death = calculate_age(birth_date_str, death_date_str)
             if age_at_death >= 150:
-                errors.append(f"Line {indi['line']} - INDIVIDUAL: {indi['ID']}: More than 150 years old at death: {age_at_death} years")
+                errors.append(f'Line {indi["line"]} - US07: INDIVIDUAL: {indi["ID"]}: More than 150 years old at death: {age_at_death} years')
         else:
             age = calculate_age(birth_date_str)
             if age >= 150:
-                errors.append(f"Line {indi['line']} - INDIVIDUAL: {indi['ID']}: More than 150 years old and still alive: {age} years")
+                errors.append(f'Line {indi["line"]} - US07: INDIVIDUAL: {indi["ID"]}: More than 150 years old and still alive: {age} years')
     return errors
 
 #US08: Birth before marriage of parents: Children should be born after marriage of parents (and not more than 9 months after their divorce)
@@ -330,14 +330,14 @@ def us08(individuals, families):
             divorce_date = str_to_date(fam['Divorced']) if fam['Divorced'] != 'NA' else None
             for child_id in fam['Children']:
                 for indi in individuals:
-                    if indi['ID'] == child_id:
-                        if indi['Birthday'] != 'NA':
-                            birth_date = str_to_date(indi['Birthday'])
+                    if indi["ID"] == child_id:
+                        if indi["Birthday"] != 'NA':
+                            birth_date = str_to_date(indi["Birthday"])
                             if not is_valid_birth(marriage_date, birth_date, divorce_date):
-                                errors.append(f'Line {fam["line"]} - US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
+                                errors.append(f'Line {fam["line"]} - US08: FAMILY: {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
     return errors
 
-#Helper function for us09 and us10
+# #Helper function for us09 and us10
 def date_to_number(date_str):
     if date_str == 'NA':
         return 999999999999
@@ -346,7 +346,7 @@ def date_to_number(date_str):
     
     return timestamp   
 
-#US09: Child should be born before death of mother and before 9 months after death of father
+# #US09: Child should be born before death of mother and before 9 months after death of father
 def us09(individuals, families):
     errors = []
 
@@ -354,11 +354,11 @@ def us09(individuals, families):
         return datetime.strptime(date_str, '%d %b %Y')
 
     for fam in families:
-        husband_id = fam["Husband"]
-        wife_id = fam["Wife"]
-        children_ids = fam["Children"]
-        husband_death = next((indi["Death"] for indi in individuals if indi["ID"] == husband_id), None)
-        wife_death = next((indi["Death"] for indi in individuals if indi["ID"] == wife_id), None)
+        husband_id = fam['Husband']
+        wife_id = fam['Wife']
+        children_ids = fam['Children']
+        husband_death = next((indi['Death'] for indi in individuals if indi['ID'] == husband_id), None)
+        wife_death = next((indi['Death'] for indi in individuals if indi['ID'] == wife_id), None)
 
         if husband_death and husband_death != "NA" and husband_death is not None:
             husband_death_new = str_to_date(husband_death)
@@ -367,22 +367,22 @@ def us09(individuals, families):
             # print(husband_death_plus9)
 
             for child_id in children_ids:
-                child_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == child_id), None)
+                child_birth = next((indi['Birthday'] for indi in individuals if indi['ID'] == child_id), None)
                 if child_birth:
                     child_bir = date_to_number(child_birth)
                     if child_bir > husband_death_plus9.timestamp():
-                        errors.append(f"Line {fam['line']} - Family {fam['ID']}: Child {child_id} born more than 9 months after father's death.")
+                        errors.append(f'Line {fam["line"]} - Family {fam["ID"]}: Child {child_id} born more than 9 months after death of father.')
 
         if wife_death:
             for child_id in children_ids:
-                child_birth = next((indi["Birthday"] for indi in individuals if indi["ID"] == child_id), None)
+                child_birth = next((indi['Birthday'] for indi in individuals if indi['ID'] == child_id), None)
                 if child_birth:
                     child_bir = date_to_number(child_birth)
                     if child_bir > date_to_number(wife_death):
-                        errors.append(f"Line {fam['line']} - Family {fam['ID']}: Child {child_id} born after mother's death.")
+                        errors.append(f'Line {fam["line"]} - US09: FAMILY: {fam["ID"]}: Child {fam["Children"]} born after death of mother.')
     return errors
 
-#Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
+# #Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
 def us10(individuals, families):
     errors = []
     for fam in families:
@@ -400,9 +400,9 @@ def us10(individuals, families):
         married = str_to_date(married_date)
 
         if husb_dob and married and married < husb_dob + timedelta(days=5110):
-            errors.append(f"Line {fam['line']} - Family {fam['ID']}: {fam['HusbandName']} married before age 14.")
+            errors.append(f'Line {fam["line"]} - US10: FAMILY: {fam["ID"]}: {fam["HusbandName"]} married before age 14.')
         if wife_dob and married and married < wife_dob + timedelta(days=5110):
-            errors.append(f"Line {fam['line']} - Family {fam['ID']}: {fam['WifeName']} married before age 14.")
+            errors.append(f'Line {fam["line"]} - US10: FAMILY: {fam["ID"]}: {fam["WifeName"]} married before age 14.')
 
     return errors
 
@@ -411,7 +411,7 @@ def us12(individuals, families):
     too_old_parents = []
     
     for individual in individuals:
-        #individual['Birthday'] = datetime.strptime(individual['Birthday'], '%d %b %Y')
+        #individual["Birthday"] = datetime.strptime(individual["Birthday"], '%d %b %Y')
         alive = individual['Death'] == "NA"
 
     for family in families:
@@ -419,32 +419,27 @@ def us12(individuals, families):
         wife_id = family['Wife']
         children_ids = family['Children']
         
-        husband = next((i for i in individuals if i['ID'] == husband_id), None)
-        wife = next((i for i in individuals if i['ID'] == wife_id), None)
+        husband = next((i for i in individuals if i["ID"] == husband_id), None)
+        wife = next((i for i in individuals if i["ID"] == wife_id), None)
         
         if husband and wife:
 
             #age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
-            husband_age = calculate_age(husband['Birthday'], None if alive else husband['Death']) if husband['Birthday'] != 'NA' else 'NA'
-            wife_age = calculate_age(wife['Birthday'], None if alive else wife["Death"]) if wife["Birthday"] != "NA" else "NA"
+            husband_age = calculate_age(husband["Birthday"], None if alive else husband['Death']) if husband["Birthday"] != 'NA' else 'NA'
+            wife_age = calculate_age(wife["Birthday"], None if alive else wife["Death"]) if wife["Birthday"] != "NA" else "NA"
             
             for child_id in children_ids:
-                child = next((i for i in individuals if i['ID'] == child_id), None)
+                child = next((i for i in individuals if i["ID"] == child_id), None)
                 if child:
-                    child_age = calculate_age(child['Birthday'], None if alive else child["Death"]) if child["Birthday"] != "NA" else "NA"
+                    child_age = calculate_age(child["Birthday"], None if alive else child["Death"]) if child["Birthday"] != "NA" else "NA"
                     
                     if (wife_age - child_age > 60):
-                        too_old_parents.append(f"Line {wife['line']} - Individual {wife['ID']}, family {family['ID']}: {family['WifeName'].replace('/', '')}, DOB {wife['Birthday']} is more than 60 yrs older than her child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
+                        too_old_parents.append(f'US12: {wife["line"]} - INDIVIDUAL: {wife["ID"]}, family {family["ID"]}: {family["WifeName"].replace(('/', ''))}, DOB {wife["Birthday"]} is more than 60 yrs older than her child {child["Name"].replace('/', '')}, DOB {child["Birthday"]}')
                     if (husband_age - child_age > 80):
-                        too_old_parents.append(f"Line {husband['line']} -Individual {husband['ID']}, family {family['ID']}: {family['HusbandName'].replace('/', '')}, DOB {husband['Birthday']} is more than 80 yrs older than his child {child['Name'].replace('/', '')}, DOB {child['Birthday']}")
+                        too_old_parents.append(f'US12: {husband["line"]} - INDIVIDUAL: {husband["ID"]}, family {family["ID"]}: {family["HusbandName"].replace(('/', ""))}, DOB {husband["Birthday"]} is more than 80 yrs older than his child {child["Name"].replace('/', '')}, DOB {child["Birthday"]}')
 
     return list(set(too_old_parents))  # Remove duplicates
 
-#US13: Sibling Spacing
-# def us13():
-
-#US15: Fewer Than 15 Siblings
-# def us15():
 
 #US16: All male members of a family should have the same last name
 def us16(individuals, families):
@@ -461,7 +456,7 @@ def us16(individuals, families):
                 if indi["ID"] == child_id and indi["Gender"] == "M":
                     child_last_name = individual_last_names[child_id]
                     if husband_last_name and child_last_name != husband_last_name:
-                        errors.append(f'Line {indi['line']} - Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
+                        errors.append(f'Line {fam["line"]} - US16: FAMILY - {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
     
 # US22: All individual IDs should be unique and all family IDs should be unique
@@ -470,20 +465,20 @@ def us22(individuals, families):
     uids = [] 
     
     for indi in individuals:
-        id = indi['ID']
+        id = indi["ID"]
         if id not in uids:
             uids.append(id)
         else:
-            errors.append(f"Line {indi['line']} - Duplicate individual ID, {id}, for {indi['Name']}")
+            errors.append(f'Line {indi["line"]} - US 22: INDIVIDUAL: Duplicate individual ID, {id}, for {indi["Name"]}')
     
     for fam in families:
-        id = fam['ID']
+        id = fam["ID"]
         marr = fam['Married']
         #print(marr)
         if id not in uids:
             uids.append(id)
         else:
-            errors.append(f"Line {fam['line']} - Duplicate family ID, {id}, with marriage date {marr}")
+            errors.append(f'Line {fam["line"]} - Duplicate family ID, {id}, with marriage date {marr}')
     return errors
 
 # US23: Check for individuals who have the same name and birth date
@@ -493,13 +488,13 @@ def us23(individuals):
     
     for individual in individuals:
         # format the name and birthday for easy comparison
-        formatted_name_birthday = f"{individual['Name']} {individual['Birthday']}"
-        id = individual['ID']
+        formatted_name_birthday = {f'{individual["Name"]} {individual["Birthday"]}'}
+        id = individual["ID"]
 
         if formatted_name_birthday not in names_birthdays:
             names_birthdays.append(formatted_name_birthday)
         else:
-            errors.append((f"Line {individual['line']} - Individual {id} has the same name and birth date - {formatted_name_birthday} - with at least one other individual in this GEDCOM."))
+            errors.append((f'US23: INDIVIDUAL - {individual["line"]} - Individual {id} has the same name and birth date - {formatted_name_birthday} - with at least one other individual in this GEDCOM.'))
 
     return errors
 
@@ -509,23 +504,23 @@ def us25(individuals, families):
     errors = []
 
     for family in families:
-        family_id = family['ID']
+        family_id = family["ID"]
         children = family['Children']
         
         for child_id in children:
-            child = next((i for i in individuals if i['ID'] == child_id), None)
+            child = next((i for i in individuals if i["ID"] == child_id), None)
 
             # Skip if its not a child
             if not child:
                 continue
 
-            formatted_name_birthday = f"{child['Name']} {child['Birthday']}"
-            id = child['ID']
+            formatted_name_birthday = {f'{child["Name"]} {child["Birthday"]}'}
+            id = child["ID"]
 
             if formatted_name_birthday not in names_birthdays:
                 names_birthdays.append(formatted_name_birthday)
             else:
-                errors.append((f"Line {child['line']} - Child with ID {id} in family {family_id} has the same name and birth date - {formatted_name_birthday} - as another child in family {family_id}."))
+                errors.append((f'Line {family["line"]} - US25: INDIVIDUAL - {child["line"]} - Child with ID {id} in family {family_id} has the same name and birth date - {formatted_name_birthday} - as another child in family {family_id}.'))
 
     return errors
 
@@ -627,7 +622,7 @@ def us27():
         else: 
             age = -1
             errors.append(f'No age listed for {indi["ID"]}')
-        indi_table.add_row([indi['ID'], indi['Name'], indi['Gender'], indi['Birthday'], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
+        indi_table.add_row([indi["ID"], indi["Name"], indi['Gender'], indi["Birthday"], age, alive, indi['Death'], indi['Child'], ','.join(indi['Spouse'])])
             
     return errors
 
@@ -635,13 +630,12 @@ def us27():
 def us28(individuals, families):
     sibling = []
     print(" ")
-    print("US28: Order siblings by age in decreasing order (oldest to youngest)")
     for fam in families:
         childrenFam = fam["ID"]
         for indi in individuals:  
             if(childrenFam == indi["Child"]):
-                id = indi['ID']
-                birthday = indi['Birthday']
+                id = indi["ID"]
+                birthday = indi["Birthday"]
                 death_date = indi['Death']
                 if(death_date != "NA"):
                     age = calculate_age(birthday, death_date)
@@ -656,7 +650,6 @@ def us28(individuals, families):
         ageInt = int(ageStr)
         return ageInt      
     sibling.sort(key = extractAge,reverse=True)
-
     return sibling
 
 #US29: List all deceased individuals
@@ -666,7 +659,7 @@ def us29(individuals):
         if indi["Death"] != "NA":
             # id = indi["ID"]
             name = indi["Name"].replace("/", "")
-            deceased_individuals.append(f'Individual: {indi["ID"]}: {name}')
+            deceased_individuals.append(f'Line {indi["line"]} - US29: INDIVIDUAL: {indi["ID"]}: {name}')
     return deceased_individuals       
 
 #US30: List all living married individuals
@@ -681,7 +674,7 @@ def us30(individuals):
         if not dead and married:
             living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}\n')
         if dead or notMarried:
-            errors.append(f'Line {indi['line']} - Individual {indi["ID"]}: Not living and married.')  
+            errors.append(f'Line {indi["line"]} US30: INDIVIDUAL: {indi["ID"]}: Not living and married.')  
     print ("".join(living_married_individuals)) 
     return errors
 
@@ -699,7 +692,7 @@ def us31(individuals):
             living_single_individuals.append(f'{indi["ID"]}:{indi["Name"]}')
         #Living individuals not over 30 or not single
         if age < 30 or not noSpouse or (not alive):
-            errors.append(f'Line {indi['line']} - Individual {indi["ID"]}: Is not alive or single above 30.')
+            errors.append(f'Line {indi["line"]} - US31: INDIVIDUAL: {indi["ID"]}: Is not alive or single above 30.')
     if len(living_single_individuals) == 0:
         print("No results")
     print ("\n".join(living_single_individuals))
@@ -712,10 +705,7 @@ def us32(families):
 
     for fam in families:
         if len(fam["Children"]) > 1:
-            error_msg = (
-                f"Family ID {fam['ID']} has multiple ( {len(fam['Children'])} ) children."
-            )
-            errors.append(error_msg)
+            errors.append(f'Line {fam["line"]} - US32: FAMILY: {fam["ID"]} has multiple ( {len(fam["Children"])} ) children.')
 
     return errors
 
@@ -750,7 +740,7 @@ def us33(individuals,families):
                         birth_date = child["Birthday"]
                         age = calculate_age(birth_date)
                         if age < 18:
-                            errors.append(f'US33: INDIVIDUAL: Orphaned child: {child["Name"]} (ID: {child["ID"]}), Age: {age}')
+                            errors.append(f'Line {indi["line"]} - US33: INDIVIDUAL: Orphaned child: {child["Name"]} (ID: {child["ID"]}), Age: {age}')
 
     return errors
 
@@ -789,9 +779,7 @@ def us34(individuals, families):
 
                 if older_age > 2 * younger_age:
                     error_msg = (
-                        f"Family ID {fam['ID']} married on {marriage_date}: "
-                        f"Older spouse ({'Husband' if older_age == husband_age_at_marriage else 'Wife'}) "
-                        f"was more than twice as old as the younger spouse."
+                        f'US34: FAMILY ID: {fam["ID"]} married on {marriage_date}: "Older spouse ({fam["HusbandName"] if older_age == husband_age_at_marriage else fam["WifeName"]}) was more than twice as old as the younger spouse.'
                     )
                     errors.append(error_msg)
     return errors
@@ -801,7 +789,7 @@ def us35(individuals):
     listName = []
     today = datetime.now().date()
     for indi in individuals:
-        birthday = indi['Birthday']
+        birthday = indi["Birthday"]
         if birthday != 'NA':
             birthdate_format = datetime.strptime(birthday, "%d %b %Y").date()
             diff = abs((today - birthdate_format).days)
@@ -820,7 +808,7 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
+                listName.append(f'US36: INDIVIDUAL ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
 
@@ -839,8 +827,8 @@ def us37(individuals,families):
     # print(diedId)
     for indi in individuals:
         if indi['Death'] == 'NA':
-            alive.add(indi['ID']) 
-        idName[indi['ID']] = indi['Name']
+            alive.add(indi["ID"]) 
+        idName[indi["ID"]] = indi["Name"]
     # check if people died in last 30days have spose and descendants and append it to theirFam list
     for person in diedId:
         for family in families:
@@ -872,7 +860,7 @@ def us37(individuals,families):
             indi_id = val[0]
             indi_name = idName.get(indi_id, "NA")
             curFamName =[]
-            curFamName.append(f'INDIVIDUAL: {indi_id} Name: {indi_name} died in the last 30 days')
+            curFamName.append(f'US37: INDIVIDUAL: {indi_id} Name: {indi_name} died in the last 30 days')
             
             if len(val) > 1:
                 curFamName.append(f'Thier family:')
@@ -900,13 +888,13 @@ def us38(individuals):
     listName = []
     today = datetime.now().date()
     for indi in individuals:
-        birth = indi['Birthday']
+        birth = indi["Birthday"]
         if indi['Death'] == 'NA' and birth != 'NA':
             birthdate = datetime.strptime(birth, "%d %b %Y").date()
             birthday = birthdate.replace(year=today.year)
             if 0 <= (birthday - today).days <= 30:
                 # print(birthday-today)
-                listName.append(f'INDIVIDUAL: US38: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
+                listName.append(f'US38: INDIVIDUAL ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
     return listName
 
 #US39: List upcoming anniversaries
@@ -917,7 +905,7 @@ def us39(families):
     todayYear = (datetime.now().date().year)
     today = abs((todayMonth + todayDay))
     for fam in families:
-        weddingDate = fam["Married"]
+        weddingDate = fam['Married']
         if weddingDate != 'NA':
             AnniversaryMonth = (datetime.strptime(weddingDate, "%d %b %Y").date().month) * 31
             AnniversaryDay =  (datetime.strptime(weddingDate, "%d %b %Y").date().day)
@@ -996,17 +984,17 @@ def main():
     errors_us08 = us08(individuals, families)
     print_errors(errors_us08, 'US08')
 
-    # Check for US09
-    errors_us09 = us09(individuals, families)
-    print_errors(errors_us09, 'US09')
+    # # Check for US09
+    # errors_us09 = us09(individuals, families)
+    # print_errors(errors_us09, 'US09')
 
-    # # Check for US10
-    errors_us10 = us10(individuals, families)
-    print_errors(errors_us10, 'US10')
+    # # # Check for US10
+    # errors_us10 = us10(individuals, families)
+    # print_errors(errors_us10, 'US10')
 
     # Check for US12: Parents not too old
-    too_old = us12(individuals, families)
-    print_errors(too_old, 'US12: Parents that are way too old to have kids')
+    # too_old = us12(individuals, families)
+    # print_errors(too_old, 'US12: Parents that are way too old to have kids')
 
     # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
