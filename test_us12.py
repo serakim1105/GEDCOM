@@ -1,24 +1,25 @@
 import pytest
 from ProjectAgile import us12, parse_gedcom_file
 
-def create_indi(id, name, birth_date, death_date='NA'):
+def create_indi(line, id, name, birth_date, death_date='NA'):
     return {
+        'line': line,
         'ID': id,
         'Name': name,
         'Birthday': birth_date,
         'Death': death_date,
     }
-indi01 = create_indi('I01', 'Chris /Anthony/', '1 JAN 1900')     #just too old 
-indi02 = create_indi('I02', 'Sriya /Bhamidipati/', '1 JAN 1900')  #way too old 
-indi03 = create_indi('I03', 'Sera /Kim/', '1 JAN 1981')           #child
+indi01 = create_indi(1, 'I01', 'Chris /Anthony/', '1 JAN 1900')     #just too old 
+indi02 = create_indi(2, 'I02', 'Sriya /Bhamidipati/', '1 JAN 1900')  #way too old 
+indi03 = create_indi(3, 'I03', 'Sera /Kim/', '1 JAN 1981')           #child
 
-indi04 = create_indi('I04', 'C /A/', '1 JAN 1900', '1 JAN 1982')     #just too old at child's birth, then dies
-indi05 = create_indi('I05', 'S /B/', '1 JAN 1900')        #way too old 
-indi06 = create_indi('I06', 'S /K/', '1 JAN 1981')        #child
+indi04 = create_indi(4, 'I04', 'C /A/', '1 JAN 1900', '1 JAN 1982')     #just too old at child's birth, then dies
+indi05 = create_indi(5, 'I05', 'S /B/', '1 JAN 1900')        #way too old 
+indi06 = create_indi(6, 'I06', 'S /K/', '1 JAN 1981')        #child
 
-indi07 = create_indi('I07', 'C /A/', '1 JAN 1950')     #not too old
-indi08 = create_indi('I08', 'S /B/', '1 JAN 1950')        #not too old 
-indi09 = create_indi('I09', 'S /K/', '1 JAN 1981')        #child
+indi07 = create_indi(7, 'I07', 'C /A/', '1 JAN 1950')     #not too old
+indi08 = create_indi(8, 'I08', 'S /B/', '1 JAN 1950')        #not too old 
+indi09 = create_indi(9, 'I09', 'S /K/', '1 JAN 1981')        #child
 
 individuals = []
 individuals.append(indi01)
