@@ -412,6 +412,7 @@ def us08(individuals, families):
 
 #     return errors
 
+<<<<<<< HEAD
 # #Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
 # def us12(individuals, families):
 #     too_old_parents = []
@@ -419,6 +420,15 @@ def us08(individuals, families):
 #     for individual in individuals:
 #         #individual["Birthday"] = datetime.strptime(individual["Birthday"], '%d %b %Y')
 #         alive = individual['Death'] == "NA"
+=======
+#Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
+def us12(individuals, families):
+
+    too_old_parents = []
+    
+    for individual in individuals:
+        alive = individual['Death'] == "NA"
+>>>>>>> 27a5fbf (remove oddly-now-not-working replace method in us12)
 
 #     for family in families:
 #         husband_id = family['Husband']
@@ -428,21 +438,34 @@ def us08(individuals, families):
 #         husband = next((i for i in individuals if i["ID"] == husband_id), None)
 #         wife = next((i for i in individuals if i["ID"] == wife_id), None)
         
+<<<<<<< HEAD
 #         if husband and wife:
 
 #             #age = calculate_age(indi["Birthday"], None if alive else indi["Death"]) if indi["Birthday"] != "NA" else "NA"
 #             husband_age = calculate_age(husband["Birthday"], None if alive else husband['Death']) if husband["Birthday"] != 'NA' else 'NA'
 #             wife_age = calculate_age(wife["Birthday"], None if alive else wife["Death"]) if wife["Birthday"] != "NA" else "NA"
+=======
+        if husband and wife:
+            husband_age = calculate_age(husband["Birthday"], None if alive else husband['Death']) if husband["Birthday"] != 'NA' else 'NA'
+            wife_age = calculate_age(wife["Birthday"], None if alive else wife["Death"]) if wife["Birthday"] != "NA" else "NA"
+>>>>>>> 27a5fbf (remove oddly-now-not-working replace method in us12)
             
 #             for child_id in children_ids:
 #                 child = next((i for i in individuals if i["ID"] == child_id), None)
 #                 if child:
 #                     child_age = calculate_age(child["Birthday"], None if alive else child["Death"]) if child["Birthday"] != "NA" else "NA"
                     
+<<<<<<< HEAD
 #                     if (wife_age - child_age > 60):
 #                         too_old_parents.append(f'US12: {wife["line"]} - INDIVIDUAL: {wife["ID"]}, family {family["ID"]}: {family["WifeName"].replace(('/', ''))}, DOB {wife["Birthday"]} is more than 60 yrs older than her child {child["Name"].replace('/', '')}, DOB {child["Birthday"]}')
 #                     if (husband_age - child_age > 80):
 #                         too_old_parents.append(f'US12: {husband["line"]} - INDIVIDUAL: {husband["ID"]}, family {family["ID"]}: {family["HusbandName"].replace(('/', ""))}, DOB {husband["Birthday"]} is more than 80 yrs older than his child {child["Name"].replace('/', '')}, DOB {child["Birthday"]}')
+=======
+                    if (wife_age - child_age > 60):
+                        too_old_parents.append(f'US12: {wife["line"]} - INDIVIDUAL: {wife["ID"]}, family {family["ID"]}: {family["WifeName"]}, DOB {wife["Birthday"]} is more than 60 yrs older than her child {child["Name"]}, DOB {child["Birthday"]}')
+                    if (husband_age - child_age > 80):
+                        too_old_parents.append(f'US12: {husband["line"]} - INDIVIDUAL: {husband["ID"]}, family {family["ID"]}: clean_name({family["HusbandName"]}), DOB {husband["Birthday"]} is more than 80 yrs older than his child {child["Name"]}), DOB {child["Birthday"]}')
+>>>>>>> 27a5fbf (remove oddly-now-not-working replace method in us12)
 
 #     return list(set(too_old_parents))  # Remove duplicates
 
@@ -771,7 +794,7 @@ def us33(individuals,families):
                         birth_date = child["Birthday"]
                         age = calculate_age(birth_date)
                         if age < 18:
-                            errors.append(f'Line {indi["line"]} - US33: INDIVIDUAL: Orphaned child: {child["Name"]} (ID: {child["ID"]}), Age: {age}')
+                            errors.append(f'Line {child["line"]} - US33: INDIVIDUAL: Orphaned child: {child["Name"]} (ID: {child["ID"]}), Age: {age}')
 
     return errors
 
