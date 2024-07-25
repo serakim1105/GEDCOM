@@ -985,16 +985,16 @@ def main():
     print_errors(errors_us08, 'US08')
 
     # # Check for US09
-    # errors_us09 = us09(individuals, families)
-    # print_errors(errors_us09, 'US09')
+    errors_us09 = us09(individuals, families)
+    print_errors(errors_us09, 'US09')
 
     # # # Check for US10
-    # errors_us10 = us10(individuals, families)
-    # print_errors(errors_us10, 'US10')
+    errors_us10 = us10(individuals, families)
+    print_errors(errors_us10, 'US10')
 
     # Check for US12: Parents not too old
-    # too_old = us12(individuals, families)
-    # print_errors(too_old, 'US12: Parents that are way too old to have kids')
+    too_old = us12(individuals, families)
+    print_errors(too_old, 'US12: Parents that are way too old to have kids')
 
     # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
