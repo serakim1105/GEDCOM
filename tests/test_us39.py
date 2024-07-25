@@ -4,9 +4,9 @@ from ProjectAgile import us39, parse_gedcom_file
 
 def create_date(wedding_date = "NA"):
     return {
-        'Married': wedding_date
+        'Married': wedding_date,
     }
-
+    
 def test_1_us39(): 
     date1 = create_date("20 OCT 1942")
     assert us39([date1])
@@ -24,5 +24,5 @@ def test_4_us39():
     assert us39([date4])
 
 def test_5_us39():
-    date5 = create_date("30 JUL 2000")
+    date5 = create_date("30 JUL 2036")
     assert us39([date5])
