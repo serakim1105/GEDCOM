@@ -816,7 +816,7 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                listName.append(f'US36:INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
+                listName.append(f'US36: INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
 
