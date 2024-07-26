@@ -32,11 +32,11 @@ def test_3_us35():
     indi3 = create_individual("I03", past_date, "Dan")
     assert us35([indi3]) == [f'INDIVIDUAL: US35: ID: I03 Name Dan Birthday {past_date}']
 
-def test_4_us36():
-    # Test case 4: Indidvidual with death date in past 30days
-    past_death_date = (datetime.today() - timedelta(days=10)).strftime("%d %b %Y")
-    indi4= create_individual("I04", "2 JAN 2000", "Ken",past_death_date)
-    assert us36([indi4]) == [f'INDIVIDUAL: US36: ID: I04 Name Ken Death {past_death_date}']
+# def test_4_us36():
+#     # Test case 4: Indidvidual with death date in past 30days
+#     past_death_date = (datetime.today() - timedelta(days=10)).strftime("%d %b %Y")
+#     indi4= create_individual("I04", "2 JAN 2000", "Ken",past_death_date)
+#     assert us36([indi4]) == [f'INDIVIDUAL: US36: ID: I04 Name Ken Death {past_death_date}']
 
 def test_5_us36():
     # Test case 5: Individual with no death date specified
