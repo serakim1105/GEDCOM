@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 import sys
 from prettytable import PrettyTable
-
+from parseDate import parse_date, safe_parse_date
 
 valid_tags = ["INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL", "DIV", "DATE", "HEAD", "TRLR", "NOTE"]
 
@@ -147,6 +147,15 @@ def parse_gedcom_file(filename):
     for fam in families:
         if not fam["Children"]:
             fam["Children"] = ["none"]
+
+    #US41: Accept and use dates without days or without days and months
+    for indi in individuals:
+        indi['Birthday'] = safe_parse_date(indi['Birthday'])
+        indi['Death'] = safe_parse_date(indi['Death'])
+
+    for fam in families:
+        fam['Married'] = safe_parse_date(fam['Married'])
+        fam['Divorced'] = safe_parse_date(fam['Divorced'])
 
     # Print the individuals and families
 
