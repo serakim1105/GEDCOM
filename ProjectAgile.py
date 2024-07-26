@@ -441,7 +441,7 @@ def us08(individuals, families):
 
 #     return list(set(too_old_parents))  # Remove duplicates
 
-#No less than 8 months between birthdays for siblings and no greater than two days for twins 
+#US13: No less than 8 months between birthdays for siblings and no greater than two days for twins 
 def us13(individuals, families):
     errors = []
     print(" ")
@@ -460,6 +460,7 @@ def us13(individuals, families):
                 siblingFamily.append(indi)
     return errors
 
+#US15: Siblings have to be fewer than 15 in a family
 def us15(individuals, families):
     errors = []
     siblings = []
