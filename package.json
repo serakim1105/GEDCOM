@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "pytest": "^1.0.0"
+    "pytest": "^1.0.0",
+    "unittest": "^1.0.0"
   }
 }
