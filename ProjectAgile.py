@@ -816,7 +816,7 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                listName.append(f'US36:INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
+                listName.append(f'US36: INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
 
@@ -902,7 +902,7 @@ def us38(individuals):
             birthday = birthdate.replace(year=today.year)
             if 0 <= (birthday - today).days <= 30:
                 # print(birthday-today)
-                listName.append(f' US38: INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
+                listName.append(f'US38: INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
     return listName
 
 #US39: List upcoming anniversaries
