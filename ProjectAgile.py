@@ -459,6 +459,16 @@ def us13(individuals, families):
                 siblingFamily.append(indi)
     return errors
 
+def us15(individuals, families):
+    errors = []
+    siblings = []
+    print(" ")
+    for fam in families:
+        siblingFamily = fam["ID"]
+        if(len(siblingFamily) < 15):
+            errors.append(f'Line {fam["line"]} - US15: FAMILY: {fam["ID"]}: Family has greater than 15 siblings.')
+    return errors
+
 #US16: All male members of a family should have the same last name
 def us16(individuals, families):
     errors = []
@@ -692,8 +702,8 @@ def us30(individuals):
         married = indi["Spouse"] != ["NA"]
         if not dead and married:
             living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}\n')
-        # if dead or notMarried:
-        #     errors.append(f'Line {indi["line"]} US30: INDIVIDUAL: {indi["ID"]}: Not living and married.')  
+        if dead or notMarried:
+            errors.append(f'Line {indi["line"]} US30: INDIVIDUAL: {indi["ID"]}: Not living and married.')  
     print ("".join(living_married_individuals)) 
     return living_married_individuals
 
@@ -715,18 +725,16 @@ def us31(individuals):
     if len(living_single_individuals) == 0:
         print("No results")
     print ("\n".join(living_single_individuals))
-    return errors
 
 
 # List all multiple births in a GEDCOM file
 def us32(families):
-    errors = []
+    births = []
 
     for fam in families:
         if len(fam["Children"]) > 1:
-            errors.append(f'Line {fam["line"]} - US32: FAMILY: {fam["ID"]} has multiple ( {len(fam["Children"])} ) children.')
-
-    return errors
+            births.append(f'US32: FAMILY: {fam["ID"]} has multiple ( {len(fam["Children"])} ) children.')
+    return births
 
 #US33:List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
 def us33(individuals,families):
@@ -1018,6 +1026,10 @@ def main():
     errors_us13 = us13(individuals, families)
     print_errors(errors_us13, 'US13')
     
+    # Check for US15: Fewer than 15 Siblings in One Family
+    errors_us15 = us15(individuals, families)
+    print_errors(errors_us15, 'US15')
+    
     # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
     print_errors(errors_us16, 'US16')
@@ -1056,8 +1068,8 @@ def main():
     print_errors(errors_us31, 'US31')
 
     # Check for US32
-    errors_us32 = us32(families)
-    print_errors(errors_us32, 'US32')
+    birth = us32(families)
+    print_list(birth, 'US32')
 
     # Check for US33: List orphans
     errors_us33 = us33(individuals,families)
