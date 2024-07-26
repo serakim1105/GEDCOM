@@ -440,30 +440,24 @@ def us08(individuals, families):
 
 #     return list(set(too_old_parents))  # Remove duplicates
 
-
+#No less than 8 months between birthdays for siblings and no greater than two days for twins 
 def us13(individuals, families):
-    siblingBirthday = []
     errors = []
     print(" ")
     for fam in families:
-        childrenFam = fam["ID"]
-        for indi in individuals:  
-            if(childrenFam == indi["Child"]):
-                birth_date_str = indi['Birthday']
-                id = indi['ID']
-                birthDate = datetime.strptime(birth_date_str, "%d %b %Y").toordinal()
-                siblingBirthday.append(birthDate)
-    def sortBirthday(siblingBirthday):
-        birthStr = siblingBirthday.split(':')[0]
-        birthInt = int(birthStr)
-        #print(birthStr)  
-        # birth_date1 = siblingBirthday[i]
-        # birth_date2 = siblingBirthday[i+1]
-        # if (birth_date1 + 160) > birth_date2 or (abs(birth_date1 - birth_date2)) < 2:
-        #     return True
-        # else:
-        #     errors.append(birthday)
-    return siblingBirthday
+        siblingFamily = []
+        childrenFam = fam["Children"]
+        for indi in individuals: 
+            if(indi["ID"] in childrenFam):
+                birth_date_str_indi = indi['Birthday']
+                birthDate1 = datetime.strptime(birth_date_str_indi, "%d %b %Y").toordinal()        
+                for sibling in siblingFamily:
+                    birth_date_str_sibling = sibling['Birthday']
+                    birthDate2 = datetime.strptime(birth_date_str_sibling, "%d %b %Y").toordinal()
+                    if 2 < (abs(birthDate1 - birthDate2)) and (abs(birthDate1 - birthDate2)) < 160:
+                        errors.append(f'Line {fam["line"]} - US13: INDIVIDUAL: {indi["ID"]} {indi["Name"]} ({birth_date_str_indi}) and INDIVIDUAL {sibling["ID"]} {sibling["Name"]} ({birth_date_str_sibling}) are siblings that have birthdays less than 8 months and greater than 2 days apart.')
+                siblingFamily.append(indi)
+    return errors
 
 #US16: All male members of a family should have the same last name
 def us16(individuals, families):
@@ -684,7 +678,7 @@ def us29(individuals):
         if indi["Death"] != "NA":
             # id = indi["ID"]
             name = indi["Name"].replace("/", "")
-            deceased_individuals.append(f'Line {indi["line"]} - US29: INDIVIDUAL: {indi["ID"]}: {name}')
+            deceased_individuals.append(f'US29: INDIVIDUAL: {indi["ID"]}: {name}')
     return deceased_individuals       
 
 #US30: List all living married individuals
@@ -698,10 +692,10 @@ def us30(individuals):
         married = indi["Spouse"] != ["NA"]
         if not dead and married:
             living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}\n')
-        if dead or notMarried:
-            errors.append(f'Line {indi["line"]} US30: INDIVIDUAL: {indi["ID"]}: Not living and married.')  
+        # if dead or notMarried:
+        #     errors.append(f'Line {indi["line"]} US30: INDIVIDUAL: {indi["ID"]}: Not living and married.')  
     print ("".join(living_married_individuals)) 
-    return errors
+    return living_married_individuals
 
 #US31:List all individuals who are 30 and have never been married
 def us31(individuals):
@@ -1022,7 +1016,7 @@ def main():
 
     # Check for US13: Siblings have to be at least 8 months apart or less than 2 days apart
     errors_us13 = us13(individuals, families)
-    print_list(errors_us13, 'US13', 'Printing sibling birthdays')
+    print_errors(errors_us13, 'US13')
     
     # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
