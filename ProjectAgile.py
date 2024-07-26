@@ -337,16 +337,16 @@ def us08(individuals, families):
                                 errors.append(f'Line {fam["line"]} - US08: Family {fam["ID"]}: Child {child_id} born before marriage or more than 9 months after divorce.')
     return errors
 
-# #Helper function for us09 and us10
-# def date_to_number(date_str):
-#     if date_str == 'NA':
-#         return 999999999999
-#     date_object = datetime.strptime(date_str, '%d %b %Y')
-#     timestamp = date_object.timestamp() 
+#Helper function for us09 and us10
+def date_to_number(date_str):
+    if date_str == 'NA':
+        return 999999999999
+    date_object = datetime.strptime(date_str, '%d %b %Y')
+    timestamp = date_object.timestamp() 
     
-#     return timestamp   
+    return timestamp   
 
-# #US09: Child should be born before death of mother and before 9 months after death of father
+#US09: Child should be born before death of mother and before 9 months after death of father
 def us09(individuals, families):
     errors = []
 
