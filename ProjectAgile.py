@@ -681,7 +681,7 @@ def us30(individuals):
         if not dead and married:
             living_married_individuals.append(f'{indi["ID"]}:{indi["Name"]}\n')
         if dead or notMarried:
-            errors.append(f'Line {indi["line"]} - Individual {indi["ID"]}: Not living and married.')  
+            errors.append(f'Individual {indi["ID"]}: Not living and married.')  
     print ("".join(living_married_individuals)) 
     return errors
 
@@ -699,7 +699,7 @@ def us31(individuals):
             living_single_individuals.append(f'{indi["ID"]}:{indi["Name"]}')
         #Living individuals not over 30 or not single
         if age < 30 or not noSpouse or (not alive):
-            errors.append(f'Line {indi['line']} - Individual {indi["ID"]}: Is not alive or single above 30.')
+            errors.append(f'Individual {indi["ID"]}: Is not alive or single above 30.')
     if len(living_single_individuals) == 0:
         print("No results")
     print ("\n".join(living_single_individuals))
@@ -820,7 +820,7 @@ def us36(individuals):
             deathdate_format = datetime.strptime(deathday, "%d %b %Y").date()
             diff = abs((today - deathdate_format).days)
             if diff <= 30:
-                listName.append(f'INDIVIDUAL: US36: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
+                listName.append(f'US36:INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Death {deathday}')
     return listName
 
 
@@ -906,7 +906,7 @@ def us38(individuals):
             birthday = birthdate.replace(year=today.year)
             if 0 <= (birthday - today).days <= 30:
                 # print(birthday-today)
-                listName.append(f'INDIVIDUAL: US38: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
+                listName.append(f' US38: INDIVIDUAL: ID: {indi["ID"]} Name {indi["Name"]} Birthday {birth}')
     return listName
 
 #US39: List upcoming anniversaries
