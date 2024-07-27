@@ -1,33 +1,37 @@
 import pytest
 from datetime import datetime
-from ProjectAgile import us03, parse_gedcom_file
+from ProjectAgile import us15, parse_gedcom_file
 
-def create_family(line = "NA", id = "NA", birth_date = "NA", death_date = "NA", name = "NA"):
+def create_fam(id = "NA", children = ["NA"], line = "NA"):
     return {
-        "line": line,
         "ID": id,
         "Children": children,
-        "Name": name
+        "line": line
     }
+# def create_indi(id = "NA", name = "NA", age = "NA", child = ["NA"], birthday = "NA", death = "NA"):
+#     return {
+#         "Name": name,
+#         "Child": child
+#     }
+
+
 
 # birth and death 
-def test_1_us03():
-    # Test case 2: Individual who is alive but not married
-    indi1 = create_individual(1, "I05", "1 JAN 2024", "2 AUG 2019", "Justin /Lee/")
-    assert us03([indi1]) == [f'Line {indi1["line"]} - US03: INDIVIDUAL: {indi1["ID"]}:{indi1["Name"]}:{indi1["Birthday"]}:{indi1["Death"]} - Birth date not before death date.']
+def test_1_us15():
+    # Test case 1: Family that has 15 siblings
+    fam1 = create_fam("F05", ["I01", "I02", "I03", "I04", "I05", "I06", "I07", "I08", 
+                            "I09", "I10", "I11", "I12", "I13", "I14", "I15"], 1)
+    assert us15([fam1]) == [f'Line {fam1["line"]} - US15: FAMILY: {fam1["ID"]} has 15 siblings or more.']
     
-def test_2_us03(): 
-    indi2 = create_individual(2, "I08", "20 NOV 2050", "21 JAN 2035", "Cody /Lee/" )
-    assert us03([indi2]) == [f'Line {indi2["line"]} - US03: INDIVIDUAL: {indi2["ID"]}:{indi2["Name"]}:{indi2["Birthday"]}:{indi2["Death"]} - Birth date not before death date.']
+def test_2_us15():
+    # Test case 1: Family that has 15 siblings
+    fam2 = create_fam("F06", ["I16", "I17", "I18", "I19", "I20", "I21", "I22", 
+                            "I23", "I24", "I25", "I26", "I27", "I28", "I29", "I30", "I31"], 2)
+    assert us15([fam2]) == [f'Line {fam2["line"]} - US15: FAMILY: {fam2["ID"]} has 15 siblings or more.']
     
-def test_3_us03():  
-    indi3 = create_individual(3, "I09", "20 JUN 2220", "1 JAN 2100", "Austin /Lee/")
-    assert us03([indi3]) == [f'Line {indi3["line"]} - US03: INDIVIDUAL: {indi3["ID"]}:{indi3["Name"]}:{indi3["Birthday"]}:{indi3["Death"]} - Birth date not before death date.']
+def test_3_us15():
+    # Test case 1: Family that has 15 siblings
+    fam3 = create_fam("F06", ["I26", "I27", "I28", "I29", "I30", 
+                            "I31", "I32", "I33", "I34", "I35", "I36", "I37", "I38", "I39", "I40", "I41"], 3)
+    assert us15([fam3]) == [f'Line {fam3["line"]} - US15: FAMILY: {fam3["ID"]} has 15 siblings or more.']
     
-def test_4_us03(): 
-    indi4 = create_individual(4, "I10", "20 OCT 2030", "1 JAN 2013", "Sarah /Lee/")
-    assert us03([indi4]) == [f'Line {indi4["line"]} - US03: INDIVIDUAL: {indi4["ID"]}:{indi4["Name"]}:{indi4["Birthday"]}:{indi4["Death"]} - Birth date not before death date.']
-    
-def test_5_us03(): 
-    indi5 = create_individual(5, "I10", "20 OCT 2100", "1 JAN 2023", "Cameron /Lee/")
-    assert us03([indi5]) == [f'Line {indi5["line"]} - US03: INDIVIDUAL: {indi5["ID"]}:{indi5["Name"]}:{indi5["Birthday"]}:{indi5["Death"]} - Birth date not before death date.']

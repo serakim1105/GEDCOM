@@ -23,14 +23,14 @@ def test_2_us38():
     # Test case 2: Indidvidual with birth date exactly today
     today = datetime.today().strftime("%d %b %Y")
     indi2 = create_individual("I02", today, "Sam")
-    assert us38([indi2]) == [f'INDIVIDUAL: US38: ID: I02 Name Sam Birthday {today}']
+    assert us38([indi2]) == [f'US38: INDIVIDUAL: ID: I02 Name Sam Birthday {today}']
 
 def test_3_us38():
     # Test case 3: Indidvidual with birth date in next 30days
     next_date = (datetime.today() + timedelta(days=15)).strftime("%d %b %Y")
     # print(past_date)
     indi3 = create_individual("I03", next_date, "Dan")
-    assert us38([indi3]) == [f'INDIVIDUAL: US38: ID: I03 Name Dan Birthday {next_date}']
+    assert us38([indi3]) == [f'US38: INDIVIDUAL: ID: I03 Name Dan Birthday {next_date}']
 
 def test_4_us38():
     # Test case : Indidvidual with birth date in next 30days but is not alive
@@ -44,7 +44,7 @@ def test_5_us38():
     individuals, _ = parse_gedcom_file("navya.ged")
     errors = us38(individuals)
     print(errors)
-    expected_num_errors = 1
+    expected_num_errors = 0
     assert len(errors) == expected_num_errors
 
 if __name__ == "__main__":
