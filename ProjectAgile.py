@@ -718,7 +718,6 @@ def us27():
 def us28(individuals, families):
     sibling = []
     print(" ")
-    print("US28: Order siblings by age in decreasing order (oldest to youngest)")
     for fam in families:
         childrenFam = fam["ID"]
         for indi in individuals:  
@@ -756,7 +755,6 @@ def us29(individuals):
 def us30(individuals):
     errors = []
     living_married_individuals = []
-    print("\nUS30: All living married individuals:\n")
     for indi in individuals:
         dead = indi["Death"] != "NA" 
         notMarried = indi["Spouse"] == ["NA"]
@@ -769,7 +767,6 @@ def us30(individuals):
 def us31(individuals):
     errors = []
     living_single_individuals = []
-    print("\n\nUS31: All living single individuals over the age of 30:")
     for indi in individuals:
         alive = indi['Death'] == "NA" 
         age = calculate_age(indi["Birthday"]) 
@@ -830,7 +827,6 @@ def us33(individuals,families):
                         age = calculate_age(birth_date)
                         if age < 18:
                             errors.append(f'US33: INDIVIDUAL: Orphaned child: {child["Name"]} (ID: {child["ID"]}), Age: {age}')
-
     return errors
 
 
