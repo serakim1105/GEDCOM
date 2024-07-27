@@ -4,7 +4,7 @@ from ProjectAgile import us13, parse_gedcom_file
 
 def create_indi(children = ["NA"], id = "NA", name = "NA", birth_date = "NA"):
     return {
-        "Child": child,
+        "Child": children,
         "ID": id,
         "Name": name,
         "Birthday": birth_date
