@@ -479,8 +479,20 @@ def us17(individuals,families):
     return errors
 
 #US18: Siblings should not marry one another
-def us18(individuals,families):
+def us18(families):
     errors =[]
+    AllChildrens = {}
+    
+    for fam in families:
+        if 'Children' in fam and fam['Children']:
+            for child in fam['Children']:
+                AllChildrens[child] = fam['Children']
+
+    for fam in families:
+        husband = fam.get('Husband')
+        wife = fam.get('Wife')
+        if husband in AllChildrens and wife in AllChildrens and AllChildrens[husband] == AllChildrens[wife]:
+            errors.append(f"Error US18: Siblings {husband} and {wife} should not marry one another in family {fam['ID']}.")
     return errors
 
 # US22: All individual IDs should be unique and all family IDs should be unique
@@ -1030,7 +1042,7 @@ def main():
     errors_us17 = us17(individuals,families)
     print_errors(errors_us17, 'US17', 'No marriages to descendants')
 
-    errors_us18 = us18(individuals,families)
+    errors_us18 = us18(families)
     print_errors(errors_us18, 'US18', 'Siblings should not marry')
 
     # Check for US22: Unique IDs
