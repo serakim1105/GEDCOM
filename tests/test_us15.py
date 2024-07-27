@@ -8,15 +8,7 @@ def create_fam(id = "NA", children = ["NA"], line = "NA"):
         "Children": children,
         "line": line
     }
-# def create_indi(id = "NA", name = "NA", age = "NA", child = ["NA"], birthday = "NA", death = "NA"):
-#     return {
-#         "Name": name,
-#         "Child": child
-#     }
-
-
-
-# birth and death 
+  
 def test_1_us15():
     # Test case 1: Family that has 15 siblings
     fam1 = create_fam("F05", ["I01", "I02", "I03", "I04", "I05", "I06", "I07", "I08", 
@@ -34,4 +26,3 @@ def test_3_us15():
     fam3 = create_fam("F06", ["I26", "I27", "I28", "I29", "I30", 
                             "I31", "I32", "I33", "I34", "I35", "I36", "I37", "I38", "I39", "I40", "I41"], 3)
     assert us15([fam3]) == [f'Line {fam3["line"]} - US15: FAMILY: {fam3["ID"]} has 15 siblings or more.']
-    

@@ -355,7 +355,7 @@ def date_to_number(date_str):
     
     return timestamp   
 
-#US09: Child should be born before death of mother and before 9 months after death of father
+# #US09: Child should be born before death of mother and before 9 months after death of father
 def us09(individuals, families):
     errors = []
 
@@ -391,7 +391,7 @@ def us09(individuals, families):
                         errors.append(f'Line {fam["line"]} - Family {fam["ID"]}: Child {child_id} born after mothers death.')
     return errors
 
-# #Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
+# # #Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
 def us10(individuals, families):
     errors = []
     for fam in families:
@@ -415,7 +415,7 @@ def us10(individuals, families):
 
     return errors
 
-#Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
+# #Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
 def us12(individuals, families):
     too_old_parents = []
     
@@ -497,56 +497,7 @@ def us16(individuals, families):
                     if husband_last_name and child_last_name != husband_last_name:
                         errors.append(f'Line {indi["line"]} - Family {fam["ID"]}: Male child ({child_last_name}) has a different last name than the father ({husband_last_name})')
     return errors
-
-#US17: Parents should not marry any of their descendants
-def us17(families):
-    errors =[]
-    parents = {}
-
-    for fam in families:
-        husband_id = fam.get('Husband')
-        wife_id = fam.get('Wife')
-        children_ids = fam.get('Children', [])
-
-        if husband_id:
-            if husband_id not in parents:
-                parents[husband_id] = set()
-            parents[husband_id].update(children_ids)
-        
-        if wife_id:
-            if wife_id not in parents:
-                parents[wife_id] = set()
-            parents[wife_id].update(children_ids)
     
-    for fam in families:
-        husband_id = fam.get('Husband')
-        wife_id = fam.get('Wife')
-
-        if husband_id in parents and wife_id in parents[husband_id]:
-            errors.append(f"Error US17: Parent {husband_id} should not marry descendant {wife_id} in family {fam['ID']}.")
-        
-        if wife_id in parents and husband_id in parents[wife_id]:
-            errors.append(f"Error US17: Parent {wife_id} should not marry descendant {husband_id} in family {fam['ID']}.")
-
-    return errors
-
-#US18: Siblings should not marry one another
-def us18(families):
-    errors =[]
-    AllChildrens = {}
-    
-    for fam in families:
-        if 'Children' in fam and fam['Children']:
-            for child in fam['Children']:
-                AllChildrens[child] = fam['Children']
-
-    for fam in families:
-        husband = fam.get('Husband')
-        wife = fam.get('Wife')
-        if husband in AllChildrens and wife in AllChildrens and AllChildrens[husband] == AllChildrens[wife]:
-            errors.append(f"Error US18: Siblings {husband} and {wife} should not marry one another in family {fam['ID']}.")
-    return errors
-
 # US22: All individual IDs should be unique and all family IDs should be unique
 def us22(individuals, families):
     errors = []
@@ -1066,6 +1017,7 @@ def main():
     errors_us06 = us06(individuals, families)
     print_errors(errors_us06, 'US06')
 
+
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
     print_errors(errors_us07, 'US07')
@@ -1074,7 +1026,7 @@ def main():
     errors_us08 = us08(individuals, families)
     print_errors(errors_us08, 'US08')
 
-    # Check for US09
+    # # Check for US09
     errors_us09 = us09(individuals, families)
     print_errors(errors_us09, 'US09')
 
@@ -1085,8 +1037,8 @@ def main():
     # # Check for US12: Parents not too old
     too_old = us12(individuals, families)
     print_errors(too_old, 'US12: Parents that are way too old to have kids')
-
-     # Check for US13: Siblings have to be at least 8 months apart or less than 2 days apart
+    
+    # Check for US13: Siblings have to be at least 8 months apart or less than 2 days apart
     errors_us13 = us13(individuals, families)
     print_errors(errors_us13, 'US13')
     
@@ -1097,12 +1049,6 @@ def main():
     # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
     print_errors(errors_us16, 'US16')
-
-    errors_us17 = us17(families)
-    print_errors(errors_us17, 'US17', 'No marriages to descendants')
-
-    errors_us18 = us18(families)
-    print_errors(errors_us18, 'US18', 'Siblings should not marry')
 
     # Check for US22: Unique IDs
     errors_us22 = us22(individuals, families)
