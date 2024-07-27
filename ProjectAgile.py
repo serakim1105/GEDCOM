@@ -476,6 +476,23 @@ def us16(individuals, families):
 #US17: Parents should not marry any of their descendants
 def us17(individuals,families):
     errors =[]
+    parents = {}
+
+    for fam in families:
+        husband_id = fam.get('Husband')
+        wife_id = fam.get('Wife')
+        children_ids = fam.get('Children', [])
+
+        if husband_id:
+            if husband_id not in parents:
+                parents[husband_id] = set()
+            parents[husband_id].update(children_ids)
+        
+        if wife_id:
+            if wife_id not in parents:
+                parents[wife_id] = set()
+            parents[wife_id].update(children_ids)
+
     return errors
 
 #US18: Siblings should not marry one another
