@@ -449,11 +449,36 @@ def us12(individuals, families):
 
     return list(set(too_old_parents))  # Remove duplicates
 
-#US13: Sibling Spacing
-# def us13():
+#US13: No less than 8 months between birthdays for siblings and no greater than two days for twins 
+def us13(individuals, families):
+    errors = []
+    print(" ")
+    for fam in families:
+        line = fam["line"]
+        siblingFamily = []
+        childrenFam = fam["Children"]
+        for indi in individuals: 
+            if(indi["ID"] in childrenFam):
+                birth_date_str_indi = indi['Birthday']
+                birthDate1 = datetime.strptime(birth_date_str_indi, "%d %b %Y").toordinal()        
+                for sibling in siblingFamily:
+                    birth_date_str_sibling = sibling['Birthday']
+                    birthDate2 = datetime.strptime(birth_date_str_sibling, "%d %b %Y").toordinal()
+                    if 2 < (abs(birthDate1 - birthDate2)) and (abs(birthDate1 - birthDate2)) < 160:
+                        errors.append(f'Line {fam["line"]} - US13: FAMILY: {fam["ID"]} contains siblings that have birthdays less than 8 months and greater than 2 days apart.')
+                siblingFamily.append(indi)
+    return errors
 
-#US15: Fewer Than 15 Siblings
-# def us15():
+#US15: Siblings have to be fewer than 15 in a family
+def us15(families):
+    errors = []
+    siblingFamily = []
+    print(" ")
+    for fam in families:
+        siblingFamily = fam["Children"]
+        if(len(siblingFamily) >= 15):
+            errors.append(f'Line {fam["line"]} - US15: FAMILY: {fam["ID"]} has 15 siblings or more.')
+    return errors
 
 #US16: All male members of a family should have the same last name
 def us16(individuals, families):
@@ -1014,7 +1039,6 @@ def main():
     errors_us06 = us06(individuals, families)
     print_errors(errors_us06, 'US06')
 
-
     # Check for US07: Less then 150 years old
     errors_us07 = us07(individuals)
     print_errors(errors_us07, 'US07')
@@ -1034,6 +1058,14 @@ def main():
     # # Check for US12: Parents not too old
     too_old = us12(individuals, families)
     print_errors(too_old, 'US12: Parents that are way too old to have kids')
+
+     # Check for US13: Siblings have to be at least 8 months apart or less than 2 days apart
+    errors_us13 = us13(individuals, families)
+    print_errors(errors_us13, 'US13')
+    
+    # Check for US15: Fewer than 15 Siblings in One Family
+    errors_us15 = us15(families)
+    print_errors(errors_us15, 'US15')
 
     # Check for US16: Male last names
     errors_us16 = us16(individuals, families)
