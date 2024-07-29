@@ -27,7 +27,7 @@ def test_1_us02():
 def test_2_us02(): 
     families_tmp = families
     families_tmp[0]["Married"] = '1 MAR 1949'
-    assert us02_err(individuals, families_tmp) == ['Line 1 - US02_Anom: FAMILY: F01: Justin /Lee/ married before his birthday.', 'Line 1 - F01: Anna /Lee/ married before her birthday.'], "Expected Justin and Anna both married before birthdays"
+    assert us02_err(individuals, families_tmp) == ['Line 1 - F01: Justin /Lee/ married before his birthday.', 'Line 1 - F01: Anna /Lee/ married before her birthday.'], "Expected Justin and Anna both married before birthdays"
 
 # test for empty .ged
 def test_3_us02():
