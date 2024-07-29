@@ -523,10 +523,10 @@ def us17(families):
         wife_id = fam.get('Wife')
 
         if husband_id in parents and wife_id in parents[husband_id]:
-            errors.append(f"Error US17: Parent {husband_id} should not marry descendant {wife_id} in family {fam['ID']}.")
+            errors.append(f"Line {fam['line']} - Error US17: Parent {husband_id} should not marry descendant {wife_id} in family {fam['ID']}.")
         
         if wife_id in parents and husband_id in parents[wife_id]:
-            errors.append(f"Error US17: Parent {wife_id} should not marry descendant {husband_id} in family {fam['ID']}.")
+            errors.append(f"Line {fam['line']} - Error US17: Parent {wife_id} should not marry descendant {husband_id} in family {fam['ID']}.")
 
     return errors
 
@@ -544,7 +544,7 @@ def us18(families):
         husband = fam.get('Husband')
         wife = fam.get('Wife')
         if husband in AllChildrens and wife in AllChildrens and AllChildrens[husband] == AllChildrens[wife]:
-            errors.append(f"Error US18: Siblings {husband} and {wife} should not marry one another in family {fam['ID']}.")
+            errors.append(f"Line {fam['line']} - Error US18: Siblings {husband} and {wife} should not marry one another in family {fam['ID']}.")
     return errors
     
 # US22: All individual IDs should be unique and all family IDs should be unique
@@ -864,7 +864,7 @@ def us34(individuals, families):
 
                 if older_age > 2 * younger_age:
                     error_msg = (
-                        f"Family ID {fam['ID']} married on {marriage_date}: "
+                        f"Line {fam['line']} - Family ID {fam['ID']} married on {marriage_date}: "
                         f"Older spouse ({'Husband' if older_age == husband_age_at_marriage else 'Wife'}) "
                         f"was more than twice as old as the younger spouse."
                     )
@@ -1137,7 +1137,7 @@ def main():
 
     # Check for US32
     errors_us32 = us32(families)
-    print_errors(errors_us32, 'US32')
+    print_list(errors_us32, 'US32', 'Multiple births')
 
     # Check for US33: List orphans
     errors_us33 = us33(individuals,families)
@@ -1164,7 +1164,7 @@ def main():
             for output in val:
                 print("\n",output)
     else:
-        print('\nUS37: No one died in the last 30 days.')
+        print('\n__US37: No one died in the last 30 days.__')
 
    #Check for US38: List upcoming birthdays
     list_us38 = us38(individuals)
