@@ -1145,7 +1145,7 @@ def main():
 
     # Check for US34
     errors_us34 = us34(individuals, families)
-    print_errors(errors_us34, 'US34')
+    print_errors(errors_us34, 'US34', 'Anomalies')
 
     # Check for US35: List recent births
     list_us35 = us35(individuals)
